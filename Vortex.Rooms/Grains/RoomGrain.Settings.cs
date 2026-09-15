@@ -263,72 +263,36 @@ public sealed partial class RoomGrain
         }
     }
 
+    /// <summary>
+    /// Owner-only. Both this and <see cref="GetBannedUsersAsync"/> answer a request that names an
+    /// arbitrary room id, so without this check any logged-in player could enumerate the rights
+    /// list and the ban list of any room in the hotel.
+    /// </summary>
     public async Task<ImmutableArray<RoomControllerSnapshot>> GetControllersAsync(
+        PlayerId actor,
         CancellationToken ct
     )
     {
-        try
+        if (!await IsRoomOwnerAsync(actor).ConfigureAwait(true))
         {
-            await using VortexDbContext dbCtx = await _dbCtxFactory
-                .CreateDbContextAsync(ct)
-                .ConfigureAwait(true);
-
-            List<RoomControllerSnapshot> result = await dbCtx
-                .RoomRights.AsNoTracking()
-                .Include(r => r.PlayerEntity)
-                .Where(r => r.RoomEntityId == _state.RoomId.Value && r.DeletedAt == null)
-                .Select(r => new RoomControllerSnapshot
-                {
-                    PlayerId = r.PlayerEntityId,
-                    Name = r.PlayerEntity != null ? r.PlayerEntity.Name : string.Empty,
-                })
-                .ToListAsync(ct)
-                .ConfigureAwait(true);
-
-            return [.. result];
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Failed to load controllers for room {RoomId}.", _state.RoomId);
             return [];
         }
+
+        return await SecurityModule.LoadControllersAsync(ct).ConfigureAwait(true);
     }
 
+    /// <summary>Owner-only, same reason as <see cref="GetControllersAsync"/>.</summary>
     public async Task<ImmutableArray<RoomControllerSnapshot>> GetBannedUsersAsync(
+        PlayerId actor,
         CancellationToken ct
     )
     {
-        try
+        if (!await IsRoomOwnerAsync(actor).ConfigureAwait(true))
         {
-            await using VortexDbContext dbCtx = await _dbCtxFactory
-                .CreateDbContextAsync(ct)
-                .ConfigureAwait(true);
-
-            DateTime now = DateTime.UtcNow;
-
-            List<RoomControllerSnapshot> result = await dbCtx
-                .RoomBans.AsNoTracking()
-                .Include(b => b.PlayerEntity)
-                .Where(b =>
-                    b.RoomEntityId == _state.RoomId.Value
-                    && b.DeletedAt == null
-                    && b.DateExpires > now
-                )
-                .Select(b => new RoomControllerSnapshot
-                {
-                    PlayerId = b.PlayerEntityId,
-                    Name = b.PlayerEntity.Name,
-                })
-                .ToListAsync(ct)
-                .ConfigureAwait(true);
-
-            return [.. result];
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Failed to load banned users for room {RoomId}.", _state.RoomId);
             return [];
         }
+
+        return await SecurityModule.LoadBannedUsersAsync(ct).ConfigureAwait(true);
     }
 
     public async Task<bool> UpdateCategoryAndTradeAsync(
@@ -442,7 +406,8 @@ public sealed partial class RoomGrain
 
             _state.PlayerIdsWithRights.Add(target);
 
-            ImmutableArray<RoomControllerSnapshot> controllers = await GetControllersAsync(ct)
+            ImmutableArray<RoomControllerSnapshot> controllers = await SecurityModule
+                .LoadControllersAsync(ct)
                 .ConfigureAwait(true);
 
             await _grainFactory
@@ -518,7 +483,8 @@ public sealed partial class RoomGrain
                 _state.PlayerIdsWithRights.Remove(target);
             }
 
-            ImmutableArray<RoomControllerSnapshot> controllers = await GetControllersAsync(ct)
+            ImmutableArray<RoomControllerSnapshot> controllers = await SecurityModule
+                .LoadControllersAsync(ct)
                 .ConfigureAwait(true);
 
             await _grainFactory
@@ -846,7 +812,8 @@ public sealed partial class RoomGrain
 
             _state.PlayerIdsWithRights.Remove(actor);
 
-            ImmutableArray<RoomControllerSnapshot> controllers = await GetControllersAsync(ct)
+            ImmutableArray<RoomControllerSnapshot> controllers = await SecurityModule
+                .LoadControllersAsync(ct)
                 .ConfigureAwait(true);
 
             await _grainFactory

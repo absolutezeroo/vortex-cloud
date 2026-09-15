@@ -1,14 +1,17 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Vortex.Database.Context;
 using Vortex.Primitives.Action;
 using Vortex.Primitives.Groups.Enums;
 using Vortex.Primitives.Orleans;
+using Vortex.Primitives.Orleans.Snapshots.Room;
 using Vortex.Primitives.Permissions;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Rooms.Enums;
@@ -306,5 +309,92 @@ public sealed class RoomSecurityModule(RoomGrain roomGrain)
             AvatarStatusType.FlatControl,
             ((int)controllerLevel).ToString(CultureInfo.InvariantCulture)
         );
+    }
+
+    /// <summary>
+    /// The room's explicitly assigned rights, straight from the table. Unchecked: the grain's own
+    /// broadcasts call this after a rights change it has already authorised, and the packet-facing
+    /// path goes through <c>RoomGrain.GetControllersAsync</c>, which gates on ownership first.
+    /// </summary>
+    public async Task<ImmutableArray<RoomControllerSnapshot>> LoadControllersAsync(
+        CancellationToken ct
+    )
+    {
+        try
+        {
+            await using VortexDbContext dbCtx = await _roomGrain
+                ._dbCtxFactory.CreateDbContextAsync(ct)
+                .ConfigureAwait(true);
+
+            List<RoomControllerSnapshot> result = await dbCtx
+                .RoomRights.AsNoTracking()
+                .Include(r => r.PlayerEntity)
+                .Where(r => r.RoomEntityId == _roomGrain._state.RoomId.Value && r.DeletedAt == null)
+                .Select(r => new RoomControllerSnapshot
+                {
+                    PlayerId = r.PlayerEntityId,
+                    Name = r.PlayerEntity != null ? r.PlayerEntity.Name : string.Empty,
+                })
+                .ToListAsync(ct)
+                .ConfigureAwait(true);
+
+            return [.. result];
+        }
+        catch (Exception ex)
+        {
+            _roomGrain._logger.LogError(
+                ex,
+                "Failed to load controllers for room {RoomId}.",
+                _roomGrain._state.RoomId
+            );
+
+            return [];
+        }
+    }
+
+    /// <summary>
+    /// The room's bans that have not yet expired. Unchecked, same contract as
+    /// <see cref="LoadControllersAsync"/>.
+    /// </summary>
+    public async Task<ImmutableArray<RoomControllerSnapshot>> LoadBannedUsersAsync(
+        CancellationToken ct
+    )
+    {
+        try
+        {
+            await using VortexDbContext dbCtx = await _roomGrain
+                ._dbCtxFactory.CreateDbContextAsync(ct)
+                .ConfigureAwait(true);
+
+            DateTime now = DateTime.UtcNow;
+
+            List<RoomControllerSnapshot> result = await dbCtx
+                .RoomBans.AsNoTracking()
+                .Include(b => b.PlayerEntity)
+                .Where(b =>
+                    b.RoomEntityId == _roomGrain._state.RoomId.Value
+                    && b.DeletedAt == null
+                    && b.DateExpires > now
+                )
+                .Select(b => new RoomControllerSnapshot
+                {
+                    PlayerId = b.PlayerEntityId,
+                    Name = b.PlayerEntity.Name,
+                })
+                .ToListAsync(ct)
+                .ConfigureAwait(true);
+
+            return [.. result];
+        }
+        catch (Exception ex)
+        {
+            _roomGrain._logger.LogError(
+                ex,
+                "Failed to load banned users for room {RoomId}.",
+                _roomGrain._state.RoomId
+            );
+
+            return [];
+        }
     }
 }

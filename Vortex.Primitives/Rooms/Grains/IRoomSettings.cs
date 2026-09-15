@@ -32,9 +32,18 @@ public interface IRoomSettings : IGrainWithIntegerKey
 
     Task<bool> DeleteRoomAsync(PlayerId actor, CancellationToken ct);
 
-    Task<ImmutableArray<RoomControllerSnapshot>> GetControllersAsync(CancellationToken ct);
+    /// <summary>Owner-only; empty for anyone else. The request names an arbitrary room id, so the
+    /// grain is the only place that can decide whether the caller may see the list.</summary>
+    Task<ImmutableArray<RoomControllerSnapshot>> GetControllersAsync(
+        PlayerId actor,
+        CancellationToken ct
+    );
 
-    Task<ImmutableArray<RoomControllerSnapshot>> GetBannedUsersAsync(CancellationToken ct);
+    /// <summary>Owner-only; empty for anyone else.</summary>
+    Task<ImmutableArray<RoomControllerSnapshot>> GetBannedUsersAsync(
+        PlayerId actor,
+        CancellationToken ct
+    );
 
     Task<bool> UpdateCategoryAndTradeAsync(
         PlayerId actor,

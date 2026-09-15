@@ -27,7 +27,7 @@ public class GetFlatControllersMessageHandler(IGrainFactory grainFactory)
 
         IRoomSettings roomGrain = grainFactory.GetRoomSettings(message.RoomId);
         ImmutableArray<RoomControllerSnapshot> controllers = await roomGrain
-            .GetControllersAsync(ct)
+            .GetControllersAsync(ctx.PlayerId, ct)
             .ConfigureAwait(false);
 
         await ctx.SendComposerAsync(

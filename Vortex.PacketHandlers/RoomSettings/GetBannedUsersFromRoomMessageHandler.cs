@@ -27,7 +27,7 @@ public class GetBannedUsersFromRoomMessageHandler(IGrainFactory grainFactory)
 
         IRoomSettings roomGrain = grainFactory.GetRoomSettings(message.RoomId);
         ImmutableArray<RoomControllerSnapshot> bannedUsers = await roomGrain
-            .GetBannedUsersAsync(ct)
+            .GetBannedUsersAsync(ctx.PlayerId, ct)
             .ConfigureAwait(false);
 
         await ctx.SendComposerAsync(
