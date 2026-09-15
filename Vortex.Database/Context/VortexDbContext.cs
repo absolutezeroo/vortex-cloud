@@ -110,6 +110,8 @@ public class VortexDbContext(DbContextOptions<VortexDbContext> options)
 
     public DbSet<RoomRightEntity> RoomRights { get; init; } = null!;
 
+    public DbSet<WiredSharedVariableEntity> WiredSharedVariables { get; init; } = null!;
+
     public DbSet<RoomEntryLogEntity> RoomEntryLogs { get; init; } = null!;
 
     public DbSet<RoomAdvertisementEntity> RoomAdvertisements { get; init; } = null!;
