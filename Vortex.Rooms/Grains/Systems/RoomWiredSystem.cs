@@ -153,6 +153,20 @@ public sealed partial class RoomWiredSystem : IRoomEventListener
                     );
 
                 EnqueueRoomEvent(evt);
+
+                // And once more per reading derived from it. A reading owns no value, so the write
+                // lands on the parent and this is the only announcement it will ever get.
+                foreach (WiredVariableChangedEvent derivedEvt in DerivedChanges(variableEvt))
+                {
+                    PublishFxStatusAsync(derivedEvt)
+                        .LogAndForget(
+                            Diagnostics.Logger,
+                            "Failed to publish a Variable FX status update."
+                        );
+
+                    EnqueueRoomEvent(derivedEvt);
+                }
+
                 break;
             case PlayerLeftEvent playerLeftEvt:
                 _playerActiveStore.RemovePlayerStore(playerLeftEvt.PlayerId);

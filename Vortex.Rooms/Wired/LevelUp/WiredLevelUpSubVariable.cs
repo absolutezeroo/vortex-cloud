@@ -38,9 +38,16 @@ internal sealed class WiredLevelUpSubVariable(
     WiredLevelUpCurve curve,
     Func<WiredLevelUpCurve, int, int> read,
     Func<WiredLevelUpCurve, int, int, int>? write
-) : IWiredVariable
+) : IWiredVariable, IWiredDerivedVariable
 {
     private WiredVariableSnapshot? _snapshot;
+
+    /// <summary>The variable box this reading was derived from. The room asks so it can turn that
+    /// box's change into one for this reading — the only announcement this reading will ever
+    /// get, since every write lands on the parent.</summary>
+    public WiredVariableId SourceVariableId => ParentSnapshot.VariableId;
+
+    public int ValueFor(int sourceValue) => read(curve, sourceValue);
 
     public bool CanBind(in WiredVariableKey key) =>
         key.VariableId == variableId && key.TargetType == ParentSnapshot.TargetType;
@@ -56,7 +63,7 @@ internal sealed class WiredLevelUpSubVariable(
             return false;
         }
 
-        value = new WiredVariableValue(read(curve, raw.Value));
+        value = new WiredVariableValue(ValueFor(raw.Value));
 
         return true;
     }

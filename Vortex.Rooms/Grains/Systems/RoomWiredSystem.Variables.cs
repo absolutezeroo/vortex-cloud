@@ -384,6 +384,52 @@ public sealed partial class RoomWiredSystem
         );
     }
 
+    /// <summary>
+    /// The same change, restated once for every reading derived from the variable that moved.
+    /// </summary>
+    /// <remarks>
+    /// A level-up add-on's readings are variables the client offers in every picker, the "variable
+    /// changed" trigger included — and the add-on exists for exactly one chain: fire when the level
+    /// goes up. But a reading owns no value, so every write lands on the parent and the parent is
+    /// the only thing that ever announces one. Without this the readings were pickable and
+    /// permanently silent.
+    /// <para>
+    /// Both values are run through the reading, so the trigger's Increased / Decreased / Unchanged
+    /// options ask about the level rather than about the experience behind it. A write that leaves
+    /// the reading where it was is still announced — that is what the client's "Unchanged" option
+    /// is for.
+    /// </para>
+    /// </remarks>
+    private List<WiredVariableChangedEvent> DerivedChanges(WiredVariableChangedEvent evt)
+    {
+        List<WiredVariableChangedEvent> derivedChanges = [];
+
+        // ponytail: a scan of the room's variables per change. A room holds tens of them, and an
+        // index keyed by source would be one more thing to invalidate every time a box moves --
+        // build one if a room ever holds enough variables for this to show.
+        foreach (IWiredVariable variable in _variableById.Values)
+        {
+            if (
+                variable is not IWiredDerivedVariable derived
+                || derived.SourceVariableId != evt.Key.VariableId
+            )
+            {
+                continue;
+            }
+
+            derivedChanges.Add(
+                evt with
+                {
+                    Key = evt.Key with { VariableId = variable.GetVarSnapshot().VariableId },
+                    Previous = derived.ValueFor(evt.Previous),
+                    Current = derived.ValueFor(evt.Current),
+                }
+            );
+        }
+
+        return derivedChanges;
+    }
+
     private bool ProcessVariable(IWiredVariable variable)
     {
         WiredVariableSnapshot snapshot = variable.GetVarSnapshot();
