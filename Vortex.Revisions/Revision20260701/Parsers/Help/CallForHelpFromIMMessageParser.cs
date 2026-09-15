@@ -25,12 +25,18 @@ internal class CallForHelpFromIMMessageParser : IParser
             evidence.Add(new CfhEvidenceLine(packet.PopInt(), packet.PopString()));
         }
 
+        // Trailing pair, after the evidence array (`_SafeCls_3732` pushes p5 and p6 last).
+        string reporterName = packet.PopString();
+        string reporterEmail = packet.PopString();
+
         return new CallForHelpFromIMMessage
         {
             Message = message,
             TopicId = topicId,
             ReportedUserId = reportedUserId,
             Evidence = evidence.MoveToImmutable(),
+            ReporterName = reporterName,
+            ReporterEmail = reporterEmail,
         };
     }
 }

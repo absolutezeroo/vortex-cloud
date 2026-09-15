@@ -12,4 +12,10 @@ public record CallForHelpFromIMMessage : IMessageEvent
     public required int TopicId { get; init; }
     public required int ReportedUserId { get; init; }
     public required ImmutableArray<CfhEvidenceLine> Evidence { get; init; }
+
+    /// <summary>See <see cref="CallForHelpMessage.ReporterName"/>.</summary>
+    public string ReporterName { get; init; } = string.Empty;
+
+    /// <summary>See <see cref="CallForHelpMessage.ReporterEmail"/>.</summary>
+    public string ReporterEmail { get; init; } = string.Empty;
 }

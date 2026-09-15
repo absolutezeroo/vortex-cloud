@@ -14,6 +14,12 @@ internal class CallForHelpFromForumMessageMessageParser : IParser
         int topicId = packet.PopInt();
         string message = packet.PopString();
 
+        // `_SafeCls_3451` builds its array with `= [p1..p7]` rather than pushing, which is why the
+        // spec scanner records it as writing nothing and the field-count check never saw these two.
+        // They are filled for the client's unlawful report categories only.
+        string reporterName = packet.PopString();
+        string reporterEmail = packet.PopString();
+
         return new CallForHelpFromForumMessageMessage
         {
             GroupId = groupId,
@@ -21,6 +27,8 @@ internal class CallForHelpFromForumMessageMessageParser : IParser
             PostId = postId,
             TopicId = topicId,
             Message = message,
+            ReporterName = reporterName,
+            ReporterEmail = reporterEmail,
         };
     }
 }

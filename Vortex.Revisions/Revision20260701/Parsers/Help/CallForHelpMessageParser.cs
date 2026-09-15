@@ -24,8 +24,8 @@ internal class CallForHelpMessageParser : IParser
             evidence.Add(new CfhEvidenceLine(packet.PopInt(), packet.PopString()));
         }
 
-        string extra1 = packet.PopString();
-        string extra2 = packet.PopString();
+        string reporterName = packet.PopString();
+        string reporterEmail = packet.PopString();
 
         return new CallForHelpMessage
         {
@@ -34,8 +34,8 @@ internal class CallForHelpMessageParser : IParser
             ReportedUserId = reportedUserId,
             RoomId = roomId,
             Evidence = evidence.MoveToImmutable(),
-            Extra1 = extra1,
-            Extra2 = extra2,
+            ReporterName = reporterName,
+            ReporterEmail = reporterEmail,
         };
     }
 }

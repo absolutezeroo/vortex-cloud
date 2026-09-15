@@ -8,4 +8,10 @@ public record GetMarketplaceOffersMessage : IMessageEvent
     public int MaxPrice { get; init; }
     public string SearchQuery { get; init; } = string.Empty;
     public int SortOrder { get; init; }
+
+    /// <summary>
+    /// Client-side `_combineUniques` (MarketPlaceLogic.as:166), defaulted to true: whether
+    /// identical unique items should collapse into a single listing row.
+    /// </summary>
+    public bool CombineUniques { get; init; } = true;
 }

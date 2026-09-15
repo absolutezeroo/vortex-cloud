@@ -18,4 +18,10 @@ public record CallForHelpFromPhotoMessage : IMessageEvent
 
     /// <summary>The wall item displaying the photo, so staff can find it in the room.</summary>
     public required int FurniId { get; init; }
+
+    /// <summary>See <see cref="CallForHelpMessage.ReporterName"/>.</summary>
+    public string ReporterName { get; init; } = string.Empty;
+
+    /// <summary>See <see cref="CallForHelpMessage.ReporterEmail"/>.</summary>
+    public string ReporterEmail { get; init; } = string.Empty;
 }

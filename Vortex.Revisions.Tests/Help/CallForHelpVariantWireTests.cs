@@ -15,6 +15,13 @@ namespace Vortex.Revisions.Tests.Help;
 ///     nothing at all. Two of the five reorder their arguments on the way out — reportPhoto and
 ///     reportSelfie both put the topic and the message somewhere other than where their own method
 ///     signature suggests — which is exactly the kind of thing a round-trip test pins down.
+///
+///     Four of the five also end with the reporter's own name and email (`help_message_name` /
+///     `help_message_email`, TopicsFlowHelpController.as:478-483), filled only for the client's
+///     unlawful report categories. Those two were dropped until 2026-09-15: the AS3 composers build
+///     their payload with an array literal (`= [p1..p7]`) rather than pushes, so the spec scanner
+///     recorded "0 fields, partial" and the field-count gate skipped them. The selfie variant is the
+///     one that genuinely ends at five.
 /// </summary>
 public sealed class CallForHelpVariantWireTests
 {
@@ -56,6 +63,8 @@ public sealed class CallForHelpVariantWireTests
                     .WriteString("go away")
                     .WriteInteger(77)
                     .WriteString("seriously")
+                    .WriteString("Ada")
+                    .WriteString("ada@example.test")
         );
 
         message.Message.Should().Be("they keep messaging me");
@@ -65,6 +74,8 @@ public sealed class CallForHelpVariantWireTests
         message.Evidence[0].UserId.Should().Be(77);
         message.Evidence[0].Text.Should().Be("go away");
         message.Evidence[1].Text.Should().Be("seriously");
+        message.ReporterName.Should().Be("Ada");
+        message.ReporterEmail.Should().Be("ada@example.test");
     }
 
     [Fact]
@@ -72,7 +83,13 @@ public sealed class CallForHelpVariantWireTests
     {
         CallForHelpFromIMMessage message = Parse<CallForHelpFromIMMessage>(
             CallForHelpFromIMMessageEvent,
-            sp => sp.WriteString("no context").WriteInteger(4).WriteInteger(77).WriteInteger(0)
+            sp =>
+                sp.WriteString("no context")
+                    .WriteInteger(4)
+                    .WriteInteger(77)
+                    .WriteInteger(0)
+                    .WriteString("")
+                    .WriteString("")
         );
 
         message.Evidence.Should().BeEmpty();
@@ -91,6 +108,8 @@ public sealed class CallForHelpVariantWireTests
                     .WriteInteger(77)
                     .WriteInteger(9)
                     .WriteInteger(4711)
+                    .WriteString("Ada")
+                    .WriteString("ada@example.test")
         );
 
         message.PhotoId.Should().Be("photo-123");
@@ -98,6 +117,8 @@ public sealed class CallForHelpVariantWireTests
         message.PhotoAuthorId.Should().Be(77);
         message.TopicId.Should().Be(9);
         message.FurniId.Should().Be(4711);
+        message.ReporterName.Should().Be("Ada");
+        message.ReporterEmail.Should().Be("ada@example.test");
     }
 
     [Fact]
@@ -132,12 +153,16 @@ public sealed class CallForHelpVariantWireTests
                     .WriteInteger(34)
                     .WriteInteger(9)
                     .WriteString("this whole thread is abusive")
+                    .WriteString("Ada")
+                    .WriteString("ada@example.test")
         );
 
         message.GroupId.Should().Be(12);
         message.ThreadId.Should().Be(34);
         message.TopicId.Should().Be(9);
         message.Message.Should().Be("this whole thread is abusive");
+        message.ReporterName.Should().Be("Ada");
+        message.ReporterEmail.Should().Be("ada@example.test");
     }
 
     [Fact]
@@ -151,6 +176,8 @@ public sealed class CallForHelpVariantWireTests
                     .WriteInteger(56)
                     .WriteInteger(9)
                     .WriteString("this reply is abusive")
+                    .WriteString("Ada")
+                    .WriteString("ada@example.test")
         );
 
         message.GroupId.Should().Be(12);
@@ -158,5 +185,7 @@ public sealed class CallForHelpVariantWireTests
         message.PostId.Should().Be(56);
         message.TopicId.Should().Be(9);
         message.Message.Should().Be("this reply is abusive");
+        message.ReporterName.Should().Be("Ada");
+        message.ReporterEmail.Should().Be("ada@example.test");
     }
 }

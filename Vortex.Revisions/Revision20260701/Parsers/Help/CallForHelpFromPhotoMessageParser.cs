@@ -16,6 +16,10 @@ internal class CallForHelpFromPhotoMessageParser : IParser
         int topicId = packet.PopInt();
         int furniId = packet.PopInt();
 
+        // Trailing pair (`_SafeCls_2702` = [p1..p7]).
+        string reporterName = packet.PopString();
+        string reporterEmail = packet.PopString();
+
         return new CallForHelpFromPhotoMessage
         {
             PhotoId = photoId,
@@ -23,6 +27,8 @@ internal class CallForHelpFromPhotoMessageParser : IParser
             PhotoAuthorId = photoAuthorId,
             TopicId = topicId,
             FurniId = furniId,
+            ReporterName = reporterName,
+            ReporterEmail = reporterEmail,
         };
     }
 }
