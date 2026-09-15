@@ -48,6 +48,10 @@
       WorkingDirectory="$(MSBuildThisFileDirectory)"
     />
     <Exec
+      Command="node scripts/hooks/check-variable-capabilities.mjs"
+      WorkingDirectory="$(MSBuildThisFileDirectory)"
+    />
+    <Exec
       Command="dotnet run --project Vortex.Specs.Cli -- validate"
       WorkingDirectory="$(MSBuildThisFileDirectory)"
     />

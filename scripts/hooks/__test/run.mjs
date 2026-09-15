@@ -100,8 +100,24 @@ fs.writeFileSync(
   )
 );
 
+// Une variable ment quand elle annonce une capacite que rien n'implemente derriere. La sonde est le
+// cas exact : elle herite d'une base interne dont l'ecriture refuse, et declare quand meme le flag
+// sur lequel l'effet "changer la valeur" filtre son menu.
+const capabilityProbe = path.join(root, 'Vortex.Rooms', 'Wired', 'Variables', '__HookProbeVariable.cs');
+fs.writeFileSync(
+  capabilityProbe,
+  'using Vortex.Primitives.Rooms.Enums.Wired;\n' +
+    'namespace Vortex.Rooms.Wired.Variables;\n' +
+    'internal sealed class HookProbeVariable : WiredInternalVariable\n' +
+    '{\n' +
+    '    protected override WiredVariableFlags Flags => WiredVariableFlags.CanWriteValue;\n' +
+    '}\n'
+);
+
 const direct = [
   ['check-header-registry.mjs', [], 0, 'registre headers : baseline a jour'],
+  ['check-variable-capabilities.mjs', [], 2, 'variable qui annonce une ecriture sans ecriture'],
+  ['check-variable-capabilities.mjs', [], 0, 'capacites variables : toutes tenues'],
   ['check-header-registry.mjs', [], 2, 'header injoignable hors baseline', { VORTEX_HEADER_BASELINE: emptyBaseline }],
   ['check-architecture-walls.mjs', [], 2, 'fuite protocole + reference rendue a un projet protege'],
   ['check-architecture-walls.mjs', [], 0, 'murs archi : les sept tiennent'],
@@ -121,6 +137,9 @@ for (const [script, argv, want, label, env] of direct) {
     fs.rmSync(wallProbe, { force: true });
     fs.writeFileSync(freeProject, freeProjectOriginal);
   }
+  if (script === 'check-variable-capabilities.mjs' && want === 0) {
+    fs.rmSync(capabilityProbe, { force: true });
+  }
   const r = spawnSync(process.execPath, [path.join('scripts', 'hooks', script), ...argv], {
     encoding: 'utf8',
     env: { ...process.env, ...env },
@@ -136,6 +155,7 @@ fs.rmSync(csProbe, { force: true });
 fs.rmSync(csProbeClean, { force: true });
 fs.rmSync(emptyBaseline, { force: true });
 fs.rmSync(wallProbe, { force: true });
+fs.rmSync(capabilityProbe, { force: true });
 fs.writeFileSync(freeProject, freeProjectOriginal);
 console.log(failed ? `\n${failed} test(s) en echec.` : '\nTous les hooks se comportent comme attendu.');
 process.exit(failed ? 1 : 0);
