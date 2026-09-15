@@ -2,7 +2,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
 using Vortex.Messages.Registry;
+using Vortex.Primitives.Action;
 using Vortex.Primitives.Orleans;
+using Vortex.Primitives.Rooms.Enums;
 using Vortex.Primitives.Rooms.Grains;
 using Vortex.Protocol.Messages.Incoming.Room.Pets;
 
@@ -24,8 +26,25 @@ public class BreedPetsMessageHandler(IGrainFactory grainFactory) : IMessageHandl
         }
 
         IRoomPets room = _grainFactory.GetRoomPets(ctx.RoomId);
+        ActionContext actorCtx = ctx.AsActionContext();
 
-        await room.BreedPetsAsync(ctx.AsActionContext(), message.PetOneId, message.PetTwoId, ct)
-            .ConfigureAwait(false);
+        switch (message.Action)
+        {
+            case PetBreedingActionType.Request:
+                await room.BreedPetsAsync(actorCtx, message.PetOneId, message.PetTwoId, ct)
+                    .ConfigureAwait(false);
+                break;
+
+            case PetBreedingActionType.Cancel:
+                await room.CancelPetBreedingAsync(actorCtx, message.PetOneId, ct)
+                    .ConfigureAwait(false);
+                break;
+
+            // Accepting only opens the naming dialog on the accepting client; the session is
+            // already pending and ConfirmPetBreeding is what completes it. Re-running the request
+            // here would notify both owners a second time.
+            case PetBreedingActionType.Accept:
+                break;
+        }
     }
 }

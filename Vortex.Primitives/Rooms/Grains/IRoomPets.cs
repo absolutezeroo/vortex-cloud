@@ -72,7 +72,19 @@ public interface IRoomPets : IGrainWithIntegerKey
         CancellationToken ct
     );
 
-    public Task<bool> ConfirmPetBreedingAsync(ActionContext ctx, int petId, CancellationToken ct);
+    /// <summary>
+    /// Completes a pending breeding session. <paramref name="nestStuffId"/> is the nest the dialog
+    /// was opened from — the client keys its result event to it — and <paramref name="petName"/> is
+    /// the name the player chose for the offspring.
+    /// </summary>
+    public Task<bool> ConfirmPetBreedingAsync(
+        ActionContext ctx,
+        int nestStuffId,
+        string petName,
+        int petOneId,
+        int petTwoId,
+        CancellationToken ct
+    );
 
     public Task CancelPetBreedingAsync(ActionContext ctx, int petId, CancellationToken ct);
 

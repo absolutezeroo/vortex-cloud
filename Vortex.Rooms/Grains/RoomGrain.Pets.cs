@@ -295,20 +295,31 @@ public sealed partial class RoomGrain
 
     public async Task<bool> ConfirmPetBreedingAsync(
         ActionContext ctx,
-        int petId,
+        int nestStuffId,
+        string petName,
+        int petOneId,
+        int petTwoId,
         CancellationToken ct
     )
     {
         try
         {
-            return await PetSystem.ConfirmPetBreedingAsync(ctx, petId, ct);
+            return await PetSystem.ConfirmPetBreedingAsync(
+                ctx,
+                nestStuffId,
+                petName,
+                petOneId,
+                petTwoId,
+                ct
+            );
         }
         catch (Exception ex)
         {
             _logger.LogError(
                 ex,
-                "Failed to confirm pet breeding for pet {PetId} in room {RoomId}",
-                petId,
+                "Failed to confirm pet breeding for pets {PetOneId}/{PetTwoId} in room {RoomId}",
+                petOneId,
+                petTwoId,
                 _state.RoomId
             );
 

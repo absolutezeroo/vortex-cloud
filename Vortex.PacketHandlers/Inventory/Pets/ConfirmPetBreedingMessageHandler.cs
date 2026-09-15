@@ -19,14 +19,21 @@ public class ConfirmPetBreedingMessageHandler(IGrainFactory grainFactory)
         CancellationToken ct
     )
     {
-        if (ctx.PlayerId <= 0 || ctx.RoomId <= 0 || message.PetId <= 0)
+        if (ctx.PlayerId <= 0 || ctx.RoomId <= 0 || message.PetOneId <= 0 || message.PetTwoId <= 0)
         {
             return;
         }
 
         IRoomPets room = _grainFactory.GetRoomPets(ctx.RoomId);
 
-        await room.ConfirmPetBreedingAsync(ctx.AsActionContext(), message.PetId, ct)
+        await room.ConfirmPetBreedingAsync(
+                ctx.AsActionContext(),
+                message.NestStuffId,
+                message.PetName,
+                message.PetOneId,
+                message.PetTwoId,
+                ct
+            )
             .ConfigureAwait(false);
     }
 }

@@ -146,12 +146,19 @@ public sealed partial class RoomPetSystem
 
     public async Task<bool> ConfirmPetBreedingAsync(
         ActionContext ctx,
-        int petId,
+        int nestStuffId,
+        string petName,
+        int petOneId,
+        int petTwoId,
         CancellationToken ct
     )
     {
+        // The dialog names both parents, so match the pair in either order rather than guessing
+        // from one id. Until the parser was fixed this method received the nest's furniture id and
+        // matched nothing, so confirming a breeding silently did nothing at all.
         PendingBreedingSession? session = _breedingByPetOneId.Values.FirstOrDefault(s =>
-            s.PetTwoId == petId
+            (s.PetOneId == petOneId && s.PetTwoId == petTwoId)
+            || (s.PetOneId == petTwoId && s.PetTwoId == petOneId)
         );
 
         if (session is null)
@@ -167,7 +174,9 @@ public sealed partial class RoomPetSystem
         {
             OwnerPlayerEntityId = session.OwnerOneId.Value,
             RoomEntityId = null,
-            Name = "Baby",
+            // The name the player typed in the confirmation dialog. It used to be hardcoded because
+            // the packet's name field was never read off the wire.
+            Name = string.IsNullOrWhiteSpace(petName) ? "Baby" : petName.Trim(),
             Type = _roomGrain._state.PetsById.TryGetValue(session.PetOneId, out PetSnapshot? p1)
                 ? p1.Type
                 : 0,
@@ -195,7 +204,9 @@ public sealed partial class RoomPetSystem
         // rather than a flag: 1 is the success it acts on.
         ConfirmBreedingResultEventMessageComposer resultMsg = new()
         {
-            BreedingNestStuffId = UnknownBreedingNestId,
+            // The real nest, now that the confirmation packet's first field is read. The client
+            // keys the result to it, so the placeholder left the dialog waiting on nest 0.
+            BreedingNestStuffId = nestStuffId,
             Result = BreedingResultSuccess,
         };
 
