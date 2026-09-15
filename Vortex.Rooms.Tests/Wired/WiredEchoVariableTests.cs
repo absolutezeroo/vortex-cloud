@@ -160,6 +160,33 @@ public sealed class WiredEchoVariableTests
 
     /// <summary>An echo box with <paramref name="source"/> registered under the id its picker
     /// holds, or with an empty picker when there is none.</summary>
+    /// <summary>
+    /// The echo names the variable it mirrors, which is what lets the room restate that variable's
+    /// changes under this box's name.
+    /// </summary>
+    /// <remarks>
+    /// Without it the box was offered in the "variable changed" picker — it republishes the source's
+    /// flags unmasked, <c>CanInterceptChanges</c> included — and could never fire: the write is a
+    /// pass-through, so the only change event raised carries the source's id.
+    /// </remarks>
+    [Fact]
+    public void ItNamesTheVariableItMirrors_SoTheRoomCanRestateItsChanges()
+    {
+        FakeWiredVariable source = new(WiredVariableTargetType.User) { Value = 42 };
+        Build(out TestEcho echo, out _, source);
+
+        echo.SourceVariableId.Should().Be(SourceId);
+        echo.ValueFor(42).Should().Be(42, "an echo is the same number under another name");
+    }
+
+    [Fact]
+    public void MirroringNothing_ItNamesNoSource()
+    {
+        Build(out TestEcho echo, out _, source: null);
+
+        echo.SourceVariableId.Should().Be(default(WiredVariableId));
+    }
+
     private static void Build(
         out TestEcho echo,
         out FakeFurniAccess furni,

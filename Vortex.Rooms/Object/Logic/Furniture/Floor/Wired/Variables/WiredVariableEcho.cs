@@ -41,7 +41,7 @@ public class WiredVariableEcho(
     IGrainFactory grainFactory,
     IStuffDataFactory stuffDataFactory,
     IRoomFloorItemContext ctx
-) : FurnitureWiredVariableLogic(grainFactory, stuffDataFactory, ctx)
+) : FurnitureWiredVariableLogic(grainFactory, stuffDataFactory, ctx), IWiredDerivedVariable
 {
     /// <summary>What an echo offers when it mirrors nothing: a value slot and nothing else, so an
     /// unconfigured box neither disappears from the menu nor advertises an operation it cannot
@@ -57,6 +57,26 @@ public class WiredVariableEcho(
     public override int WiredCode => (int)WiredVariableBoxType.Echo;
 
     public override int GetMaxVariableIds() => 1;
+
+    /// <summary>
+    /// The variable being mirrored, so the room can restate its changes under this box's name.
+    /// </summary>
+    /// <remarks>
+    /// Writes are a pass-through, so the change event carries the <em>source</em>'s id and a trigger
+    /// watching the echo compared two ids that could never match — the box mirrors the source's
+    /// flags unmasked, <c>CanInterceptChanges</c> included, so it was offered in the "variable
+    /// changed" picker and was silent there.
+    /// <para>
+    /// ponytail: the room restates a change one level deep, so an echo of an echo hears its own
+    /// source and not the root. Two echoes in a chain is buildable but not what the box is for;
+    /// make the fan-out transitive if anyone ever builds one.
+    /// </para>
+    /// </remarks>
+    public WiredVariableId SourceVariableId =>
+        FromSource(source => source.GetVarSnapshot().VariableId, default);
+
+    /// <summary>An echo is the same number under another name.</summary>
+    public int ValueFor(int sourceValue) => sourceValue;
 
     protected override WiredVariableTargetType TargetType =>
         FromSource(source => source.GetVarSnapshot().TargetType, WiredVariableTargetType.None);
@@ -134,9 +154,10 @@ public class WiredVariableEcho(
     /// <remarks>
     /// Nothing is stored on the echo itself. Whether the write is allowed at all is the source's
     /// answer to give — its own <c>CanCreateAndDelete</c> check refuses a variable that may not be
-    /// created, and the change event it publishes is the one a "variable changed" trigger is already
-    /// listening for. An echo that kept its own copy would let the two drift, and the whole point of
-    /// the box is that there is one value under two names.
+    /// created. The change event is the source's too, and carries the source's id, which is why the
+    /// box declares <see cref="SourceVariableId"/>: the room restates that change under this name so
+    /// a trigger watching the echo hears it. An echo that kept its own copy would let the two drift,
+    /// and the whole point of the box is that there is one value under two names.
     /// </remarks>
     public override async Task<bool> GiveValueAsync(
         WiredVariableKey key,
