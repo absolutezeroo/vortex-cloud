@@ -5,7 +5,9 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Orleans;
+using Vortex.Networking.Configuration;
 using Vortex.Primitives.Events;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Orleans;
@@ -18,11 +20,13 @@ namespace Vortex.Networking.Session;
 public sealed class SessionGateway(
     IGrainFactory grainFactory,
     IEventPublisher events,
+    IOptions<NetworkingConfig> networkingConfig,
     ILogger<SessionGateway> logger
 ) : ISessionGateway
 {
     private readonly IGrainFactory _grainFactory = grainFactory;
     private readonly IEventPublisher _events = events;
+    private readonly NetworkingConfig _networkingConfig = networkingConfig.Value;
     private readonly ILogger<SessionGateway> _logger = logger;
 
     private readonly ConcurrentDictionary<SessionKey, ISessionContext> _sessions = new();
@@ -30,6 +34,18 @@ public sealed class SessionGateway(
     private readonly ConcurrentDictionary<SessionKey, PlayerId> _sessionToPlayer = new();
     private readonly ConcurrentDictionary<PlayerId, SessionKey> _playerToSession = new();
     private readonly ConcurrentDictionary<PlayerId, DateTime> _playerConnectedAt = new();
+
+    /// <summary>
+    /// Live session count per remote address, and the address each session was ADMITTED under.
+    /// The second map is what makes the count survive: on close the context may already be torn
+    /// down and its <see cref="ISessionContext.RemoteIpAddress"/> null, so a decrement that re-read
+    /// the address from the context would leak a slot per disconnect until the cap refused
+    /// everybody sharing that address (SEC-10).
+    /// </summary>
+    private readonly ConcurrentDictionary<string, int> _sessionsByIpAddress = new(
+        StringComparer.OrdinalIgnoreCase
+    );
+    private readonly ConcurrentDictionary<SessionKey, string> _ipAddressBySession = new();
 
     /// <summary>
     ///     Serializes mutation of the <see cref="_sessionToPlayer" />/<see cref="_playerToSession" />
@@ -58,8 +74,13 @@ public sealed class SessionGateway(
 
     public IReadOnlyCollection<PlayerId> GetOnlinePlayerIds() => _playerToSession.Keys.ToArray();
 
-    public Task AddSessionAsync(SessionKey key, ISessionContext ctx)
+    public Task<bool> AddSessionAsync(SessionKey key, ISessionContext ctx)
     {
+        if (!TryAdmit(key, ctx))
+        {
+            return Task.FromResult(false);
+        }
+
         _sessions[key] = ctx;
 
         _sessionObservers.AddOrUpdate(
@@ -75,8 +96,68 @@ public sealed class SessionGateway(
             (_, existing) => existing
         );
 
-        return Task.CompletedTask;
+        return Task.FromResult(true);
     }
+
+    /// <summary>
+    /// Counts this connection against the global and per-address caps, admitting it only when both
+    /// have room. The slot is reserved before this returns true, so two connections racing for the
+    /// last one cannot both win.
+    /// </summary>
+    private bool TryAdmit(SessionKey key, ISessionContext ctx)
+    {
+        int maxTotal = _networkingConfig.MaxTotalSessions;
+
+        if (maxTotal > 0 && _sessions.Count >= maxTotal)
+        {
+            _logger.LogWarning(
+                "Refusing session {SessionKey}: at the hotel-wide session ceiling ({MaxTotal}).",
+                key,
+                maxTotal
+            );
+
+            return false;
+        }
+
+        int maxPerIp = _networkingConfig.MaxSessionsPerIpAddress;
+        string? ipAddress = ctx.RemoteIpAddress;
+
+        // Nothing to attribute it to -- a loopback transport, a test double -- means no per-address
+        // cap to apply. The global ceiling above already counted it.
+        if (maxPerIp <= 0 || string.IsNullOrEmpty(ipAddress))
+        {
+            return true;
+        }
+
+        // AddOrUpdate IS the reservation: the increment and the test are one atomic step, so the
+        // count can never be read stale by a second connection arriving at the same instant.
+        int held = _sessionsByIpAddress.AddOrUpdate(ipAddress, 1, static (_, n) => n + 1);
+
+        if (held > maxPerIp)
+        {
+            // Hand the slot straight back. Leaving the increment in place would let a refused
+            // attacker exhaust the cap for everyone sharing the address -- the refusal would
+            // become the attack.
+            ReleaseIpSlot(ipAddress);
+
+            _logger.LogWarning(
+                "Refusing session {SessionKey} from {IpAddress}: {Held} concurrent sessions, cap {MaxPerIp}.",
+                key,
+                ipAddress,
+                held - 1,
+                maxPerIp
+            );
+
+            return false;
+        }
+
+        _ipAddressBySession[key] = ipAddress;
+
+        return true;
+    }
+
+    private void ReleaseIpSlot(string ipAddress) =>
+        _sessionsByIpAddress.AddOrUpdate(ipAddress, 0, static (_, n) => n - 1 < 0 ? 0 : n - 1);
 
     public async Task RemoveSessionAsync(SessionKey key, CancellationToken ct)
     {
@@ -112,6 +193,13 @@ public sealed class SessionGateway(
         }
 
         _sessions.TryRemove(key, out _);
+
+        // Keyed on what the session was ADMITTED under, not on the context, which by now may be
+        // torn down and reporting no address at all.
+        if (_ipAddressBySession.TryRemove(key, out string? admittedIpAddress))
+        {
+            ReleaseIpSlot(admittedIpAddress);
+        }
     }
 
     public async Task AddSessionToPlayerAsync(

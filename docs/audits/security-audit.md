@@ -152,9 +152,11 @@ Le défaut est documenté comme délibéré — *« Left default (TicketSingleUs
 
 `Vault/WithdrawCreditVaultMessageHandler` et `Marketplace/BuyMarketplaceTokensMessageHandler` ont pour corps entier `await ValueTask.CompletedTask`. Le client affiche l'écran, le joueur clique, rien ne se passe et rien ne le dit. Ce n'est pas une faille — c'est la classe « déclaré mais inerte » de l'audit wired, sur des écrans où le joueur croit manipuler de l'argent.
 
-### SEC-14 — L'objet en main n'est pas validé (P3, confirmé)
+### SEC-14 — L'objet en main n'est pas validé (P3, confirmé, **délibérément non corrigé**)
 
 `RoomHandItemModule.Give(playerId, itemId)` n'exige que `itemId > 0`. N'importe quel identifiant d'objet-en-main peut être placé dans la main d'un avatar. C'est cosmétique et temporaire (`HandItemDurationMs`), donc P3 — mais c'est une valeur du fil qui atteint un état diffusé à toute la room sans être vérifiée contre une liste connue.
+
+**Laissé ouvert, et voici pourquoi.** Corriger demande une plage valide, et il n'en existe **aucune autorité** : ni énumération ni table dans le dépôt, rien dans le port TypeScript du client non plus (recherché sur `CarryItem` croisé avec `max|valid|range`). Inventer une borne risquerait de refuser des objets légitimes — une régression visible par les joueurs — pour fermer un défaut cosmétique, juste avant une réouverture. Le bon ordre est : établir la liste depuis le client ou depuis les données, *puis* borner.
 
 ---
 

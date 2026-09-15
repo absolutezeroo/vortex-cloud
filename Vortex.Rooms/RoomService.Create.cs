@@ -87,12 +87,18 @@ internal sealed partial class RoomService
         // dialog can express.
         int cappedMaxPlayers = Math.Clamp(maxPlayers, 1, RoomsConfig.MaxPlayersCeiling);
 
-        string trimmedName = name.Trim();
+        // Bounded, not just trimmed: the column declares no length, so what the wire sends is what
+        // gets stored -- up to a whole packet body.
+        string trimmedName = RoomsConfig.Clamp(name, RoomsConfig.MaxNameLength);
+        string clampedDescription = RoomsConfig.Clamp(
+            description,
+            RoomsConfig.MaxDescriptionLength
+        );
 
         RoomEntity room = new RoomEntity
         {
             Name = trimmedName,
-            Description = description.Trim(),
+            Description = clampedDescription,
             PlayerEntityId = player.Id,
             PlayerEntity = player,
             RoomModelEntityId = model.Id,

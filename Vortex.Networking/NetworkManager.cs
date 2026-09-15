@@ -168,11 +168,22 @@ public sealed class NetworkManager(
                 );
 
                 context.SetRevisionId(_revisionManager.DefaultRevisionId);
-                _wsSessions[session.SessionID] = context;
 
-                await _sessionGateway
-                    .AddSessionAsync(context.SessionKey, context)
-                    .ConfigureAwait(false);
+                if (
+                    !await _sessionGateway
+                        .AddSessionAsync(context.SessionKey, context)
+                        .ConfigureAwait(false)
+                )
+                {
+                    // Over a session cap (SEC-10). Registered in neither map -- note this runs
+                    // BEFORE _wsSessions would have held it, so the close is the whole cleanup and
+                    // no heartbeat was started to cancel.
+                    await context.CloseSessionAsync().ConfigureAwait(false);
+
+                    return;
+                }
+
+                _wsSessions[session.SessionID] = context;
 
                 context.Touch();
 

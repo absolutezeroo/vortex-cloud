@@ -74,8 +74,13 @@ public sealed partial class RoomGrain
                 return false;
             }
 
-            entity.Name = update.Name;
-            entity.Description = update.Description;
+            // Same bound as creation. Without it a rename was the way past the limit the create
+            // path applies.
+            entity.Name = RoomsConfig.Clamp(update.Name, RoomsConfig.MaxNameLength);
+            entity.Description = RoomsConfig.Clamp(
+                update.Description,
+                RoomsConfig.MaxDescriptionLength
+            );
             entity.DoorMode = update.DoorMode;
             entity.Password = update.Password;
             entity.PlayersMax = Math.Clamp(update.MaxVisitors, 1, _roomConfig.MaxVisitorsLimit);

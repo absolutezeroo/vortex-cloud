@@ -303,7 +303,8 @@ public sealed class VortexMetricsInstrumentTests
 
         public PlayerId GetPlayerId(SessionKey key) => -1;
 
-        public Task AddSessionAsync(SessionKey key, ISessionContext ctx) => Task.CompletedTask;
+        public Task<bool> AddSessionAsync(SessionKey key, ISessionContext ctx) =>
+            Task.FromResult(true);
 
         public Task RemoveSessionAsync(SessionKey key, System.Threading.CancellationToken ct) =>
             Task.CompletedTask;

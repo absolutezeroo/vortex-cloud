@@ -47,6 +47,34 @@ public sealed class AuthenticationConfigValidator(IHostEnvironment environment)
             }
         }
 
+        // Neither bound set is the one combination that lets an observed ticket be replayed for as
+        // long as somebody keeps using it: the sliding branch pushes the expiry forward on EVERY
+        // successful use, so the TTL never runs out, and the absolute cap that would stop it is off
+        // by default. Each option is individually reasonable -- single-use is deliberately off for
+        // CMS integrations that reuse one ticket across reconnects -- which is exactly why nothing
+        // noticed that turning both off leaves no bound at all (SEC-15).
+        //
+        // Development is exempt so a fresh clone still runs; anywhere else this is a refusal to
+        // start rather than a warning, because the failure it prevents is silent account takeover.
+        if (
+            !environment.IsDevelopment()
+            && !options.TicketSingleUse
+            && options.TicketAbsoluteLifetimeSeconds is null
+        )
+        {
+            failures.Add(
+                $"'{AuthenticationConfig.SECTION_NAME}' bounds ticket replay in two ways and both are "
+                    + $"off: '{nameof(AuthenticationConfig.TicketSingleUse)}' is false and "
+                    + $"'{nameof(AuthenticationConfig.TicketAbsoluteLifetimeSeconds)}' is unset. Every "
+                    + $"use slides the {nameof(AuthenticationConfig.TicketTtlSeconds)} expiry forward, "
+                    + "so an observed ticket stays valid for as long as it keeps being replayed. Set "
+                    + $"'{nameof(AuthenticationConfig.TicketAbsoluteLifetimeSeconds)}' to cap the total "
+                    + "lifetime (this keeps working for CMS integrations that reuse a ticket across "
+                    + $"reconnects), or set '{nameof(AuthenticationConfig.TicketSingleUse)}' to true to "
+                    + "consume it on first use."
+            );
+        }
+
         if (options.TicketTtlSeconds < 0)
         {
             failures.Add(

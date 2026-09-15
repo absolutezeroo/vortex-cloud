@@ -22,7 +22,21 @@ public class WiredSelectorEntitiesWithVariable(
 {
     public override int WiredCode => (int)WiredSelectorType.USERS_WITH_VARIABLE;
 
-    public override List<IWiredParamRule> GetIntParamRules() => [new WiredBoolParamRule(false)];
+    /// <summary>
+    /// Five, like its furni twin, and for the same reason: both client classes extend
+    /// <c>VariableSelector</c> and neither overrides <c>readIntParamsFromForm</c>, so both send the
+    /// comparison, the select-by-value option, a value across two slots, and the target. One rule
+    /// was declared here against the five the form sends, and TryNormalizeIntParams refuses a count
+    /// it has no rule for -- so this selector could never be saved at all, silently.
+    /// </summary>
+    public override List<IWiredParamRule> GetIntParamRules() =>
+        [
+            new WiredEnumParamRule<WiredComparisonType>(WiredComparisonType.GreaterThan),
+            new WiredRangeParamRule(0, 2, 0),
+            new WiredParamRule(0),
+            new WiredParamRule(0), // set value
+            new WiredEnumParamRule<WiredVariableTargetType>(WiredVariableTargetType.Furni),
+        ];
 
     /// <summary>
     /// The pool this selector reads is one merged input source, and the client addresses it as
