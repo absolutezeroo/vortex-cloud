@@ -2,8 +2,8 @@
 // Every place that decides "may this actor do this?", and which idiom decides it.
 //
 // This check does NOT judge whether an authorization is correct. It cannot, and neither can a
-// reviewer, which is the point: the same question is answered eight different ways in this
-// repository, and two of them are invisible in a diff.
+// reviewer, which is the point: the same question is answered nineteen different ways in this
+// repository, and five of them are invisible in a diff.
 //
 //   if (ctx.PlayerId <= 0) return;                        the handler guard
 //   if (ctx.PlayerId <= 0 || ctx.RoomId <= 0) return;     the service guard
@@ -70,7 +70,10 @@ const GATES = [
   ['room-owner', /Is(?:Get)?RoomOwnerAsync|GetIsRoomOwnerAsync/],
   ['capability', /HasCapabilityAsync|permissions\s*\.\s*Has\s*\(|Capabilities\s*\./],
   ['moderation', /CanModerateAsync|HasStaffModerationCapabilityAsync|ModerationPolicy/],
-  ['gated-lookup', /Find(?:Manipulable|RentedSpaceForOwned)[A-Za-z]*Async\s*\(/],
+  ['gated-lookup', /Find(?:Manipulable|RentedSpaceForOwned)[A-Za-z]*Async\s*\(|LoadIf[A-Za-z]*Async\s*\(|LoadForModerationAsync\s*\(/],
+  ['gated-mutator', /MutateAs(?:Admin)?Async\s*\(/],
+  ['group-rank', /IsAdminAsync\s*\(|GroupMemberRank|OwnerPlayerEntityId\s*(?:!=|==)/],
+  ['permission-matrix', /Allows\s*\([A-Za-z.]*(?:Mod|Read|Post)Permission|CanRead\b|PostPermission/],
   ['ensure-helper', /Ensure[A-Za-z]*(?:Owner|Rights|Permission|Allowed|Authori)[A-Za-z]*\s*\(/],
   ['can-helper', /\bCan[A-Za-z]+Async\s*\(/],
   ['owner-compare', /Owner(?:Player(?:Entity)?)?Id\s*(?:!=|==)|(?:!=|==)\s*ctx\.PlayerId/],
@@ -84,23 +87,40 @@ function gateOf(body) {
   return found.length ? found.join('+') : null;
 }
 
-// ---- surface 1: room grain methods that take an actor -------------------------------------------
-
-const ifaceDir = join(root, 'Vortex.Primitives/Rooms/Grains');
-const ACTOR = /\b(?:PlayerId\s+(?:actor|playerId|requesterId)|ActionContext\s+ctx)\b/;
+// ---- surface 1: grain methods that take an actor ------------------------------------------------
+//
+// Not only room grains. The rule the repository states -- "callable by anything in the cluster that
+// can name it" -- has nothing to do with rooms, and the groups system proved it: fifteen methods on
+// IGroupGrain and eight on IGroupForumGrain take an actor and decide who may kick, promote, rename
+// and moderate. They are all gated today, through idioms found nowhere else in the tree.
+const ifaceRoots = [
+  join(root, 'Vortex.Primitives/Rooms/Grains'),
+  join(root, 'Vortex.Primitives/Groups/Grains'),
+  join(root, 'Vortex.Primitives/Players/Grains'),
+];
+const ACTOR =
+  /\b(?:PlayerId\s+(?:actor|playerId|requesterId|viewer|viewerId|player)|ActionContext\s+(?:ctx|actorCtx))\b/;
 
 const declared = [];
-for (const f of walk(ifaceDir)) {
-  const src = strip(readFileSync(f, 'utf8'));
-  for (const m of src.matchAll(/(?:Task|ValueTask)(?:<[^>]*>)?\s+([A-Za-z0-9_]+)\s*\(([^;{]*)\)/g)) {
-    if (ACTOR.test(m[2])) declared.push({ iface: relative(ifaceDir, f).split(sep).join('/'), method: m[1] });
+for (const ifaceDir of ifaceRoots) {
+  const label = relative(join(root, 'Vortex.Primitives'), ifaceDir).split(sep)[0];
+  for (const f of walk(ifaceDir)) {
+    const src = strip(readFileSync(f, 'utf8'));
+    for (const m of src.matchAll(/(?:Task|ValueTask)(?:<[^>]*>)?\s+([A-Za-z0-9_]+)\s*\(([^;{]*)\)/g)) {
+      if (ACTOR.test(m[2]))
+        declared.push({ iface: `${label}/${relative(ifaceDir, f).split(sep).join('/')}`, method: m[1] });
+    }
   }
 }
 
 // Implementations, by method name, across Vortex.Rooms. A name can be implemented more than once
 // (grain facade + module + system); the gate may live in any of them, so all are considered.
 const impls = new Map();
-for (const f of walk(join(root, 'Vortex.Rooms'))) {
+for (const f of [
+  ...walk(join(root, 'Vortex.Rooms')),
+  ...walk(join(root, 'Vortex.Social')),
+  ...walk(join(root, 'Vortex.Players')),
+]) {
   const src = strip(readFileSync(f, 'utf8'));
   for (const m of src.matchAll(/(?:public|internal|private)\s[^\n;{}]*?\b([A-Za-z0-9_]+)\s*\(([^)]*)\)\s*(?:=>|\{)/g)) {
     const at = m.index + m[0].length - 1;
@@ -216,7 +236,7 @@ const byGate = {};
 for (const e of entries) byGate[e.gate === 'NONE' ? 'NONE' : e.gate.split('+')[0]] = (byGate[e.gate === 'NONE' ? 'NONE' : e.gate.split('+')[0]] ?? 0) + 1;
 console.error(
   `check-authorization-surface: OK (${entries.length} entries: ` +
-    `${entries.filter((e) => e.kind === 'grain').length} room-grain methods, ` +
+    `${entries.filter((e) => e.kind === 'grain').length} actor-taking grain methods, ` +
     `${entries.filter((e) => e.kind === 'http').length} HTTP endpoints; ` +
     `${Object.keys(byGate).length} distinct gate idioms).`
 );

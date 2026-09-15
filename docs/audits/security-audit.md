@@ -255,3 +255,70 @@ La baseline porte une note par classe d'entrée, dont celle-ci, qui est la seule
 - **Les 48 entrées `NONE`** : j'en ai lu une quinzaine (avatar, animaux, objets-en-main, cadeaux, mobi-crédit). Les autres — notamment `ClaimWelcomeGiftAsync`, `HitCrackableAsync`, `UseMysteryBoxAsync`, `GetWiredDataSnapshotByFloorItemIdAsync`, `AddPlayerToRoomAsync` — sont inventoriées mais **pas relues une par une**. C'est le premier endroit où continuer.
 - **L'injection SQL** : non recherchée systématiquement. Le dépôt utilise EF Core avec LINQ paramétré partout où j'ai regardé, ce qui rend la classe improbable, mais « improbable » n'est pas « vérifié ».
 - **Les plugins** : la surface d'extension (`Vortex.Plugins`) charge du code tiers dans le processus. Hors périmètre ici, et c'est un audit à part entière.
+
+*(Les grains hors room figuraient dans cette liste ; ils sont désormais couverts, §10.)*
+
+
+---
+
+## 10. Les grains hors room
+
+Ajouté après coup : le §8 listait les grains hors room comme non couverts. Ils le sont maintenant, et la règle que le dépôt énonce — « *callable by anything in the cluster that can name it* » — ne parlait jamais de rooms.
+
+### 10.1 Résultat
+
+**Aucun trou exploitable.** Sur 62 interfaces de grain :
+
+| Surface | Constat |
+|---|---|
+| **20 grains à clé chaîne** | 19 sont des singletons (`SingletonGrainId.GLOBAL`). **Un seul** prend une chaîne du client : `IVoucherGrain`, déjà rapporté en SEC-11. La classe « clé de grain choisie par le client » est donc close, avec une seule instance. |
+| **24 méthodes hors room prenant un acteur** | 15 sur `IGroupGrain`, 8 sur `IGroupForumGrain`, 1 sur `IPlayerGrain`. **Toutes gardées.** |
+| **31 méthodes agissant sur un tiers nommé** (`targetPlayerId`) | Exclusion, promotion, bannissement, modération de forum : vérifiées, gardées. |
+
+Les groupes sont le système le mieux gardé que j'aie lu dans ce dépôt. `KickCoreAsync` refuse même d'exclure le propriétaire, avec la raison écrite : *« a guild without an owner has nobody who can disband or repair it »*.
+
+### 10.2 Mais sept idiomes de plus, dont trois invisibles
+
+La couture du §5 ne s'arrête pas aux rooms. Les groupes répondent à la même question avec un vocabulaire **entièrement distinct**, que rien ne relie au précédent :
+
+| Idiome | Exemple | Visible au point d'appel ? |
+|---|---|---|
+| comparaison en ligne | `group.OwnerPlayerEntityId != actorId` | oui |
+| `IsAdminAsync(dbCtx, group, actorId, ct)` | | oui |
+| matrice de permissions | `Allows(settings.ModPermission, role)`, `CanRead`, `PostPermission` | oui |
+| **chargeur gardé** | `LoadIfAdminAsync(dbCtx, actor, ct)` → `null` si refusé | **non** |
+| **chargeur gardé à tuple** | `LoadForModerationAsync(...)` → `(null, ForumRole.None)` | **non** |
+| **enrobage de mutation** | `MutateAsAdminAsync(actor, group => { … }, ct)` | **non** |
+
+Le deuxième mérite d'être regardé de près, parce qu'il est le plus trompeur du dépôt :
+
+```csharp
+(GroupEntity? group, ForumRole role) = await LoadForModerationAsync(dbCtx, actor, ct);
+if (group is null) { return null; }
+// `role` n'est plus jamais utilisé
+```
+
+Le rôle est extrait puis **jeté**. Le refus voyage sur le `group is null`, pas sur le rôle. Une relecture rapide y voit un chargement qui a échoué, pas une autorisation refusée — et quelqu'un qui « nettoierait » ce `role` inutilisé toucherait à la seule ligne qui dit que cette méthode est gardée.
+
+Le troisième plie la porte dans un enrobage qui prend une lambda : au point d'appel, `UpdateBadgeAsync` ne montre qu'un acteur et une mutation, jamais une vérification.
+
+### 10.3 Deux grains qui délèguent à leur appelant (forme SEC-12)
+
+- **`StaffModerateThreadAsync(int actorPlayerId, …)`** ne vérifie **rien**. Son unique appelant de production est la route dashboard, qui exige `Capabilities.Dashboard.OpsGuildsManage`. Correct aujourd'hui.
+- **`SetHotelMuteAsync(PlayerId targetPlayerId, DateTime? expiresUtc)`** — mute à l'échelle de l'hôtel, et **aucun paramètre d'acteur**. Le grain ne peut donc pas vérifier, même en principe. `ModMuteMessageHandler` résout bien `ModerationAction.Mute` avant d'appeler. *C'est la signature qui est le constat* : un acteur qu'on ne passe pas ne peut pas être vérifié.
+
+### 10.4 Une fausse piste, et pourquoi elle compte
+
+J'ai cru tenir une fuite de vie privée : `PlayerEntity.ProfileVisible` est appliqué avec soin côté site — profil privé = en-tête seul, jamais un 404, pour ne pas offrir un oracle d'énumération de pseudos — et **n'apparaît pas une seule fois** dans `Vortex.Players`, donc le profil complet part quand même sur le socket de jeu.
+
+C'est un choix documenté, sur la propriété elle-même :
+
+> « *It governs the WEB profile only. Nothing on the game socket reads it… calling this one "private" for that too would be the same promise broken a second time.* »
+
+**Ce n'est donc pas un défaut, et c'est le septième cas de la session** où un détecteur pointe une décision délibérée. Le point n'est pas que je me sois trompé : c'est que la justification vivait dans un commentaire XML sur une propriété d'entité, trois projets plus loin que le handler concerné. Aucun outil ne pouvait la voir, et un relecteur pressé non plus.
+
+### 10.5 Ce que ça change pour la refonte
+
+`docs/audits/authorization-redesign.md` propose `[RequiresRoomAuthority]` sur les interfaces de grain room. **Le périmètre est à élargir** : `IGroupGrain` et `IGroupForumGrain` en ont autant besoin, et `SetHotelMuteAsync` montre le cas que l'attribut ne peut pas traiter seul — une méthode sans acteur doit d'abord en recevoir un.
+
+Le contrôle livré couvre désormais cette surface : **220 entrées** (162 méthodes de grain prenant un acteur, 58 endpoints HTTP), **19 idiomes distincts** au lieu de 15.
