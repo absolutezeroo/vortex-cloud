@@ -1,0 +1,17 @@
+{
+  "known": [
+    "action/wf_act_freeze_habbo:client=2:vortex=0",
+    "addon/wf_xtra_mov_physics:client=4:vortex=0",
+    "selector/wf_slc_remote:client=2:vortex=0",
+    "selector/wf_slc_users_with_var:client=5:vortex=1",
+    "trigger/wf_trg_user_performs_action:client=1:vortex=0"
+  ],
+  "notes": {
+    "_": "Every entry here is an OPEN BUG, not accepted debt: a box whose entire configuration update the server refuses, silently, on every save. The baseline exists so a NEW one blocks -- it is not permission to leave these.",
+    "action/wf_act_freeze_habbo": "Client FreezeUser.ts sends [effectId, cancelOnTeleport]; the box declares no rules, so every save is refused. ExecuteAsync works and locks movement -- the behaviour is fine, it is unreachable. Its own doc comment says 'No int params', which is what the client contradicts. Fixing the count makes the box saveable; honouring the two params is separate work.",
+    "addon/wf_xtra_mov_physics": "Client MovePhysics.ts sends four booleans (keep altitude, move through furni, move through users, block by furni); the box declares no rules. It also has no behaviour at all beyond WiredCode, so fixing the count alone changes nothing a player can see.",
+    "selector/wf_slc_users_with_var": "Client UsersWithVariable.ts inherits VariableSelector.readIntParamsFromForm, which sends 5 (comparison, select-by-value, a two-slot long, target); the box declares 1. Its furni twin wf_slc_furni_with_var declares all 5 -- the asymmetry is the bug.",
+    "selector/wf_slc_remote": "Client RemoteSelector.ts sends [type, count]; the box declares no rules and has no behaviour beyond WiredCode.",
+    "trigger/wf_trg_user_performs_action": "Client UserPerformsAction.ts sends one int, the action code; the box declares no rules."
+  }
+}
