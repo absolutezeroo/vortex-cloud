@@ -66,9 +66,17 @@ for (const file of walk(WIRED)) {
     base: decl[2],
     key,
     file: file.slice(root.length + 1),
-    // `typeof` shows up because several triggers declare their event as an expression-bodied
-    // member; it is a real signal of family membership, so it is kept rather than filtered.
-    overrides: new Set([...src.matchAll(/public\s+override\s[^\n(]*?\b([A-Za-z0-9_]+)\s*\(/g)].map((m) => m[1])),
+    // Methods AND properties. Reading only methods was wrong: FurnitureWiredTriggerLogic's family
+    // declares SupportedEventTypes as an overridden property with an initializer, so every trigger
+    // that used that form read as "missing" it, and the `typeof` from the expression-bodied ones
+    // read as a method they all shared. That produced one clean false positive
+    // (wf_trg_transaction_complete) and polluted a real one.
+    overrides: new Set([
+      ...[...src.matchAll(/public\s+override\s[^\n(]*?\b([A-Za-z0-9_]+)\s*\(/g)].map((m) => m[1]),
+      ...[...src.matchAll(/public\s+override\s+[^\n=;]*?\b([A-Za-z0-9_]+)\s*(?:\{\s*get|=>\s*[^(])/g)].map(
+        (m) => m[1]
+      ),
+    ].filter((n) => n !== 'typeof')),
   });
 }
 
