@@ -487,7 +487,7 @@ compiler sees. They are ordinary node scripts — run any of them alone while yo
 | `node scripts/hooks/check-logic-groups.mjs` | FastCheck | a `[RoomObjectLogic("...")]` key the admin's furniture dropdown does not offer, so no operator can assign the behaviour. `--write` regenerates the block |
 | `cd Vortex.Dashboard.Web && npm run lint` | QualityGate | an undefined identifier in Svelte markup, which `npm run build` compiles and ships |
 | `node scripts/hooks/__test/run.mjs` | QualityGate | a hook that stopped blocking what it was written to block |
-| `node scripts/hooks/check-wire-conflicts.mjs` | QualityGate | a NEW field-count disagreement with the official client (existing ones are baselined). Skips itself where the client sources are not checked out beside the repo — CI included |
+| `node scripts/hooks/check-wire-conflicts.mjs` | QualityGate | a NEW field-count disagreement with the official client (existing ones are baselined), and a NEW packet whose parser reads fewer values than the client passes its composer — `ConflictDetector` excludes partial client layouts on purpose, so a composer body the scanner could not resolve is exempt from the field-count check and only the recorded call-site arity catches it. Skips itself where the client sources are not checked out beside the repo — CI included |
 
 ## Definition of done for AI changes
 - All modified files match nearby patterns and contract rules.

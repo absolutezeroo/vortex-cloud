@@ -127,9 +127,98 @@ const againstClient = entries
   .map((e) => e.subject)
   .sort();
 
+// ---------------------------------------------------------------------------------------------
+// Second ratchet: the call-site arity the conflict machinery cannot see.
+//
+// ConflictDetector excludes partial layouts on purpose (Vortex.Specs/Reasoning/ConflictDetector.cs:96)
+// -- a reader that stopped early has claimed nothing, so comparing its count would be noise. But when
+// the client scanner fails to resolve an outgoing composer's `push` calls it records exactly that
+// shape: `field_count: 0, partial: true` for authority `client_code`. The comparison above then finds
+// no client position to disagree with, and the packet is silently exempt from the only wire check
+// there is.
+//
+// The scanner does still resolve the CALL SITE, and writes the arity into the evidence note:
+//     "...RoomSettingsCtrl.as:1511 with 2 argument(s); the class writes 0 value(s) to the wire"
+// Those two numbers sit in the same file and nothing compared them. That is how `UnbanUserFromRoom`
+// (client 2 args, our parser 1) and `RemoveAllRights` (client 1, ours 0) both shipped reading the
+// wrong room, with the right answer already written down in docs/habbo-specs.
+//
+// Arity is not a field count, so the rule is narrow -- measured over all 297 blind-bodied incoming
+// notes, only these two shapes exist:
+//
+//   - ours >= args (227): normal and expected. A composer constructor pushes literals the caller
+//     never passes -- SetChatPreferences takes 3 args and pushes a leading `false` (4 fields, and 4
+//     is right); WiredSetPreferences takes 6 and pushes a hardcoded 0; SaveRoomSettings takes ONE
+//     argument, a data object, and pushes 25 values. Never flagged.
+//   - ours < args (70): we read fewer values than the client hands its composer. THIS LIST IS NOT
+//     NOISE. It is baselined so a new entry fails the gate, but the entries in it are unread work,
+//     not known-benign artifacts. Of the 11 read so far -- the ones where we already parse
+//     something, so a short read loses real data -- SEVEN were real:
+//         ConfirmPetBreeding   client 4, we read 1  (int, String, int, int)
+//         BreedPets            client 3 ints, we read 2
+//         GetMarketplaceOffers client 5, we read 4  (trailing Boolean dropped)
+//         CallForHelpFrom{ForumMessage,ForumThread,IM,Photo}: every one drops the two trailing
+//           strings the client fills for unlawful-category reports -- the reporter's name and
+//           email (help_message_name / help_message_email, TopicsFlowHelpController.as:481).
+//           The plain CallForHelp parser reads them; these four are the odd ones out.
+//     Only three of the eleven were arity artifacts, and they are worth knowing as shapes:
+//         MoveWallItem   ctor takes 3 params and pushes param1 and param3 -- param2 never ships.
+//         ModAlert, GetMarketplaceItemStats: a trailing field pushed only inside an `if`.
+//     The ~59 remaining entries all read 0 on our side. Some are a parser that delegates to a base
+//     class (the wired Update* family: UpdateActionMessageParser is 4 lines over
+//     UpdateWiredDataParser, so our analyzer counts nothing) -- the mirror of the client-side
+//     blindness above. The rest have not been read. Do not treat a baselined entry as cleared.
+const arityBaselineFile = path.join(root, 'scripts', 'hooks', 'wire-arity-baseline.json');
+const specsDir = path.join(root, 'docs', 'habbo-specs', 'packets', 'incoming');
+
+const callSiteNote = /with (\d+) argument\(s\); the class writes (\d+) value\(s\) to the wire/;
+const vortexLayout = /- origin: vortex\n\s+authority: vortex_emulator\n\s+field_count: (\d+)/;
+
+const walk = (dir) =>
+  fs.existsSync(dir)
+    ? fs.readdirSync(dir, { withFileTypes: true }).flatMap((e) => {
+        const full = path.join(dir, e.name);
+        return e.isDirectory() ? walk(full) : e.name.endsWith('.yaml') ? [full] : [];
+      })
+    : [];
+
+const specFiles = walk(specsDir);
+let notesSeen = 0;
+const underRead = [];
+
+for (const file of specFiles) {
+  const text = fs.readFileSync(file, 'utf8');
+  const note = callSiteNote.exec(text);
+  if (!note) continue;
+
+  const args = Number(note[1]);
+  const writes = Number(note[2]);
+  notesSeen += 1;
+
+  // writes > 0 means the scanner read the composer body fine, and the normal field-count
+  // comparison above already covers the packet.
+  if (writes !== 0 || args === 0) continue;
+  if (!/\bmapped_in_vortex: true\b/.test(text)) continue;
+
+  const ours = vortexLayout.exec(text);
+  if (!ours || Number(ours[1]) >= args) continue;
+
+  underRead.push(`${path.relative(specsDir, file).replace(/\\/g, '/').replace(/\.yaml$/, '')} (client passes ${args}, we read ${ours[1]})`);
+}
+
+underRead.sort();
+
+// Same reasoning as the client_code guard above: without the client checkout there are no call-site
+// notes at all, and reporting OK for that would be worse than saying nothing.
+const arityBlind = specFiles.length > 0 && notesSeen === 0;
+
 if (update) {
   fs.writeFileSync(baselineFile, `${JSON.stringify({ subjects: againstClient }, null, 2)}\n`);
   console.error(`check-wire-conflicts: baseline written (${againstClient.length} disagreements with the client).`);
+  if (!arityBlind) {
+    fs.writeFileSync(arityBaselineFile, `${JSON.stringify({ subjects: underRead }, null, 2)}\n`);
+    console.error(`check-wire-conflicts: arity baseline written (${underRead.length} under-reads).`);
+  }
   process.exit(0);
 }
 
@@ -137,6 +226,8 @@ if (!fs.existsSync(baselineFile)) {
   console.error(`check-wire-conflicts: no baseline at ${path.relative(root, baselineFile)}. Run with --update.`);
   process.exit(2);
 }
+
+let failed = false;
 
 const baseline = new Set(JSON.parse(fs.readFileSync(baselineFile, 'utf8')).subjects);
 const added = againstClient.filter((s) => !baseline.has(s));
@@ -156,9 +247,40 @@ if (added.length) {
       'source (.claude/agents/wire-truth-auditor.md), then fix the serializer -- or, if the client is\n' +
       'the one that is wrong, record why and run this script with --update.'
   );
-  process.exit(2);
+  failed = true;
 }
 
+if (arityBlind) {
+  console.error(
+    'check-wire-conflicts: arity check skipped -- no call-site notes in the specs. The client sources\n' +
+      'are not checked out beside this repository, so no composer arity was ever recorded.'
+  );
+} else if (!fs.existsSync(arityBaselineFile)) {
+  console.error(`check-wire-conflicts: no arity baseline at ${path.relative(root, arityBaselineFile)}. Run with --update.`);
+  failed = true;
+} else {
+  const arityBaseline = new Set(JSON.parse(fs.readFileSync(arityBaselineFile, 'utf8')).subjects);
+  const arityAdded = underRead.filter((s) => !arityBaseline.has(s));
+  const arityFixed = [...arityBaseline].filter((s) => !underRead.includes(s));
+
+  for (const s of arityFixed) console.error(`warning: ${s} no longer under-reads -- run --update to lock it in`);
+
+  if (arityAdded.length) {
+    console.error(`\nOur parser reads fewer values than the client's composer is handed (${arityAdded.length}):`);
+    for (const s of arityAdded) console.error(`  - ${s}`);
+    console.error(
+      '\nThe client scanner could not resolve these composer bodies, so the field-count check above is\n' +
+        'blind to them and this arity note is the only evidence there is. Open the AS3 composer class\n' +
+        'named in the spec evidence and count its pushes: either our parser is short a field, or the\n' +
+        'constructor takes an argument it does not put on the wire -- record which, and --update.'
+    );
+    failed = true;
+  }
+}
+
+if (failed) process.exit(2);
+
 console.error(
-  `check-wire-conflicts: OK (${againstClient.length} known disagreements with the client, ${entries.length} field-count conflicts total).`
+  `check-wire-conflicts: OK (${againstClient.length} known disagreements with the client, ${entries.length} field-count conflicts total; ` +
+    `${underRead.length} known call-site under-reads over ${notesSeen} composer notes).`
 );
