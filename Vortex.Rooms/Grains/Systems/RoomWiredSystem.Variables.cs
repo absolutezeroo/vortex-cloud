@@ -75,6 +75,12 @@ public sealed partial class RoomWiredSystem
             WiredVariableTargetType.Furni => _furnitureActiveStore.TryGetStore(key, out store),
             WiredVariableTargetType.User => _playerActiveStore.TryGetStore(key, out store),
             WiredVariableTargetType.Global => _roomActiveStore.TryGetStore(key, out store),
+            // Scoped to the chain running right now, and to nothing else. Asked outside a chain --
+            // the wired menu listing what the room holds, a condition evaluated before the effects
+            // begin -- there is no run to describe, so there is no store and the read is a miss.
+            // It used to be the `_ =>` arm below, which threw on every read and write of the two
+            // Context-typed boxes the client offers.
+            WiredVariableTargetType.Context => (store = _currentContextVariables) is not null,
             _ => throw new ArgumentOutOfRangeException(
                 nameof(key.TargetType),
                 $"Unsupported target type: {key.TargetType}"

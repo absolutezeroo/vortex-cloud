@@ -98,9 +98,14 @@ internal sealed class FakeFurniAccess : IRoomFurniAccess
     /// unless a test supplies one, which is right for every box that writes nothing.</summary>
     public IWiredKeyValueStore? VariableStore { get; set; }
 
+    /// <summary>Answers per key instead of with one fixed store, for the scopes a real room decides
+    /// at read time — a context variable has a store only while a chain is running. Wins over
+    /// <see cref="VariableStore"/> when set.</summary>
+    public Func<WiredVariableKey, IWiredKeyValueStore?>? VariableStoreFor { get; set; }
+
     public bool TryGetVariableStore(WiredVariableKey key, out IWiredKeyValueStore? store)
     {
-        store = VariableStore;
+        store = VariableStoreFor is null ? VariableStore : VariableStoreFor(key);
 
         return store is not null;
     }

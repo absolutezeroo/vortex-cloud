@@ -17,6 +17,7 @@ using Vortex.Primitives.Rooms.Object.Furniture;
 using Vortex.Primitives.Rooms.Object.Furniture.Floor;
 using Vortex.Primitives.Rooms.Wired;
 using Vortex.Protocol.Messages.Outgoing.Room.Engine;
+using Vortex.Rooms.Grains.Storage;
 using Vortex.Rooms.Object.Logic.Furniture.Floor.Wired;
 using Vortex.Rooms.Object.Logic.Furniture.Floor.Wired.Actions;
 using Vortex.Rooms.Object.Logic.Furniture.Floor.Wired.Addons;
@@ -89,6 +90,18 @@ public sealed partial class RoomWiredSystem : IRoomEventListener
     /// </para>
     /// </remarks>
     public IWiredContext? CurrentContext { get; private set; }
+
+    /// <summary>
+    /// The context variables of the chain running right now, or null when none is.
+    /// </summary>
+    /// <remarks>
+    /// Separate from <see cref="CurrentContext"/> and taken from the pending chain rather than from
+    /// the per-action context, because a context variable set by one effect has to still be there
+    /// for the next one. Same lifetime rules as the ambient beside it: published for the duration of
+    /// an action and cleared in a finally, so a throwing effect cannot leave one chain's values
+    /// standing for the next.
+    /// </remarks>
+    private KeyValueStore? _currentContextVariables;
 
     // Which trigger boxes are in the room and what they listen for, and how a tile's pile is
     // resolved. Both read the room through the host, so both can be exercised without one.
@@ -651,6 +664,7 @@ public sealed partial class RoomWiredSystem : IRoomEventListener
                 // Published for the duration of the action so the context variables have something
                 // to read, and taken down again whatever happens — see CurrentContext.
                 CurrentContext = ctx;
+                _currentContextVariables = pending.ContextVariables;
 
                 try
                 {
@@ -659,6 +673,7 @@ public sealed partial class RoomWiredSystem : IRoomEventListener
                 finally
                 {
                     CurrentContext = null;
+                    _currentContextVariables = null;
                 }
 
                 FlushWiredContextAsync(ctx)
