@@ -124,6 +124,30 @@ La seconde s'applique à la méthode la plus puissante de la room : réattributi
 
 *Correction* : déplacer la résolution de capacité dans le grain (il a déjà `SecurityModule.HasCapabilityAsync`), et laisser celle du handler comme réponse rapide au client. C'est très exactement ce que le commentaire de `HasCapabilityAsync` prescrit pour les autres pouvoirs staff.
 
+### SEC-15 — Le ticket SSO est rejouable sans limite, et la protection existe mais est livrée éteinte (P1, confirmé)
+
+Le rapport de bêta notait AUTH-01 « ticket rejouable dans une fenêtre glissante de 30 s ». C'est plus grave que ça, et plus précis.
+
+**La protection a été écrite.** `AuthenticationService.cs:90` consomme le ticket à la première utilisation quand `TicketSingleUse` est vrai, avec le bon commentaire : *« an observed ticket (proxy logs, browser history, unencrypted transport, Referer) can no longer be replayed at all »*.
+
+**Elle est livrée éteinte, et rien ne la remplace :**
+
+| Réglage | Défaut | Dans votre `appsettings.json` |
+|---|---|---|
+| `TicketSingleUse` | `false` (bool sans initialiseur) | **non déclaré** |
+| `TicketAbsoluteLifetimeSeconds` | `null` (plafond désactivé) | **non déclaré** |
+| `TicketTtlSeconds` | `30` | non déclaré |
+
+La section `Vortex:Authentication` de `appsettings.json` ne contient **qu'une seule clé**, `IpHashSecret`, dont la valeur livrée est `"replace-with-a-production-secret"`.
+
+**Conséquence, en suivant la branche `else` :** à chaque usage, l'expiration est *repoussée* de 30 s (`slidExpiry`). Le plafond absolu qui bornerait le total est `null`. Donc **un ticket observé peut être rejoué indéfiniment**, chaque rejeu prolongeant sa propre validité. Ce n'est pas une fenêtre de 30 secondes : c'est une fenêtre de 30 secondes qui se déplace aussi longtemps que l'attaquant s'en sert.
+
+**Et aucun garde-fou ne le signale.** `AuthenticationConfigValidator` ne mentionne jamais `TicketSingleUse` (0 occurrence) et autorise explicitement le plafond absent : *« Leave it unset to disable the cap »*. La combinaison « pas d'usage unique **et** pas de plafond » est la seule qui soit dangereuse, et c'est la seule que la validation ne regarde pas.
+
+Le défaut est documenté comme délibéré — *« Left default (TicketSingleUse = false) for compatibility with CMS integrations that reuse one ticket across reconnects »* — ce qui est une raison valable pour l'option, pas pour l'absence de plafond.
+
+*Correction* (par ordre d'effet, aucune ne touche au code) : déclarer `TicketAbsoluteLifetimeSeconds` dans `appsettings.json` — le plafond borne le rejeu **sans casser** les intégrations CMS qui rejouent un ticket ; passer `TicketSingleUse` à `true` si votre CMS ne le fait pas ; remplacer `IpHashSecret`. Puis ajouter au validateur la règle qui manque : refuser le démarrage quand les deux protections sont absentes à la fois.
+
 ### SEC-13 — Deux écrans d'argent branchés sur des handlers vides (P3, confirmé)
 
 `Vault/WithdrawCreditVaultMessageHandler` et `Marketplace/BuyMarketplaceTokensMessageHandler` ont pour corps entier `await ValueTask.CompletedTask`. Le client affiche l'écran, le joueur clique, rien ne se passe et rien ne le dit. Ce n'est pas une faille — c'est la classe « déclaré mais inerte » de l'audit wired, sur des écrans où le joueur croit manipuler de l'argent.
