@@ -90,7 +90,13 @@ internal sealed partial class RoomService(
         }
 
         await playerPresence.ClearActiveRoomAsync(ct).ConfigureAwait(false);
-        await playerPresence.SetPendingRoomAsync(roomId, true).ConfigureAwait(false);
+
+        // Pending, not approved: the gates below have not run yet. This used to claim approval here
+        // and never take it back on the doorbell path, where the request legitimately stays pending
+        // while the room is asked -- so a ringer who sent GetRoomEntryData without waiting for an
+        // answer was handed the whole entry payload and walked in. Approval is granted in
+        // CompleteRoomEntryAsync, the one place every admission passes through.
+        await playerPresence.SetPendingRoomAsync(roomId, false).ConfigureAwait(false);
 
         // Room entry is the one flow that legitimately spans the room: core activation, the
         // security gate, the avatar list and the doorbell all take part. This is what the
@@ -358,6 +364,13 @@ internal sealed partial class RoomService(
             .ConfigureAwait(false);
 
         await playerPresence.SetActiveRoomAsync(roomId, ct).ConfigureAwait(false);
+
+        // Approved only once the player is genuinely in. Every gate above answered, the payload is
+        // sent and the avatar exists, so the flag now means what GetRoomEntryDataMessageHandler
+        // reads it as: this player was admitted here. Granting it any earlier reopens the hole it
+        // closes -- a request stays pending for as long as a locked room's doorbell rings, and the
+        // handler served the whole entry payload off the room id alone.
+        await playerPresence.SetPendingRoomAsync(roomId, true).ConfigureAwait(false);
     }
 
     public async Task CloseRoomForPlayerAsync(PlayerId playerId, CancellationToken ct)

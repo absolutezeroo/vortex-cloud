@@ -47,7 +47,13 @@ public class GetRoomEntryDataMessageHandler(IGrainFactory grainFactory)
             .ConfigureAwait(false);
         RoomId roomId = pendingRoom.RoomId;
 
-        if (roomId <= 0)
+        // Approved, not merely pending. A request stays pending while a locked room's doorbell
+        // rings, and this handler used to serve the whole entry payload off the room id alone and
+        // then call SetActiveRoomAsync -- so a client that rang and sent this without waiting was
+        // inside. Approval is granted in RoomService.CompleteRoomEntryAsync once the ban, the cap,
+        // the password, the doorbell, raid protection and the cancellable entry event have all
+        // passed.
+        if (roomId <= 0 || !pendingRoom.Approved)
         {
             return;
         }
@@ -186,6 +192,9 @@ public class GetRoomEntryDataMessageHandler(IGrainFactory grainFactory)
             await playerPresence.SendComposerAsync(handItemComposers).ConfigureAwait(false);
         }
 
-        await playerPresence.SetActiveRoomAsync(roomId, ct).ConfigureAwait(false);
+        // No SetActiveRoomAsync here. Reaching this point means RoomService already ran the whole
+        // admission and put the player in the room -- that is what the approved flag above is - so
+        // this handler re-sends the entry payload and nothing more. Entering the room from here was
+        // the second door into the grain, past every gate RoomService owns.
     }
 }
