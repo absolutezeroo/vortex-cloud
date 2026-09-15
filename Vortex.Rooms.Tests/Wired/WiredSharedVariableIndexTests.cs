@@ -3,15 +3,18 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Orleans;
 using Vortex.Furniture;
 using Vortex.Furniture.Providers;
 using Vortex.Primitives.Furniture.Enums;
 using Vortex.Primitives.Rooms.Enums.Wired;
+using Vortex.Primitives.Rooms.Grains;
 using Vortex.Primitives.Rooms.Object.Furniture.Floor;
 using Vortex.Primitives.Rooms.Snapshots.Wired.Variables;
 using Vortex.Rooms.Object.Logic.Furniture.Floor.Wired.Variables;
 using Vortex.Rooms.Wired;
 using Vortex.Rooms.Wired.Variables;
+using Vortex.Tests.Support;
 using Xunit;
 
 namespace Vortex.Rooms.Tests.Wired;
@@ -36,7 +39,7 @@ public sealed class WiredSharedVariableIndexTests
             StringParam = "score",
         };
 
-        WiredVariableRoom box = new(null!, new StuffDataFactory(), Context(data));
+        WiredVariableRoom box = new(SharedGrains(), new StuffDataFactory(), Context(data));
 
         await box.LoadWiredAsync(CancellationToken.None);
 
@@ -61,7 +64,7 @@ public sealed class WiredSharedVariableIndexTests
             StringParam = "level",
         };
 
-        WiredVariableUser box = new(null!, new StuffDataFactory(), Context(data));
+        WiredVariableUser box = new(SharedGrains(), new StuffDataFactory(), Context(data));
 
         await box.LoadWiredAsync(CancellationToken.None);
 
@@ -115,6 +118,21 @@ public sealed class WiredSharedVariableIndexTests
             .Should()
             .BeFalse();
     }
+
+    /// <summary>
+    /// A grain factory that answers, because a shared box now needs one.
+    /// </summary>
+    /// <remarks>
+    /// Shared is the availability whose values live behind a grain rather than in this room, so the
+    /// box reaches for one while it hydrates. These tests are about what the box <em>declares</em>,
+    /// not about what it holds, so the grain is never asked anything — but it has to exist.
+    /// </remarks>
+    private static IGrainFactory SharedGrains() =>
+        FakeProxy.Create<IGrainFactory>(call =>
+            call.Method.Name == nameof(IGrainFactory.GetGrain)
+                ? FakeProxy.Create<IWiredSharedVariableGrain>(_ => null)
+                : null
+        );
 
     /// <summary>The box as the database holds it: its wired configuration, as the furni's extra
     /// data, which is exactly what the query below reads back.</summary>

@@ -9,6 +9,7 @@ using Vortex.Primitives.Furniture.Enums;
 using Vortex.Primitives.Furniture.Providers;
 using Vortex.Primitives.Rooms.Enums.Wired;
 using Vortex.Primitives.Rooms.Events;
+using Vortex.Primitives.Rooms.Grains;
 using Vortex.Primitives.Rooms.Object.Furniture.Floor;
 using Vortex.Primitives.Rooms.Snapshots.Wired.Variables;
 using Vortex.Primitives.Rooms.Wired;
@@ -32,6 +33,10 @@ public abstract class FurnitureWiredVariableLogic
     protected abstract WiredAvailabilityType AvailabilityType { get; }
     protected virtual WiredVariableFlags Flags => WiredVariableFlags.None;
     protected KeyValueStore? _storage = null;
+
+    /// <summary>The replica of this box's values when it is shared across rooms, and null for every
+    /// other availability.</summary>
+    private WiredSharedVariableStore? _shared;
     protected WiredVariableSnapshot? _varSnapshot;
 
     public FurnitureWiredVariableLogic(
@@ -243,10 +248,40 @@ public abstract class FurnitureWiredVariableLogic
                 });
             }
         }
+        else if (snapshot.AvailabilityType == WiredAvailabilityType.Shared)
+        {
+            // "Permanent, shared across rooms" — the one availability whose values cannot live in
+            // this room. The furni row is out (the referencing room cannot read it, and its own
+            // room rewrites it wholesale on save) and the room's active store is out (it does not
+            // outlive the room), so the values belong to a grain and this box keeps a replica.
+            _shared ??= new WiredSharedVariableStore(
+                _grainFactory.GetGrain<IWiredSharedVariableGrain>(
+                    unchecked((long)snapshot.VariableId.Value)
+                ),
+                _logger
+            );
+
+            await _shared.RefreshAsync(ct);
+        }
     }
 
+    /// <summary>
+    /// Where this box's values live, which is its availability made concrete.
+    /// </summary>
+    /// <remarks>
+    /// Shared before persistent: a box can only be one of the two, but a builder who moves a box
+    /// from "Permanent" to "Permanent, shared across rooms" leaves the old <c>_storage</c> behind on
+    /// the furni, and reading it again would answer from a copy nobody else can see.
+    /// </remarks>
     private bool TryGetStore(WiredVariableKey key, out IWiredKeyValueStore? store)
     {
+        if (_shared is not null)
+        {
+            store = _shared;
+
+            return true;
+        }
+
         if (_storage is not null)
         {
             store = _storage;
