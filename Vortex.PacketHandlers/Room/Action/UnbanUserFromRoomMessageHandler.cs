@@ -6,6 +6,7 @@ using Vortex.Primitives.Action;
 using Vortex.Primitives.Events;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Permissions;
+using Vortex.Primitives.Rooms;
 using Vortex.Primitives.Rooms.Grains;
 using Vortex.Protocol.Messages.Incoming.Room.Action;
 
@@ -23,12 +24,22 @@ public class UnbanUserFromRoomMessageHandler(
         CancellationToken ct
     )
     {
-        if (ctx.PlayerId <= 0 || ctx.RoomId <= 0 || message.UserId <= 0)
+        if (ctx.PlayerId <= 0 || message.UserId <= 0)
         {
             return;
         }
 
-        ActionContext actorCtx = ctx.AsActionContext();
+        // The banned-users tab lives in the room settings window, which is normally opened from
+        // the navigator - the player is rarely standing in the room being edited. Same shape as
+        // BanUserWithDurationMessageHandler, and RoomModerationSystem rejects an ActionContext
+        // whose RoomId is not the grain's own, so the context has to be re-pointed too.
+        RoomId actorRoomId = message.RoomId > 0 ? new RoomId(message.RoomId) : ctx.RoomId;
+        if (actorRoomId <= 0)
+        {
+            return;
+        }
+
+        ActionContext actorCtx = ctx.AsActionContext() with { RoomId = actorRoomId };
         // Room-scoped: the owner / rights-holders / guild members are authorized by the room's
         // own mod settings inside RoomGrain. All that is enforced here is that nobody sanctions
         // higher-ranked staff.
@@ -38,7 +49,7 @@ public class UnbanUserFromRoomMessageHandler(
                     permissionService,
                     events,
                     ctx,
-                    ctx.RoomId,
+                    actorRoomId,
                     message.UserId,
                     ModerationAction.Ban,
                     ct
@@ -49,7 +60,7 @@ public class UnbanUserFromRoomMessageHandler(
             return;
         }
 
-        IRoomModeration roomGrain = grainFactory.GetRoomModeration(ctx.RoomId);
+        IRoomModeration roomGrain = grainFactory.GetRoomModeration(actorRoomId);
         bool applied = await roomGrain
             .UnbanUserAsync(actorCtx, message.UserId, ct)
             .ConfigureAwait(false);
@@ -58,7 +69,14 @@ public class UnbanUserFromRoomMessageHandler(
         {
             // The room's mod settings did not grant this actor authority here.
             await RoomModerationGuard
-                .AuditDenialAsync(events, ctx, ctx.RoomId, message.UserId, ModerationAction.Ban, ct)
+                .AuditDenialAsync(
+                    events,
+                    ctx,
+                    actorRoomId,
+                    message.UserId,
+                    ModerationAction.Ban,
+                    ct
+                )
                 .ConfigureAwait(false);
         }
     }
