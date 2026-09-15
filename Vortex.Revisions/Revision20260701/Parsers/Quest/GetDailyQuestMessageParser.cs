@@ -6,5 +6,6 @@ namespace Vortex.Revisions.Revision20260701.Parsers.Quest;
 
 internal class GetDailyQuestMessageParser : IParser
 {
-    public IMessageEvent Parse(IClientPacket packet) => new GetDailyQuestMessage();
+    public IMessageEvent Parse(IClientPacket packet) =>
+        new GetDailyQuestMessage { Refresh = packet.PopBoolean(), Index = packet.PopInt() };
 }

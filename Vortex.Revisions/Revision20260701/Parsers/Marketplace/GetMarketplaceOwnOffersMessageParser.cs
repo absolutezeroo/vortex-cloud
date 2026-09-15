@@ -6,5 +6,6 @@ namespace Vortex.Revisions.Revision20260701.Parsers.Marketplace;
 
 internal class GetMarketplaceOwnOffersMessageParser : IParser
 {
-    public IMessageEvent Parse(IClientPacket packet) => new GetMarketplaceOwnOffersMessage();
+    public IMessageEvent Parse(IClientPacket packet) =>
+        new GetMarketplaceOwnOffersMessage { Unknown1 = packet.PopInt() };
 }

@@ -1,0 +1,162 @@
+using System;
+using FluentAssertions;
+using Microsoft.Extensions.Options;
+using Vortex.Primitives.Packets;
+using Vortex.Protocol.Messages.Incoming.Collectibles;
+using Vortex.Protocol.Messages.Incoming.Marketplace;
+using Vortex.Protocol.Messages.Incoming.Navigator;
+using Vortex.Protocol.Messages.Incoming.Quest;
+using Vortex.Revisions.Configuration;
+using Xunit;
+using Rev = Vortex.Revisions.Revision20260701.Revision20260701;
+
+namespace Vortex.Revisions.Tests.Room;
+
+/// <summary>
+///     Nine parsers that read nothing at all while their client composer pushes one or two values.
+///     Unread trailing bytes do not desynchronise a length-framed packet, so none of these was a
+///     parsing crash — they were fields the server acted without. Two of them had already been
+///     declared on the message record and were therefore structurally always default, which is the
+///     worst of the shapes: <c>RemoveOwnRoomRightsRoom</c>'s handler guards on
+///     <c>message.RoomId &gt; 0</c>, so leaving it 0 made the whole feature return silently.
+///
+///     Every id is cross-checked against the client's own registry
+///     (<c>communication/_SafeCls_2046.as</c>), not against the header table's comments.
+/// </summary>
+public sealed class UnreadFieldWireTests
+{
+    private const int GetCollectorScoreEvent = 1614; // _composers[1614] = _SafeCls_2861
+    private const int GetNftCollectionsEvent = 708; // _composers[708]  = _SafeCls_3378
+    private const int ClaimBonusItemEvent = 1977; // _composers[1977] = _SafeCls_3818
+    private const int ClaimRewardItemEvent = 1166; // _composers[1166] = _SafeCls_3758
+    private const int GetMarketplaceOwnOffersEvent = 2086; // _composers[2086] = _SafeCls_1881
+    private const int RemoveOwnRoomRightsRoomEvent = 260; // _composers[260]  = _SafeCls_2158
+    private const int RoomAdSearchEvent = 1971; // _composers[1971] = _SafeCls_3386
+    private const int GetCommunityGoalHallOfFameEvent = 2252; // _composers[2252] = _SafeCls_3450
+    private const int GetDailyQuestEvent = 397; // _composers[397]  = _SafeCls_3520
+
+    private static readonly Rev Revision = new(Options.Create(new ProtocolLimitsConfig()));
+
+    private static T Parse<T>(int header, Action<ServerPacket> write)
+        where T : class
+    {
+        ServerPacket sp = new(header);
+        write(sp);
+        return Revision
+            .Parsers[header]
+            .Parse(new ClientPacket(header, sp.ToArray()))
+            .Should()
+            .BeOfType<T>()
+            .Subject;
+    }
+
+    /// <summary>
+    ///     The one that was a dead feature rather than a dropped field: the handler already read
+    ///     <c>message.RoomId</c> and returned when it was not positive, and nothing ever set it.
+    /// </summary>
+    [Fact]
+    public void RemoveOwnRoomRightsRoomParser_ReadsTheRoomTheClientNames()
+    {
+        RemoveOwnRoomRightsRoomMessage message = Parse<RemoveOwnRoomRightsRoomMessage>(
+            RemoveOwnRoomRightsRoomEvent,
+            sp => sp.WriteInteger(4271)
+        );
+
+        message.RoomId.Should().Be(4271);
+    }
+
+    /// <summary>Both fields were declared on the record and never filled.</summary>
+    [Fact]
+    public void RoomAdSearchParser_ReadsTheAdIndexAndTab()
+    {
+        RoomAdSearchMessage message = Parse<RoomAdSearchMessage>(
+            RoomAdSearchEvent,
+            sp => sp.WriteInteger(3).WriteInteger(17)
+        );
+
+        message.AdIndex.Should().Be(3);
+        message.TabId.Should().Be(17);
+    }
+
+    [Fact]
+    public void GetCollectorScoreParser_ReadsTheActiveWallet()
+    {
+        GetCollectorScoreMessage message = Parse<GetCollectorScoreMessage>(
+            GetCollectorScoreEvent,
+            sp => sp.WriteString("0xfeed")
+        );
+
+        message.WalletAddress.Should().Be("0xfeed");
+    }
+
+    [Fact]
+    public void GetNftCollectionsParser_ReadsTheActiveWallet()
+    {
+        GetNftCollectionsMessage message = Parse<GetNftCollectionsMessage>(
+            GetNftCollectionsEvent,
+            sp => sp.WriteString("0xfeed")
+        );
+
+        message.WalletAddress.Should().Be("0xfeed");
+    }
+
+    /// <summary>A claim names what it is claiming and where to credit it; neither reached us.</summary>
+    [Fact]
+    public void ClaimBonusItemParser_ReadsTheCollectionAndWallet()
+    {
+        NftCollectiblesClaimBonusItemMessage message = Parse<NftCollectiblesClaimBonusItemMessage>(
+            ClaimBonusItemEvent,
+            sp => sp.WriteString("relics").WriteString("0xfeed")
+        );
+
+        message.CollectionId.Should().Be("relics");
+        message.WalletAddress.Should().Be("0xfeed");
+    }
+
+    [Fact]
+    public void ClaimRewardItemParser_ReadsTheCollectionAndWallet()
+    {
+        NftCollectiblesClaimRewardItemMessage message =
+            Parse<NftCollectiblesClaimRewardItemMessage>(
+                ClaimRewardItemEvent,
+                sp => sp.WriteString("relics").WriteString("0xfeed")
+            );
+
+        message.CollectionId.Should().Be("relics");
+        message.WalletAddress.Should().Be("0xfeed");
+    }
+
+    [Fact]
+    public void GetMarketplaceOwnOffersParser_ReadsItsLeadingInt()
+    {
+        GetMarketplaceOwnOffersMessage message = Parse<GetMarketplaceOwnOffersMessage>(
+            GetMarketplaceOwnOffersEvent,
+            sp => sp.WriteInteger(1)
+        );
+
+        message.Unknown1.Should().Be(1);
+    }
+
+    [Fact]
+    public void GetCommunityGoalHallOfFameParser_ReadsTheGoalCode()
+    {
+        GetCommunityGoalHallOfFameMessage message = Parse<GetCommunityGoalHallOfFameMessage>(
+            GetCommunityGoalHallOfFameEvent,
+            sp => sp.WriteString("summer_goal")
+        );
+
+        message.GoalCode.Should().Be("summer_goal");
+    }
+
+    [Fact]
+    public void GetDailyQuestParser_ReadsTheRefreshFlagBeforeTheIndex()
+    {
+        GetDailyQuestMessage message = Parse<GetDailyQuestMessage>(
+            GetDailyQuestEvent,
+            sp => sp.WriteBoolean(true).WriteInteger(0)
+        );
+
+        message.Refresh.Should().BeTrue();
+        message.Index.Should().Be(0);
+    }
+}

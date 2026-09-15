@@ -6,5 +6,6 @@ namespace Vortex.Revisions.Revision20260701.Parsers.Collectibles;
 
 internal class GetNftCollectionsMessageParser : IParser
 {
-    public IMessageEvent Parse(IClientPacket packet) => new GetNftCollectionsMessage();
+    public IMessageEvent Parse(IClientPacket packet) =>
+        new GetNftCollectionsMessage { WalletAddress = packet.PopString() };
 }

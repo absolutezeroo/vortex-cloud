@@ -6,5 +6,10 @@ namespace Vortex.Revisions.Revision20260701.Parsers.Collectibles;
 
 internal class NftCollectiblesClaimBonusItemMessageParser : IParser
 {
-    public IMessageEvent Parse(IClientPacket packet) => new NftCollectiblesClaimBonusItemMessage();
+    public IMessageEvent Parse(IClientPacket packet) =>
+        new NftCollectiblesClaimBonusItemMessage
+        {
+            CollectionId = packet.PopString(),
+            WalletAddress = packet.PopString(),
+        };
 }
