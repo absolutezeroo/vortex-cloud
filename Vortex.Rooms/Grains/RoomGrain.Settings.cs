@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Logging;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Room;
@@ -22,6 +23,7 @@ using Vortex.Primitives.Rooms.Grains;
 using Vortex.Protocol.Messages.Outgoing.Room.Chat;
 using Vortex.Protocol.Messages.Outgoing.Room.Engine;
 using Vortex.Protocol.Messages.Outgoing.Roomsettings;
+using Vortex.Rooms.Grains.Systems;
 
 namespace Vortex.Rooms.Grains;
 
@@ -225,8 +227,32 @@ public sealed partial class RoomGrain
                 return false;
             }
 
+            // The room empties into its owners' hands and disappears in one transaction, because
+            // either half alone is a bug: a soft delete on its own strands every piece in a room
+            // nobody can open again, and a release on its own takes a still-standing room's
+            // furniture out from under the people in it.
+            await using IDbContextTransaction tx = await dbCtx
+                .Database.BeginTransactionAsync(ct)
+                .ConfigureAwait(true);
+
+            List<int> affectedOwners = await RoomFurnitureLocationStore
+                .ReleaseRoomContentsAsync(dbCtx, _state.RoomId.Value, ct)
+                .ConfigureAwait(true);
+
             entity.DeletedAt = DateTime.UtcNow;
             await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
+            await tx.CommitAsync(ct).ConfigureAwait(true);
+
+            // Bounded by the distinct owners of one room's contents, which in practice is the owner
+            // and a handful of guests. Without it the rows are back in the hand but the loaded
+            // inventory view still predates the release, so the items stay invisible until relog.
+            foreach (int ownerId in affectedOwners)
+            {
+                await _grainFactory
+                    .GetInventoryGrain(ownerId)
+                    .ReloadFurnitureAsync(ct)
+                    .ConfigureAwait(true);
+            }
 
             ActionContext actorCtx = ActionContext.CreateForPlayer(actor, _state.RoomId);
 
