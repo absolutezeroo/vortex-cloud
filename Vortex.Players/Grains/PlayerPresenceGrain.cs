@@ -105,6 +105,16 @@ internal sealed partial class PlayerPresenceGrain
         _sessionOverflowed = false;
         _outgoingQueue.Clear();
 
+        // This activation now holds a socket, so it must outlive the collection age. Nothing else
+        // keeps it awake: a player who sends no packet for GrainCollectionAge (two minutes -- an
+        // idle tab, a sleeping machine, a cable pulled without a FIN) was collected, and collection
+        // runs OnDeactivateAsync, which unregisters this very observer and walks them out of their
+        // room. They came back a ghost: still connected, gone from the room, offline to their
+        // friends, and mute -- the fresh activation has no observer, so every reply queued behind
+        // one that is never drained. Released again in UnregisterSessionObserverAsync, so an
+        // activation without a socket is still collectable.
+        DelayDeactivation(TimeSpan.MaxValue);
+
         return Task.CompletedTask;
     }
 
@@ -113,6 +123,10 @@ internal sealed partial class PlayerPresenceGrain
         await ClearActiveRoomAsync(ct);
 
         _sessionObserver = null;
+
+        // The socket is gone, so the keep-alive taken in RegisterSessionObserverAsync goes with it.
+        // Harmless on the OnDeactivateAsync path, which is already deactivating.
+        DeactivateOnIdle();
     }
 
     public Task<bool> IsOnlineAsync(CancellationToken ct)
