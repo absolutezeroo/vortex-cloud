@@ -173,6 +173,38 @@ const specsDir = path.join(root, 'docs', 'habbo-specs', 'packets', 'incoming');
 
 const callSiteNote = /with (\d+) argument\(s\); the class writes (\d+) value\(s\) to the wire/;
 const vortexLayout = /- origin: vortex\n\s+authority: vortex_emulator\n\s+field_count: (\d+)/;
+const clientOrigins = /- origin: "([^"]+)"\n\s+authority: client_code\b/g;
+
+// A packet can carry a call-site note from more than one client build -- 48 of them do, because the
+// 2016 PRODUCTION swf is scanned alongside the one this emulator targets, and BOTH are recorded with
+// authority `client_code`. Reading the first note in the file compares our parser against whichever
+// build happens to be listed first, which for `groups/GetThread` meant flagging a parser that is
+// correct: the 2016 composer takes 4 arguments, the current one takes 2, and we read 2.
+//
+// Pick the newest build instead of hardcoding a revision here, so this keeps working when the target
+// client moves: the origin carries the build timestamp (`as3:WIN63-202607011411-782849652`), so the
+// greatest one wins. Falls back to the first note when a packet has no client_code layout at all.
+const buildStamp = (origin) => {
+  const digits = /(\d{8,14})/.exec(origin);
+  return digits ? Number(digits[1].slice(0, 12).padEnd(12, '0')) : 0;
+};
+
+const callSiteArity = (text) => {
+  const origins = [...text.matchAll(clientOrigins)].map((m) => m[1]);
+
+  if (origins.length > 0) {
+    const newest = origins.reduce((a, b) => (buildStamp(b) > buildStamp(a) ? b : a));
+
+    for (const block of text.split(/\n {2}- id: /)) {
+      if (block.includes(`origin: "${newest}"`)) {
+        const scoped = callSiteNote.exec(block);
+        if (scoped) return scoped;
+      }
+    }
+  }
+
+  return callSiteNote.exec(text);
+};
 
 const walk = (dir) =>
   fs.existsSync(dir)
@@ -188,7 +220,7 @@ const underRead = [];
 
 for (const file of specFiles) {
   const text = fs.readFileSync(file, 'utf8');
-  const note = callSiteNote.exec(text);
+  const note = callSiteArity(text);
   if (!note) continue;
 
   const args = Number(note[1]);

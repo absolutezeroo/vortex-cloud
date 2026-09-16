@@ -31,7 +31,6 @@
     "gifts/SetPhoneNumberVerificationStatus (client passes 1, we read 0)",
     "gifts/TryPhoneNumber (client passes 2, we read 0)",
     "gifts/VerifyCode (client passes 1, we read 0)",
-    "groups/GetThread (client passes 4, we read 2)",
     "hotlooks/GetHotLooks (client passes 1, we read 0)",
     "inventory/ConfirmPetBreeding (client passes 4, we read 1)",
     "inventory/SilverFee (client passes 1, we read 0)",
