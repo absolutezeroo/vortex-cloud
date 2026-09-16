@@ -1,50 +1,50 @@
-# Site web — tranche 1 : les news
+# Website — slice 1: the news
 
-Date : 2026-08-27
-Statut : design validé, en attente de relecture
+Date: 2026-08-27
+Status: design approved, pending review
 
-## Périmètre
+## Scope
 
-Le site (`vortex-modern-client/packages/vortex-web`) existe déjà : port fidèle de habbo-web, Svelte 5
-+ Vite + Tailwind, routeur en mode hash, sprite sheet et `fr.json` d'origine. Sa moitié éditoriale est
-mockée dans `src/lib/mock.js`, qui annonce lui-même la suite : *« the shapes below are the ones a
-habbo.com response has, so wiring a real endpoint later is a swap in one page »*.
+The site (`vortex-modern-client/packages/vortex-web`) already exists: a faithful port of habbo-web, Svelte 5
++ Vite + Tailwind, hash-mode router, original sprite sheet and `fr.json`. Its editorial half is
+mocked in `src/lib/mock.js`, which announces the sequel itself: *"the shapes below are the ones a
+habbo.com response has, so wiring a real endpoint later is a swap in one page"*.
 
-**Le front du site n'est pas touché.** Il reste dans son dépôt et consomme le contrat défini ici.
+**The site's front end is not touched.** It stays in its repository and consumes the contract defined here.
 
-Tout est livré dans **`Vortex.WebApi`**. `Vortex.Dashboard.Web` et `Vortex.Dashboard.API` ne sont pas
-touchés.
+Everything is delivered in **`Vortex.WebApi`**. `Vortex.Dashboard.Web` and `Vortex.Dashboard.API` are not
+touched.
 
-| Livré ici (`Vortex.WebApi` + `Vortex.Database`) | Hors périmètre |
+| Delivered here (`Vortex.WebApi` + `Vortex.Database`) | Out of scope |
 | --- | --- |
-| 3 tables + migration EF | Tout `vortex-web` : `api.js`, `i18n.js`, sélecteur de langue, rendu des blocs |
-| Lecture publique — ce que le site affiche | Toute page ou endpoint de la dashboard |
-| Écriture protégée — comment les articles se peuplent | L'écran de rédaction lui-même |
-| Listage des images `c_images` | — |
-| Route OG `/article/{slug}` + service du `dist/` | — |
+| 3 tables + EF migration | All of `vortex-web`: `api.js`, `i18n.js`, language picker, block rendering |
+| Public read — what the site displays | Any dashboard page or endpoint |
+| Protected write — how articles get populated | The authoring screen itself |
+| Listing the `c_images` images | — |
+| OG route `/article/{slug}` + serving the `dist/` | — |
 
-### Deux surfaces dans le même hôte
+### Two surfaces in the same host
 
-| | Préfixe | Auth | Rôle |
+| | Prefix | Auth | Role |
 | --- | --- | --- | --- |
-| Lecture | `/api/public/…` | aucune | ce que le site public affiche |
-| Écriture | `/api/admin/…` | session + droit staff | ce qui peuple les articles |
+| Read | `/api/public/…` | none | what the public site displays |
+| Write | `/api/admin/…` | session + staff right | what populates the articles |
 
-Même hôte, même cookie, même validation : rien à dupliquer, pas de CORS. L'écran de rédaction se
-construit ensuite contre `/api/admin/…` sans que le serveur bouge.
+Same host, same cookie, same validation: nothing to duplicate, no CORS. The authoring screen is then
+built against `/api/admin/…` without the server moving.
 
-## Décisions
+## Decisions
 
-| Décision | Choix | Raison |
+| Decision | Choice | Reason |
 | --- | --- | --- |
-| Étendue | Noyau éditorial | Brouillon/programmé/épinglé/catégories/archive. L'engagement (j'aime, commentaires) et les campagnes (récompenses réclamables) sont des tranches ultérieures : ni les mêmes risques, ni les mêmes surfaces. |
-| Corps d'article | Blocs JSON typés | Zéro assainisseur, XSS impossible par construction. Markdown aurait ajouté Markdig + un sanitizer, et c'est le sanitizer qui serait devenu la frontière de sécurité du site public. |
-| Écran de rédaction | TipTap, schéma restreint aux blocs | La pile de textareas n'était pas une surface d'écriture. TipTap est *headless* : son document est mappé vers les mêmes blocs (`articleBlocks.js`), donc le rédacteur gagne l'éditeur et la base ne gagne pas de HTML. CKEditor ne sait produire que du HTML, ce qui aurait ramené l'assainisseur que la ligne au-dessus refuse. |
-| Multilingue | Site entier, langue au choix du visiteur | Une URL par article, langue résolue côté API. Pas d'URL par langue : le SEO multilingue (hreflang, canonical, sitemap, routeur en mode history) est un chantier à lui seul. |
-| Service en prod | `Vortex.WebApi` sert le `dist/` | Même origine que `/api`, donc le cookie de session marche sans reverse proxy ; aucune infra en plus ; aucun couplage de build entre les deux dépôts ; et ça débloque la route OG. |
-| Emplacement de la logique | Service EF, pas un grain | Un article est du contenu, pas de l'état de jeu vivant. `IWebApiArticleService` sur `IDbContextFactory<VortexDbContext>`, comme `WebApiPlayerService`. |
+| Extent | Editorial core | Draft/scheduled/pinned/categories/archive. Engagement (likes, comments) and campaigns (claimable rewards) are later slices: neither the same risks nor the same surfaces. |
+| Article body | Typed JSON blocks | Zero sanitizer, XSS impossible by construction. Markdown would have added Markdig + a sanitizer, and the sanitizer would have become the public site's security boundary. |
+| Authoring screen | TipTap, schema restricted to the blocks | A stack of textareas was not a writing surface. TipTap is *headless*: its document maps to the same blocks (`articleBlocks.js`), so the writer gains the editor and the database does not gain HTML. CKEditor can only produce HTML, which would have brought back the sanitizer the line above refuses. |
+| Multilingual | Whole site, language chosen by the visitor | One URL per article, language resolved API-side. No per-language URL: multilingual SEO (hreflang, canonical, sitemap, history-mode router) is a project of its own. |
+| Serving in production | `Vortex.WebApi` serves the `dist/` | Same origin as `/api`, so the session cookie works with no reverse proxy; no extra infrastructure; no build coupling between the two repositories; and it unblocks the OG route. |
+| Where the logic lives | EF service, not a grain | An article is content, not live game state. `IWebApiArticleService` over `IDbContextFactory<VortexDbContext>`, like `WebApiPlayerService`. |
 
-## Données
+## Data
 
 ```
 web_languages
@@ -63,32 +63,31 @@ web_article_categories
   id · code ("campagnes") · label_json · sort_order · enabled
 ```
 
-Ce qui est **éditorial** (quand ça sort, où ça se range, si c'est épinglé) reste sur l'article ; ce
-qui est **rédigé** descend dans la traduction. Entités sous `Vortex.Database/Entities/Web/`, `DbSet`
-dans `VortexDbContext`, migration EF (recette hors-ligne habituelle). Toutes héritent de
+What is **editorial** (when it goes out, where it is filed, whether it is pinned) stays on the article; what
+is **written** goes down into the translation. Entities under `Vortex.Database/Entities/Web/`, `DbSet`
+in `VortexDbContext`, EF migration (the usual offline recipe). All inherit from
 `VortexEntity` (`id`, `created_at`, `updated_at`, `deleted_at`).
 
-### Pourquoi l'image d'en-tête est sur la traduction
+### Why the header image lives on the translation
 
-`c_images/web_promo` contient 3 284 fichiers, dont **168 ont une variante de langue** :
+`c_images/web_promo` contains 3,284 files, of which **168 have a language variant**:
 `Schreibwerkstatt_DE_LargePromo.png`, `WebPromo_FanSites_FR.png`,
-`article_webPromo_aprilfools14_fr.png`. Une image partagée afficherait une promo française en tête
-d'un article allemand. Elle appartient donc au texte, pas à l'article.
+`article_webPromo_aprilfools14_fr.png`. A shared image would show a French promo at the top of a
+German article. So it belongs to the text, not to the article.
 
-### Pourquoi les langues sont une table et pas une option de configuration
+### Why languages are a table and not a configuration option
 
-C'est de la donnée métier réglable : une langue doit pouvoir s'ouvrir sans reconstruire ni
-redémarrer. Même raison que `currency_types` ou `ServerConfigGrain`.
+This is tunable business data: a language must be able to open without a rebuild or a
+restart. Same reason as `currency_types` or `ServerConfigGrain`.
 
-`label_json` sur les catégories est un dictionnaire `{"fr": "Campagnes", "en": "Campaigns"}` — une
-table de traductions pour deux colonnes serait disproportionné, et la même règle de repli s'y
-applique.
+`label_json` on the categories is a dictionary `{"fr": "Campagnes", "en": "Campaigns"}` — a
+translation table for two columns would be disproportionate, and the same fallback rule applies to it.
 
-### « Programmé » n'est pas un état stocké
+### "Scheduled" is not a stored state
 
-`status` a **trois** valeurs : `Draft`, `Published`, `Archived`. Un article programmé est un
-`Published` dont `publish_at` est dans le futur. Conséquence : aucun service de fond, aucun timer,
-rien à rattraper après un redémarrage. Le filtre public fait tout :
+`status` has **three** values: `Draft`, `Published`, `Archived`. A scheduled article is a
+`Published` whose `publish_at` is in the future. Consequence: no background service, no timer,
+nothing to catch up after a restart. The public filter does it all:
 
 ```sql
 WHERE deleted_at IS NULL
@@ -97,42 +96,42 @@ WHERE deleted_at IS NULL
 ORDER BY pinned DESC, publish_at DESC
 ```
 
-Un article archivé sort du fil mais son URL reste lisible, comme sur habbo.com.
+An archived article leaves the feed but its URL stays readable, as on habbo.com.
 
-> **Piège.** `DeletedAt` vient de `VortexEntity` et **rien ne le filtre automatiquement**. Le fil
-> public doit l'exclure explicitement — c'est exactement le trou déjà rencontré côté catalogue, où le
-> runtime ne filtrait pas `DeletedAt`.
+> **Trap.** `DeletedAt` comes from `VortexEntity` and **nothing filters it automatically**. The public
+> feed must exclude it explicitly — that is exactly the hole already hit on the catalog side, where the
+> runtime did not filter `DeletedAt`.
 
-### La règle de repli, une seule fois
+### The fallback rule, once only
 
-Traduction absente dans la langue demandée → **langue par défaut** (`web_languages.is_default`).
-Cette règle vaut pour les articles et pour les libellés de catégorie. Le front applique la même à son
-habillage (`lib/locales/<code>.json` manquant → fichier par défaut), mais ça, c'est chez lui.
+Translation missing in the requested language → **default language** (`web_languages.is_default`).
+That rule holds for articles and for category labels. The front end applies the same to its
+chrome (`lib/locales/<code>.json` missing → default file), but that is its business.
 
-Un article sans **aucune** traduction n'apparaît nulle part, y compris en langue par défaut.
+An article with **no** translation at all appears nowhere, including in the default language.
 
-> **Laissé ouvert : une traduction ne se publie pas seule.** Le repli sert la langue par défaut dès
-> que la traduction manque, donc « la version anglaise n'est pas prête » et « la version anglaise est
-> identique au français » sont indistinguables pour le lecteur, et une traduction en relecture part
-> en ligne dès que l'article passe `Published`. Les rédactions multi-pays mettent un état par
-> traduction pour ça — ici il faudrait un `publish_at` sur `web_article_translations`. Décision, pas
-> oubli : à trancher quand une deuxième langue sera réellement rédigée.
+> **Left open: a translation cannot be published on its own.** The fallback serves the default language as
+> soon as the translation is missing, so "the English version is not ready" and "the English version is
+> identical to the French one" are indistinguishable to the reader, and a translation under review goes
+> live as soon as the article turns `Published`. Multi-country newsrooms put a state per
+> translation for that — here it would need a `publish_at` on `web_article_translations`. A decision, not an
+> oversight: to be settled when a second language is actually written.
 
-## Lecture publique — `Vortex.WebApi`
+## Public read — `Vortex.WebApi`
 
-Mappés dans `WebApiEndpoints` (tag `Content`), aucune session requise. Service
-`IWebApiArticleService` sur `IDbContextFactory<VortexDbContext>`, `AsNoTracking`, pas de cache tant
-que rien ne le réclame.
+Mapped in `WebApiEndpoints` (tag `Content`), no session required. Service
+`IWebApiArticleService` over `IDbContextFactory<VortexDbContext>`, `AsNoTracking`, no cache as long
+as nothing asks for one.
 
-Cette section est **normative** : c'est ce que `src/lib/api.js` implémentera de l'autre côté.
+This section is **normative**: it is what `src/lib/api.js` will implement on the other side.
 
-### Résolution de la langue
+### Language resolution
 
-Chaque endpoint accepte `?lang=<code>`. À défaut, l'en-tête `Accept-Language`. À défaut, la langue par
-défaut. Un code inconnu ou désactivé est traité comme absent — jamais une erreur.
+Every endpoint accepts `?lang=<code>`. Failing that, the `Accept-Language` header. Failing that, the default
+language. An unknown or disabled code is treated as absent — never an error.
 
-La réponse porte toujours `lang` (la langue effectivement servie) et `fallback` (vrai si le contenu
-rendu vient de la langue par défaut faute de traduction), pour que le front puisse le signaler.
+The response always carries `lang` (the language actually served) and `fallback` (true if the rendered
+content comes from the default language for lack of a translation), so the front end can flag it.
 
 ### `GET /api/public/languages`
 
@@ -148,8 +147,8 @@ rendu vient de la langue par défaut faute de traduction), pour que le front pui
 
 ### `GET /api/public/articles?category=&lang=&page=&pageSize=`
 
-`category` est un code de catégorie ; absent ou `all` = tout. `page` commence à 1, `pageSize` vaut 10
-par défaut et est plafonné à 50.
+`category` is a category code; absent or `all` = everything. `page` starts at 1, `pageSize` defaults to 10
+and is capped at 50.
 
 ```json
 {
@@ -179,20 +178,20 @@ par défaut et est plafonné à 50.
 }
 ```
 
-`items[]` reprend **exactement** les clés de `mock.js` : `id` est le slug, `image` et `thumbnail` sont
-des chemins relatifs sous `c_images` (le front les préfixe déjà avec `IMAGES`), `date` est une date
-ISO sans heure. `NewsList.svelte` consomme cette forme sans modification. `categories[]` inclut
-l'entrée `tout` en tête, libellée dans la langue servie.
+`items[]` uses **exactly** the keys from `mock.js`: `id` is the slug, `image` and `thumbnail` are
+relative paths under `c_images` (the front end already prefixes them with `IMAGES`), `date` is an ISO
+date with no time. `NewsList.svelte` consumes this shape unmodified. `categories[]` includes
+the `tout` entry first, labelled in the language served.
 
-`publishedAt` s'ajoute à `date`, il ne le remplace pas — le front actuel lit `date` et continue de
-marcher. C'est le même instant, zoné : un article publié à 23h à Paris est déjà le lendemain en UTC
-et la veille à São Paulo, et une date nue ne permet pas au site de le rendre juste. Le `Z` est forcé
-(`DateTime.SpecifyKind`) parce que MySQL rend un `DATETIME` en `Unspecified` et qu'un instant sans
-zone est parsé comme heure locale par le navigateur — exactement le décalage que ce champ évite.
+`publishedAt` is added to `date`, it does not replace it — the current front end reads `date` and keeps
+working. It is the same instant, zoned: an article published at 11 pm in Paris is already the next day in UTC
+and the previous day in São Paulo, and a bare date does not let the site render it correctly. The `Z` is forced
+(`DateTime.SpecifyKind`) because MySQL returns a `DATETIME` as `Unspecified` and an instant with no
+zone is parsed as local time by the browser — exactly the offset this field avoids.
 
 ### `GET /api/public/articles/{slug}?lang=`
 
-Même objet, plus :
+Same object, plus:
 
 ```json
 {
@@ -209,72 +208,72 @@ Même objet, plus :
 }
 ```
 
-Slug inconnu, article en brouillon, programmé pour plus tard, ou supprimé → **404**
-`{"error": "article_not_found"}`. Un article archivé répond 200 : son URL reste lisible.
+Unknown slug, draft article, scheduled for later, or deleted → **404**
+`{"error": "article_not_found"}`. An archived article answers 200: its URL stays readable.
 
-`related` : jusqu'à 3 articles publiés de la même catégorie, le plus récent d'abord, l'article courant
-exclu ; complété par les plus récents toutes catégories si la catégorie n'en fournit pas assez.
+`related`: up to 3 published articles from the same category, most recent first, the current article
+excluded; topped up with the most recent across all categories if the category does not supply enough.
 
-### Les six types de blocs
+### The six block types
 
-Contrat fermé. Un type inconnu doit être **ignoré** par le front, jamais rendu brut.
+A closed contract. An unknown type must be **ignored** by the front end, never rendered raw.
 
-| `type` | Champs | Rendu attendu |
+| `type` | Fields | Expected rendering |
 | --- | --- | --- |
-| `p` | `text` | un paragraphe |
-| `h` | `text` | un sous-titre dans l'article |
-| `list` | `items` (≥ 1 `text`), `ordered` optionnel | une liste à puces ou numérotée |
-| `img` | `src` (relatif sous `c_images`), `caption` optionnelle | l'image pleine largeur, légende dessous |
-| `btn` | `label`, `href` | un bouton ; `href` interne (`#/…`) ou externe |
-| `hr` | — | un séparateur |
+| `p` | `text` | a paragraph |
+| `h` | `text` | a subheading inside the article |
+| `list` | `items` (≥ 1 `text`), optional `ordered` | a bulleted or numbered list |
+| `img` | `src` (relative under `c_images`), optional `caption` | the image full width, caption below |
+| `btn` | `label`, `href` | a button; `href` internal (`#/…`) or external |
+| `hr` | — | a separator |
 
-### `text` : chaîne ou suite de fragments
+### `text`: string or sequence of fragments
 
-Un `text` est **soit** une chaîne nue, **soit** un tableau de fragments quand le rédacteur a mis quelque
-chose en forme :
+A `text` is **either** a bare string **or** an array of fragments when the writer has formatted
+something:
 
 ```json
 {"type":"p","text":[{"t":"avant "},{"t":"gras","b":true},{"t":"ici","href":"#/hotel"}]}
 ```
 
-| Clé | Sens |
+| Key | Meaning |
 | --- | --- |
-| `t` | le texte du fragment ; un `\n` est un saut de ligne |
-| `b` `i` `u` `s` | gras, italique, souligné, barré — des booléens, absents sinon |
-| `href` | le fragment est un lien ; **mêmes règles que `btn.href`** |
+| `t` | the fragment's text; a `\n` is a line break |
+| `b` `i` `u` `s` | bold, italic, underline, strikethrough — booleans, absent otherwise |
+| `href` | the fragment is a link; **same rules as `btn.href`** |
 
-Aucun champ ne contient de HTML : la mise en forme est de la donnée, que le lecteur transforme en
-éléments. C'est ce qui permet à la dashboard d'offrir un vrai éditeur (TipTap, `ArticleBodyEditor.svelte`)
-sans qu'un assainisseur redevienne la frontière de sécurité du site.
+No field contains HTML: formatting is data, which the reader turns into
+elements. That is what lets the dashboard offer a real editor (TipTap, `ArticleBodyEditor.svelte`)
+without a sanitizer becoming the site's security boundary again.
 
-Le lecteur doit rendre le texte en `white-space: pre-wrap`, et **ignorer** une clé qu'il ne connaît pas.
-Un `text` dont aucun fragment ne porte de caractère non blanc est refusé, comme une chaîne vide l'est.
+The reader must render text with `white-space: pre-wrap`, and **ignore** a key it does not know.
+A `text` in which no fragment carries a non-whitespace character is refused, just as an empty string is.
 
-## Écriture — `Vortex.WebApi`
+## Write — `Vortex.WebApi`
 
-Sous `/api/admin/…`, même hôte et même cookie de session que le reste de la WebApi. Pas d'interface
-ici : seulement le contrat, pour que l'écran de rédaction soit constructible ensuite sans retoucher au
-serveur.
+Under `/api/admin/…`, same host and same session cookie as the rest of the WebApi. No UI
+here: only the contract, so the authoring screen can be built later without touching the
+server again.
 
-### Autorisation
+### Authorization
 
-La session donne un `accountId` (`WebApiSessionStore`). Le droit se résout sur les tables staff qui
-existent déjà — `player_account_roles` → `role_permissions` — contre une capability
-`web.articles.manage` déclarée dans `Vortex.Primitives/Permissions/Capabilities.cs`. Sans le droit :
-**403**. Non authentifié : **401**.
+The session gives an `accountId` (`WebApiSessionStore`). The right resolves against the staff tables that
+already exist — `player_account_roles` → `role_permissions` — against a `web.articles.manage`
+capability declared in `Vortex.Primitives/Permissions/Capabilities.cs`. Without the right:
+**403**. Unauthenticated: **401**.
 
-Ce n'est **pas** une capability `dashboard.*` : elle ne passe par aucune des quatre listes du
-checklist dashboard, et `CapabilityDeclarationTests` ne la réclame donc pas dans
+It is **not** a `dashboard.*` capability: it goes through none of the four lists in the
+dashboard checklist, and `CapabilityDeclarationTests` therefore does not require it in
 `Capabilities.Dashboard.All`.
 
 ### Endpoints
 
 ```
-GET    /api/admin/articles?status=&category=&lang=&q=&page=   liste, brouillons compris
-POST   /api/admin/articles                                    crée
-GET    /api/admin/articles/{id}                               l'article et TOUTES ses traductions
-PUT    /api/admin/articles/{id}                               champs éditoriaux
-PUT    /api/admin/articles/{id}/translations/{lang}           titre, résumé, images, blocs
+GET    /api/admin/articles?status=&category=&lang=&q=&page=   list, drafts included
+POST   /api/admin/articles                                    create
+GET    /api/admin/articles/{id}                               the article and ALL its translations
+PUT    /api/admin/articles/{id}                               editorial fields
+PUT    /api/admin/articles/{id}/translations/{lang}           title, summary, images, blocks
 DELETE /api/admin/articles/{id}/translations/{lang}
 DELETE /api/admin/articles/{id}                               deleted_at
 GET/POST/PUT/DELETE  /api/admin/categories[/{id}]
@@ -284,26 +283,26 @@ GET    /api/admin/images?dir=&q=&page=
 
 ### Validation
 
-Le serveur est la frontière ; l'interface aide, elle ne garantit rien.
+The server is the boundary; the UI helps, it guarantees nothing.
 
-- `body_json` : tableau de blocs dont chaque `type` est l'un des cinq. Type inconnu, champ requis
-  absent, ou autre chose qu'un tableau → **400** `invalid_body`.
-- `href` d'un bloc `btn` : seuls `#/…`, `/…`, `http://` et `https://` passent. `javascript:`, `data:`
-  et le reste → **400** `invalid_href`.
-- `header_image`, `thumbnail`, `src` d'un bloc `img` : chemin relatif sous `c_images`, sans `..`, sans
-  schéma → **400** `invalid_image`.
-- `slug` : minuscules, chiffres et tirets, unique. Collision → **409** `slug_taken`.
-- `publish_at` requis dès que `status = Published`.
-- Supprimer la langue par défaut, ou désactiver la dernière langue, est refusé (**409**).
+- `body_json`: an array of blocks each of whose `type` is one of the five. Unknown type, required field
+  missing, or anything other than an array → **400** `invalid_body`.
+- A `btn` block's `href`: only `#/…`, `/…`, `http://` and `https://` pass. `javascript:`, `data:`
+  and the rest → **400** `invalid_href`.
+- `header_image`, `thumbnail`, an `img` block's `src`: relative path under `c_images`, no `..`, no
+  scheme → **400** `invalid_image`.
+- `slug`: lowercase, digits and hyphens, unique. Collision → **409** `slug_taken`.
+- `publish_at` required as soon as `status = Published`.
+- Deleting the default language, or disabling the last language, is refused (**409**).
 
 ### `GET /api/admin/images?dir=&q=&page=`
 
-De quoi construire un sélecteur d'image. `dir` vaut `web_promo` ou `articles` — liste fermée, aucun
-chemin arbitraire. Recherche et pagination obligatoires : 3 284 + 1 550 fichiers ne se servent pas
-d'un coup.
+Enough to build an image picker. `dir` is `web_promo` or `articles` — a closed list, no
+arbitrary path. Search and pagination are mandatory: 3,284 + 1,550 files are not served
+in one go.
 
-C'est le portage de `DashboardApiService.TargetedOffers.cs:231` (`TargetedOfferImages`), y compris son
-repli des variantes `.thumb.png` dans l'entrée principale.
+It is the port of `DashboardApiService.TargetedOffers.cs:231` (`TargetedOfferImages`), including its
+folding of `.thumb.png` variants into the main entry.
 
 ```json
 {"total": 3284, "page": 1, "items": [
@@ -311,112 +310,111 @@ repli des variantes `.thumb.png` dans l'entrée principale.
 ]}
 ```
 
-> **À faire avant de tester** : `appsettings.json:103` porte `"AssetsLocalRoot": "./assets"`. Sans le
-> pointer sur `C:\Laragon\www\vortex-assets`, l'endpoint rend une liste vide — et une liste vide
-> ressemble à un bug alors que c'est une configuration.
+> **To do before testing**: `appsettings.json:103` carries `"AssetsLocalRoot": "./assets"`. Without
+> pointing it at `C:\Laragon\www\vortex-assets`, the endpoint returns an empty list — and an empty list
+> looks like a bug when it is configuration.
 
-## Service du site et partage de lien — `Vortex.WebApi`
+## Serving the site and link sharing — `Vortex.WebApi`
 
-Option `Vortex:WebApi:SiteRoot`, validée par `WebApiConfigValidator` : absente = fonctionnalité
-éteinte, présente mais introuvable = démarrage refusé, comme le reste de la configuration de ce
-module. Quand elle est posée :
+Option `Vortex:WebApi:SiteRoot`, validated by `WebApiConfigValidator`: absent = feature
+off, present but not found = startup refused, like the rest of this module's configuration. When it is set:
 
 ```
 UseStaticFiles(SiteRoot)
 MapFallbackToFile("index.html")
 ```
 
-Même origine que `/api`, donc le cookie de session `HttpOnly` continue de marcher sans proxy.
+Same origin as `/api`, so the `HttpOnly` session cookie keeps working with no proxy.
 
 ### `GET /article/{slug}?lang=`
 
-Le routeur du site est en mode hash : un lien partagé (`site/#/article/x`) n'envoie que `site/` au
-serveur, et l'aperçu Discord affiche donc toujours l'accueil. Cette route corrige ça sans toucher au
-routeur :
+The site's router is in hash mode: a shared link (`site/#/article/x`) only sends `site/` to the
+server, so the Discord preview always shows the home page. This route fixes that without touching the
+router:
 
-1. lit l'article dans la langue de `?lang=`, à défaut celle d'`Accept-Language`, à défaut la langue
-   par défaut ;
-2. renvoie `index.html` avec les balises Open Graph injectées ;
-3. redirige le navigateur vers `#/article/{slug}`.
+1. reads the article in the language from `?lang=`, failing that the one from `Accept-Language`, failing that the
+   default language;
+2. returns `index.html` with the Open Graph tags injected;
+3. redirects the browser to `#/article/{slug}`.
 
-Le robot lit les balises, l'humain atterrit dans le SPA. Slug inconnu → l'index sans balises, la SPA
-affiche son 404. Les valeurs injectées sont échappées (elles viennent d'un champ éditorial).
+The crawler reads the tags, the human lands in the SPA. Unknown slug → the index with no tags, the SPA
+shows its 404. The injected values are escaped (they come from an editorial field).
 
-**Pourquoi `?lang=` et pas seulement l'en-tête.** Discord, Facebook, X et Slack vont chercher un lien
-partagé sans `Accept-Language` utile. Une langue lue de l'en-tête seul rendait donc **tous** les
-aperçus dans la langue par défaut, quelle que soit la langue du lecteur qui a partagé. C'est le seul
-endroit où le choix « une URL, N langues » se paie visiblement, et le paramètre suffit à le régler
-sans ouvrir le chantier des URL par langue.
+**Why `?lang=` and not just the header.** Discord, Facebook, X and Slack fetch a shared
+link with no useful `Accept-Language`. A language read from the header alone therefore rendered **all**
+previews in the default language, whatever the language of the reader who shared it. It is the only
+place where the "one URL, N languages" choice is visibly paid for, and the parameter is enough to settle it
+without opening the per-language URL project.
 
-Balises émises : `og:type`, `og:title`, `og:description`, `og:url` (query comprise, donc le lien
-partagé est celui qui est prévisualisé), `og:image` si `AssetBaseUrl` est posé, `og:site_name` si
-`Vortex:WebApi:SiteName` est posé, `article:published_time`, et `twitter:card`.
+Tags emitted: `og:type`, `og:title`, `og:description`, `og:url` (query included, so the shared
+link is the one previewed), `og:image` if `AssetBaseUrl` is set, `og:site_name` if
+`Vortex:WebApi:SiteName` is set, `article:published_time`, and `twitter:card`.
 
-**Pas d'`og:locale`, délibérément.** La balise attend une langue *et* un territoire (`fr_FR`) ;
-`web_languages` ne stocke qu'un code nu (`fr`). Émettre `fr` serait une balise malformée, et inventer
-`FR` serait faux pour tout hôtel qui publie en français hors de France. Ça demande une colonne
-territoire d'abord.
+**No `og:locale`, deliberately.** The tag expects a language *and* a territory (`fr_FR`);
+`web_languages` only stores a bare code (`fr`). Emitting `fr` would be a malformed tag, and inventing
+`FR` would be wrong for any hotel publishing in French outside France. It needs a territory column
+first.
 
-**Conséquence pour le front** : c'est cette URL **sans hash** que la page article doit afficher et
-copier, avec la langue courante en `?lang=`. Un lien avec hash n'aura jamais d'aperçu.
+**Consequence for the front end**: it is this **hash-free** URL that the article page must display and
+copy, with the current language in `?lang=`. A link with a hash will never get a preview.
 
-## Vérification
+## Verification
 
-`Vortex.WebApi.Tests` (16 tests d'intégration existants, `WebApiTestFactory`) :
+`Vortex.WebApi.Tests` (16 existing integration tests, `WebApiTestFactory`):
 
-- un brouillon n'apparaît pas dans le fil ;
-- un `Published` dont `publish_at` est futur n'apparaît pas non plus ;
-- l'épinglé passe devant un article plus récent ;
-- pagination : `total` est le compte réel, `page=2` ne recoupe pas `page=1` ;
-- slug inconnu → 404 ; article archivé → 200 ;
-- `?lang=en` sans traduction anglaise sert le français avec `fallback: true` ;
-- `?lang=xx` inconnu ne renvoie pas d'erreur ;
-- un article sans aucune traduction n'apparaît pas ;
-- un article dont `deleted_at` est renseigné n'apparaît pas.
+- a draft does not appear in the feed;
+- a `Published` whose `publish_at` is in the future does not appear either;
+- the pinned one comes before a more recent article;
+- pagination: `total` is the real count, `page=2` does not overlap `page=1`;
+- unknown slug → 404; archived article → 200;
+- `?lang=en` with no English translation serves French with `fallback: true`;
+- an unknown `?lang=xx` does not return an error;
+- an article with no translation at all does not appear;
+- an article whose `deleted_at` is set does not appear.
 
-`ArticleShareUrlTests`, pour la route de partage : le titre dans `og:title` et `og:site_name` posé ;
-`?lang=en` l'emporte sur l'en-tête ; sans le paramètre l'en-tête décide encore ;
-`article:published_time` se termine par `Z` ; un slug inconnu sert quand même le site, sans balises.
+`ArticleShareUrlTests`, for the share route: the title in `og:title` and `og:site_name` set;
+`?lang=en` wins over the header; without the parameter the header still decides;
+`article:published_time` ends with `Z`; an unknown slug still serves the site, with no tags.
 
-> Ces cas étaient annoncés ici et n'existaient pas : `WebApiSiteHosting.Map` n'était appelé que depuis
-> l'hôte de production, donc la route n'était pas mappée sous le serveur de test et rien n'était
-> atteignable. `WebApiTestFactory` l'appelle maintenant, dans le même ordre que `WebApiWebHost`.
+> These cases were announced here and did not exist: `WebApiSiteHosting.Map` was only called from
+> the production host, so the route was not mapped under the test server and nothing was
+> reachable. `WebApiTestFactory` now calls it, in the same order as `WebApiWebHost`.
 
-Écriture, même projet de tests :
+Write, same test project:
 
-- sans session → 401 ; avec session mais sans le droit → 403 ;
-- bloc de type inconnu → 400 ; `href` en `javascript:` → 400 ; `src` contenant `..` → 400 ;
-- slug en double → 409 ;
-- `status = Published` sans `publish_at` → 400 ;
-- suppression de la langue par défaut → 409 ;
+- no session → 401; session but no right → 403;
+- unknown block type → 400; `javascript:` `href` → 400; `src` containing `..` → 400;
+- duplicate slug → 409;
+- `status = Published` with no `publish_at` → 400;
+- deleting the default language → 409;
 - `/api/admin/images?dir=../..` → 400.
 
-Portail final : `dotnet build Vortex.Main/Vortex.Main.csproj -t:VortexCloudQualityGate`.
+Final gate: `dotnet build Vortex.Main/Vortex.Main.csproj -t:VortexCloudQualityGate`.
 
-## Ce qui reste mocké après cette tranche
+## What stays mocked after this slice
 
-`mock.js` garde `BADGES`, `FRIENDS`, `GROUPS`, `DISCUSSIONS`, `ROOMS`, `PURSE`, `SHOP_SECTIONS`. La
-suite, dans cet ordre :
+`mock.js` keeps `BADGES`, `FRIENDS`, `GROUPS`, `DISCUSSIONS`, `ROOMS`, `PURSE`, `SHOP_SECTIONS`. The
+sequel, in this order:
 
-2. **Apparts + profil public** — read-models sur `RoomEntity`, `RoomRatingEntity`, `PlayerBadgeEntity`,
-   groupes, messagerie. Rien à construire côté données.
-3. **Photos** — exige d'abord le vertical caméra dans l'émulateur : `PublishPhotoMessageHandler`,
-   `PurchasePhotoMessageHandler`, `RenderRoomMessageHandler`, `PhotoCompetitionMessageHandler` et
-   `RequestCameraConfigurationMessageHandler` sont **cinq stubs vides**, et il n'y a ni entité photo ni
-   arbre `usercontent` derrière l'hôte d'assets.
-4. **Bourse + messagerie** — `PlayerCurrencyEntity`, abonnements, messagerie.
+2. **Rooms + public profile** — read models over `RoomEntity`, `RoomRatingEntity`, `PlayerBadgeEntity`,
+   groups, messaging. Nothing to build on the data side.
+3. **Photos** — requires the camera vertical in the emulator first: `PublishPhotoMessageHandler`,
+   `PurchasePhotoMessageHandler`, `RenderRoomMessageHandler`, `PhotoCompetitionMessageHandler` and
+   `RequestCameraConfigurationMessageHandler` are **five empty stubs**, and there is neither a photo entity nor a
+   `usercontent` tree behind the asset host.
+4. **Purse + messaging** — `PlayerCurrencyEntity`, subscriptions, messaging.
 
-`SHOP_SECTIONS` est hors trajectoire : c'est du vrai argent, donc une question de paiement, pas de
-site.
+`SHOP_SECTIONS` is off the trajectory: it is real money, hence a payment question, not a
+site one.
 
-## Hors périmètre, explicitement
+## Out of scope, explicitly
 
-- `Vortex.Dashboard.Web` et `Vortex.Dashboard.API` : aucune page, aucun endpoint, aucune capability
-  `dashboard.*`. L'écran de rédaction se construira contre `/api/admin/…`, plus tard et ailleurs.
-- J'aime, vues, commentaires (tranche « engagement »).
-- Récompenses réclamables et liens vers catalogue / appart / quête (tranche « campagnes »).
-- URL par langue, `hreflang`, `canonical`, `sitemap.xml`.
-- Un rendu serveur complet du site.
-- Le front du site : `api.js`, `i18n.js`, le sélecteur de langue, le rendu des blocs. Y compris
-  récupérer les fichiers `<lang>.json` de habbo-web-l10n — seul `fr.json` est présent, les autres se
-  prennent sur `images.habbo.com/habbo-web-l10n/` comme celui-là.
+- `Vortex.Dashboard.Web` and `Vortex.Dashboard.API`: no page, no endpoint, no `dashboard.*`
+  capability. The authoring screen will be built against `/api/admin/…`, later and elsewhere.
+- Likes, views, comments (the "engagement" slice).
+- Claimable rewards and links to catalog / room / quest (the "campaigns" slice).
+- Per-language URLs, `hreflang`, `canonical`, `sitemap.xml`.
+- Full server-side rendering of the site.
+- The site's front end: `api.js`, `i18n.js`, the language picker, block rendering. Including
+  fetching the `<lang>.json` files from habbo-web-l10n — only `fr.json` is present, the others are
+  taken from `images.habbo.com/habbo-web-l10n/` like that one.

@@ -1,82 +1,82 @@
 # VORTEX CLOUD — Dashboard / API / Security — FINAL FROZEN
 
-**Statut : VALIDÉ / FROZEN — document canonique du chantier Dashboard / API / Security.**  
-**Baseline :** `afc485be58ffd983b8d96430efe8aed620ad0ade` (`main`, 25 août 2026).  
-**Relation avec la V4 runtime :** ce document est indépendant de `Vortex_Runtime_Architecture_Workflow_V4_FINAL.md`. La V4 runtime exclut explicitement Dashboard/API/Security de son périmètre. Aucun chantier Runtime/Commerce/Rooms/Wired ne doit modifier les décisions ci-dessous par effet de bord.
+**Status: VALIDATED / FROZEN — canonical document for the Dashboard / API / Security workstream.**  
+**Baseline:** `afc485be58ffd983b8d96430efe8aed620ad0ade` (`main`, 25 August 2026).  
+**Relation to the runtime V4:** this document is independent of `Vortex_Runtime_Architecture_Workflow_V4_FINAL.md`. The runtime V4 explicitly excludes Dashboard/API/Security from its scope. No Runtime/Commerce/Rooms/Wired workstream may modify the decisions below as a side effect.
 
-> Ce fichier consolide les décisions Dashboard déjà validées. Il ne constitue pas une nouvelle réouverture d’audit. Toute modification structurante de ce document exige un ADR explicite et un audit ciblé.
-
----
-
-## 1. Objectif
-
-Le Dashboard est un **plan de contrôle administratif privilégié** pour Vortex. Il ne doit pas devenir une seconde couche métier concurrente de l’émulateur, ni contourner les ownership boundaries existantes.
-
-Le Dashboard doit fournir :
-
-- authentification opérateur robuste ;
-- sessions opérateur révocables ;
-- RBAC par **capabilities** ;
-- step-up MFA pour les opérations sensibles ;
-- récupération MFA opérateur auditée ;
-- opérations administratives centralisées et auditables ;
-- ledger/audit durable des mutations privilégiées ;
-- API stable avec erreurs structurées ;
-- modération/CFH complète ;
-- séparation claire entre Dashboard Web, API et domaines Vortex ;
-- tests de matrice d’autorisation et quality gates.
+> This file consolidates the Dashboard decisions already validated. It does not constitute a new audit reopening. Any structural change to this document requires an explicit ADR and a targeted audit.
 
 ---
 
-## 2. Périmètre
+## 1. Objective
+
+The Dashboard is a **privileged administrative control plane** for Vortex. It must not become a second business layer competing with the emulator, nor bypass the existing ownership boundaries.
+
+The Dashboard must provide:
+
+- robust operator authentication;
+- revocable operator sessions;
+- RBAC by **capabilities**;
+- step-up MFA for sensitive operations;
+- audited operator MFA recovery;
+- centralized, auditable administrative operations;
+- a durable ledger/audit of privileged mutations;
+- a stable API with structured errors;
+- complete moderation/CFH;
+- a clear separation between Dashboard Web, API and Vortex domains;
+- authorization matrix tests and quality gates.
+
+---
+
+## 2. Scope
 
 ### IN SCOPE
 
 - `Vortex.Dashboard.API`
 - `Vortex.Dashboard.Web`
 - `Vortex.Dashboard.Tests`
-- contrats de permissions et administration utilisés par le Dashboard ;
-- authentification opérateur ;
-- MFA et récupération MFA ;
-- sessions Dashboard ;
-- opérations staff/RBAC ;
-- modération et CFH ;
-- audit/ledger administratif ;
-- contrats HTTP, IDs et erreurs ;
-- observabilité et tests du plan de contrôle.
+- permission and administration contracts used by the Dashboard;
+- operator authentication;
+- MFA and MFA recovery;
+- Dashboard sessions;
+- staff/RBAC operations;
+- moderation and CFH;
+- administrative audit/ledger;
+- HTTP contracts, IDs and errors;
+- observability and control-plane tests.
 
 ### OUT OF SCOPE
 
-- refactor Rooms/Furniture/Wired ;
-- Commerce Consistency de la V4 ;
-- changement des ownership boundaries Orleans ;
-- microservices généralisés ;
-- event sourcing global ;
-- CQRS/MediatR généralisé ;
-- remplacement du moteur de permissions du gameplay ;
-- mélange des PR Dashboard avec les PR V4 Runtime.
+- Rooms/Furniture/Wired refactor;
+- V4 Commerce Consistency;
+- changes to the Orleans ownership boundaries;
+- generalized microservices;
+- global event sourcing;
+- generalized CQRS/MediatR;
+- replacing the gameplay permission engine;
+- mixing Dashboard PRs with V4 Runtime PRs.
 
 ---
 
-## 3. Principes non négociables
+## 3. Non-negotiable principles
 
-1. **Le Dashboard est un control plane, pas un second moteur métier.** Les writes appellent des contrats/services/grains propriétaires ; ils ne réimplémentent pas la logique domaine dans les endpoints.
-2. **Authorization par capabilities, jamais par nom de rôle ou rang codé en dur.**
-3. Les opérations qui accordent des capacités sont elles-mêmes protégées par une capability dédiée — notamment `OpsStaffManage`.
-4. **Toute mutation privilégiée exige un acteur identifiable, une raison opérateur et une trace d’audit.**
-5. Les endpoints HTTP restent minces : parsing/authz/validation → service d’opération → contrat domaine.
-6. Les secrets MFA ne sont jamais renvoyés ou journalisés en clair hors flux d’enrôlement strictement nécessaire.
-7. Une récupération MFA ne contourne pas l’audit : elle est une opération staff explicite.
-8. Les sessions opérateur sont **server-side et révocables** ; l’identité d’une session n’est pas équivalente à une simple présence d’un cookie côté client.
-9. Les erreurs API utilisent un format structuré et stable de type **Problem Details** / code d’erreur stable ; aucun détail d’exception interne n’est exposé au client.
-10. Les IDs transportés par l’API ont une sémantique explicite ; ne pas utiliser des chaînes ambiguës ou des indexes UI comme identités métier.
-11. La modération CFH reste reliée aux modèles/tickets réels ; pas de seconde queue uniquement Dashboard.
-12. Les opérations critiques ne sont jamais “fire-and-forget” du point de vue de l’audit.
-13. **Dashboard/API/Security reste FROZEN** tant qu’un ADR ne le rouvre pas.
+1. **The Dashboard is a control plane, not a second business engine.** Writes call owner contracts/services/grains; they do not reimplement domain logic in the endpoints.
+2. **Authorization by capabilities, never by role name or hardcoded rank.**
+3. Operations that grant capabilities are themselves protected by a dedicated capability — notably `OpsStaffManage`.
+4. **Every privileged mutation requires an identifiable actor, an operator reason and an audit trail.**
+5. HTTP endpoints stay thin: parsing/authz/validation → operation service → domain contract.
+6. MFA secrets are never returned or logged in clear outside the strictly necessary enrolment flow.
+7. An MFA recovery does not bypass the audit: it is an explicit staff operation.
+8. Operator sessions are **server-side and revocable**; a session's identity is not equivalent to the mere presence of a cookie on the client side.
+9. API errors use a structured, stable format of the **Problem Details** / stable error code kind; no internal exception detail is exposed to the client.
+10. The IDs carried by the API have explicit semantics; do not use ambiguous strings or UI indices as business identities.
+11. CFH moderation stays connected to the real models/tickets; no second, Dashboard-only queue.
+12. Critical operations are never "fire-and-forget" from the audit's point of view.
+13. **Dashboard/API/Security stays FROZEN** until an ADR reopens it.
 
 ---
 
-## 4. Architecture cible figée
+## 4. Frozen target architecture
 
 ```text
 Vortex.Dashboard.Web
@@ -105,17 +105,17 @@ Vortex domain owners
 
 `DashboardEndpoint -> DashboardOperationsService -> owner contract`
 
-et non :
+and not:
 
-`DashboardEndpoint -> DbContext -> mutation métier arbitraire`.
+`DashboardEndpoint -> DbContext -> arbitrary business mutation`.
 
-Une lecture administrative peut utiliser des projections/read services dédiés ; une mutation doit respecter l’owner réel.
+An administrative read may use dedicated projections/read services; a mutation must respect the real owner.
 
 ---
 
-## 5. Authentication & sessions opérateur
+## 5. Operator authentication & sessions
 
-Le dépôt contient déjà le sous-système dédié :
+The repository already contains the dedicated subsystem:
 
 - `Vortex.Dashboard.API/Security/DashboardAuthService.cs`
 - `DashboardAuthenticationHandler.cs`
@@ -123,117 +123,117 @@ Le dépôt contient déjà le sous-système dédié :
 - `DashboardSessionStore.cs`
 - `LoginRequest.cs`
 
-Décision figée :
+Frozen decision:
 
-- authentification Dashboard distincte de la simple session joueur ;
-- principal Dashboard explicite ;
-- session server-side ;
-- invalidation/révocation possible côté serveur ;
-- aucune authorization sensible basée uniquement sur ce que le Web déclare ;
-- l’API reconstitue toujours le principal effectif côté serveur.
+- Dashboard authentication distinct from a mere player session;
+- explicit Dashboard principal;
+- server-side session;
+- server-side invalidation/revocation possible;
+- no sensitive authorization based solely on what the Web declares;
+- the API always rebuilds the effective principal server-side.
 
 ### Target security context
 
-Le modèle cible conserve le concept validé d’un **ActorSecurityContext** au boundary administratif : identité opérateur, session, capabilities effectives, état MFA/step-up et metadata de corrélation nécessaires à l’audit.
+The target model keeps the validated concept of an **ActorSecurityContext** at the administrative boundary: operator identity, session, effective capabilities, MFA/step-up state and the correlation metadata the audit needs.
 
-Le nom exact de type peut évoluer sans ADR si la sémantique reste identique ; ce qui est figé est la frontière : les opérations privilégiées ne doivent pas dépendre d’un simple `string actor` comme unique contexte de sécurité à long terme.
+The exact type name may change without an ADR as long as the semantics stay identical; what is frozen is the boundary: privileged operations must not depend on a mere `string actor` as their only long-term security context.
 
 ---
 
 ## 6. RBAC / capabilities
 
-Le Dashboard administre les rôles et capabilities via les contrats de permissions existants.
+The Dashboard administers roles and capabilities through the existing permission contracts.
 
-Le code baseline possède notamment des opérations :
+The baseline code notably has operations for:
 
-- création / modification / suppression de rôle ;
-- remplacement de l’ensemble des capabilities d’un rôle ;
-- assignation / désassignation de rôle ;
-- administration des sanction presets ;
-- récupération MFA opérateur.
+- role creation / modification / deletion;
+- replacing a role's whole capability set;
+- role assignment / unassignment;
+- sanction preset administration;
+- operator MFA recovery.
 
-Ces writes passent par `DashboardOperationsService.Staff.cs`.
+These writes go through `DashboardOperationsService.Staff.cs`.
 
 ### Invariant
 
-Une modification de permissions doit enregistrer **l’état résultant complet** lorsqu’il est utile à l’audit, pas uniquement un delta impossible à interpréter isolément.
+A permission change must record **the complete resulting state** when that is useful to the audit, not only a delta that cannot be interpreted in isolation.
 
-Exemple déjà documenté dans le code : lors de `SetRoleCapabilitiesAsync`, l’ensemble complet des capabilities est enregistré dans le détail de l’opération afin que l’entrée d’audit puisse répondre seule à « que pouvait faire ce rôle après le changement ? ».
+Example already documented in the code: during `SetRoleCapabilitiesAsync`, the complete capability set is recorded in the operation detail so that the audit entry can answer on its own "what could this role do after the change?".
 
 ---
 
-## 7. MFA, step-up et récupération
+## 7. MFA, step-up and recovery
 
-### MFA normal
+### Normal MFA
 
-Le Web possède un flux MFA dédié (`MfaModal.svelte`) et l’API expose les opérations account/MFA associées.
+The Web has a dedicated MFA flow (`MfaModal.svelte`) and the API exposes the associated account/MFA operations.
 
 ### Step-up MFA
 
-Décision figée : une authentification initiale valide ne suffit pas nécessairement pour une opération hautement sensible. Les opérations sélectionnées comme critiques doivent pouvoir exiger un **step-up MFA récent**.
+Frozen decision: a valid initial authentication is not necessarily enough for a highly sensitive operation. Operations selected as critical must be able to require a **recent MFA step-up**.
 
-Le step-up appartient au contexte de sécurité opérateur, pas au payload métier envoyé par le navigateur.
+The step-up belongs to the operator security context, not to the business payload sent by the browser.
 
-### Recovery MFA
+### MFA recovery
 
-`DashboardOperationsService.ResetAccountMfaAsync` est la voie administrative dédiée.
+`DashboardOperationsService.ResetAccountMfaAsync` is the dedicated administrative route.
 
-Invariant validé :
+Validated invariant:
 
-- capability dédiée `OpsStaffManage` ;
-- raison opérateur obligatoire ;
-- audit de l’action `ops.staff.mfa.reset` ;
-- target account explicite ;
-- aucun “code MFA de secours” inventé par l’API ;
-- la récupération efface le second facteur via le service MFA propriétaire.
+- dedicated `OpsStaffManage` capability;
+- mandatory operator reason;
+- audit of the `ops.staff.mfa.reset` action;
+- explicit target account;
+- no "backup MFA code" invented by the API;
+- recovery clears the second factor through the owning MFA service.
 
-Cette voie est une **recovery path** et doit rester plus fortement auditée qu’un changement ordinaire.
+That route is a **recovery path** and must stay more heavily audited than an ordinary change.
 
 ---
 
-## 8. Ledger / audit administratif
+## 8. Administrative ledger / audit
 
-Le Dashboard ne doit pas avoir des mutations privilégiées non traçables.
+The Dashboard must not have untraceable privileged mutations.
 
-Chaque opération sensible doit produire une entrée possédant au minimum :
+Every sensitive operation must produce an entry holding at least:
 
 ```text
 OperationId / CorrelationId
 Timestamp
 Actor / Operator
 Session identity
-Effective capabilities / security context pertinent
+Effective capabilities / relevant security context
 Action key
 Reason
 Target account/player/room/entity
 Structured detail
 Outcome
-Failure code (si applicable)
+Failure code (if applicable)
 ```
 
-### Règle de cohérence
+### Consistency rule
 
-Quand mutation métier et audit vivent dans la même frontière transactionnelle locale, **mutation + entrée ledger doivent être committées ensemble**.
+When the business mutation and the audit live in the same local transactional boundary, **mutation + ledger entry must be committed together**.
 
-Quand l’opération traverse un owner distant/grain, le Dashboard journalise l’intention et le résultat avec un identifiant de corrélation stable ; il ne prétend pas créer une transaction ACID cross-grain.
+When the operation crosses a remote owner/grain, the Dashboard logs the intent and the result with a stable correlation identifier; it does not pretend to create a cross-grain ACID transaction.
 
-### Interdictions
+### Prohibitions
 
-- audit uniquement sous forme de log texte ;
-- raison facultative sur un write sensible ;
-- modification destructive sans actor ;
-- journal contenant secrets, mot de passe ou seed MFA ;
-- succès retourné avant que l’état d’audit requis soit durable.
+- audit as a text log only;
+- optional reason on a sensitive write;
+- destructive change with no actor;
+- a journal containing secrets, passwords or MFA seeds;
+- success returned before the required audit state is durable.
 
 ---
 
 ## 9. Operations boundary
 
-`DashboardOperationsService` est la frontière canonique des writes Dashboard.
+`DashboardOperationsService` is the canonical boundary for Dashboard writes.
 
-Les endpoints ne doivent pas grossir en services métier.
+Endpoints must not grow into business services.
 
-Pattern cible :
+Target pattern:
 
 ```text
 Endpoint
@@ -247,15 +247,15 @@ Endpoint
   -> stable HTTP result
 ```
 
-Les writes qui donnent eux-mêmes des permissions restent séparés des opérations de contenu génériques.
+Writes that themselves grant permissions stay separate from generic content operations.
 
 ---
 
 ## 10. API contract & Problem Details
 
-Décision figée : les erreurs API sont **structurées et stables**.
+Frozen decision: API errors are **structured and stable**.
 
-Cible :
+Target:
 
 ```json
 {
@@ -268,37 +268,37 @@ Cible :
 }
 ```
 
-Le shape exact peut suivre `ProblemDetails`, mais les invariants sont :
+The exact shape may follow `ProblemDetails`, but the invariants are:
 
-- status HTTP correct ;
-- `code` stable pour le Web ;
-- trace/correlation id ;
-- pas de stack trace ;
-- pas de message SQL/EF/Orleans brut ;
-- validation différenciée de authorization et domain rejection ;
-- les erreurs domaine connues ne sont pas loggées comme faults système.
+- correct HTTP status;
+- stable `code` for the Web;
+- trace/correlation id;
+- no stack trace;
+- no raw SQL/EF/Orleans message;
+- validation differentiated from authorization and from domain rejection;
+- known domain errors are not logged as system faults.
 
 ---
 
-## 11. IDs et contrats
+## 11. IDs and contracts
 
-Les DTOs de Dashboard doivent distinguer :
+Dashboard DTOs must distinguish:
 
 - `AccountId`
 - `PlayerId`
 - `RoomId`
 - `RoleId`
 - `PresetId`
-- IDs de ticket CFH
-- autres IDs domaine
+- CFH ticket IDs
+- other domain IDs
 
-Éviter :
+Avoid:
 
-- “id” sans contexte dans les APIs sensibles ;
-- conversion implicite d’un ID UI vers un ID métier différent ;
-- utiliser username comme clé d’autorité quand l’ID stable existe.
+- "id" with no context in sensitive APIs;
+- implicit conversion of a UI ID into a different business ID;
+- using a username as the authority key when the stable ID exists.
 
-Les strongly typed IDs peuvent rester au boundary interne ; le JSON peut rester numérique/string selon compatibilité existante, mais la sémantique doit être non ambiguë.
+Strongly typed IDs may stay at the internal boundary; the JSON may stay numeric/string for existing compatibility, but the semantics must be unambiguous.
 
 ---
 
@@ -306,123 +306,123 @@ Les strongly typed IDs peuvent rester au boundary interne ; le JSON peut rester 
 
 CFH = **Call For Help**.
 
-Le baseline contient :
+The baseline contains:
 
 - `Vortex.Dashboard.API/Api/DashboardApiService.Cfh.cs`
 - `Vortex.Dashboard.Web/src/pages/CfhQueuePage.svelte`
 - `Vortex.Dashboard.Web/src/pages/CfhStatsPage.svelte`
 - `Vortex.Rooms/CfhTicketService.cs`
-- entités DB `CfhTicketEntity`, `CfhTopicEntity`, `CfhCategoryEntity`
-- queue de modération côté runtime.
+- DB entities `CfhTicketEntity`, `CfhTopicEntity`, `CfhCategoryEntity`
+- the moderation queue on the runtime side.
 
-### Décision
+### Decision
 
-Le Dashboard **projette et opère sur la vérité CFH existante**. Il ne crée pas une seconde source de vérité administrative.
+The Dashboard **projects and operates on the existing CFH truth**. It does not create a second administrative source of truth.
 
-Les writes de modération utilisent les capabilities correspondantes et le ledger opérateur.
+Moderation writes use the corresponding capabilities and the operator ledger.
 
-Les stats sont des read models ; elles ne deviennent jamais owner du workflow CFH.
+Stats are read models; they never become the owner of the CFH workflow.
 
 ---
 
-## 13. Hôte administratif
+## 13. Administrative host
 
-Décision d’architecture validée : le plan de contrôle Dashboard doit pouvoir être **hébergé hors du process gameplay principal**.
+Validated architecture decision: the Dashboard control plane must be able to be **hosted outside the main gameplay process**.
 
-But :
+Goals:
 
-- réduire le blast radius d’une erreur Web/admin ;
-- permettre déploiement/redémarrage du Dashboard sans redémarrer le runtime jeu ;
-- éviter qu’un serveur HTTP administratif augmente directement la surface d’attaque du silo principal ;
-- conserver les appels vers les vrais owners via des frontières explicites.
+- reduce the blast radius of a Web/admin error;
+- allow deploying/restarting the Dashboard without restarting the game runtime;
+- prevent an administrative HTTP server from directly increasing the main silo's attack surface;
+- keep calls to the real owners through explicit boundaries.
 
-Cela ne signifie pas microservices généralisés : c’est une séparation du **control plane**, pas une fragmentation du domaine.
+This does not mean generalized microservices: it is a separation of the **control plane**, not a fragmentation of the domain.
 
-`DashboardWebHost.cs` reste le composition point HTTP du Dashboard.
+`DashboardWebHost.cs` remains the Dashboard's HTTP composition point.
 
 ---
 
 ## 14. Web client
 
-Le Web :
+The Web:
 
-- ne décide jamais des permissions effectives ;
-- masque/désactive l’UI selon capabilities pour UX, mais l’API reste l’autorité ;
-- gère MFA/step-up comme interaction utilisateur, sans stocker le secret ;
-- consomme les error codes stables de l’API ;
-- ne reproduit pas les règles métier des grains/services.
+- never decides effective permissions;
+- hides/disables UI by capability for UX, but the API remains the authority;
+- handles MFA/step-up as a user interaction, without storing the secret;
+- consumes the API's stable error codes;
+- does not reproduce the business rules of the grains/services.
 
-Les permissions de navigation (`dashboardPermissions.js`, routes, etc.) doivent rester alignées avec la matrice API.
+Navigation permissions (`dashboardPermissions.js`, routes, etc.) must stay aligned with the API matrix.
 
 ---
 
 ## 15. Authorization matrix
 
-Le dépôt dispose d’une matrice de tests dédiée (`Vortex.Dashboard.Tests/Hosting/authorization-matrix.txt`).
+The repository has a dedicated test matrix (`Vortex.Dashboard.Tests/Hosting/authorization-matrix.txt`).
 
-Critère final :
+Final criterion:
 
-- chaque endpoint privilégié apparaît dans la matrice ;
-- capability minimale attendue documentée ;
-- absence de capability -> refus ;
-- capability correcte -> accès ;
-- les endpoints staff/manage ne partagent pas une capability trop large avec des writes de contenu ;
-- les opérations à step-up testent le cas MFA récent / absent / expiré.
+- every privileged endpoint appears in the matrix;
+- the expected minimum capability is documented;
+- capability absent -> refusal;
+- correct capability -> access;
+- staff/manage endpoints do not share an over-broad capability with content writes;
+- step-up operations test the recent / absent / expired MFA cases.
 
-Une nouvelle route Dashboard sans entrée de matrice est une régression.
+A new Dashboard route with no matrix entry is a regression.
 
 ---
 
-## 16. Tests obligatoires
+## 16. Mandatory tests
 
 ### Auth / session
 
-- login succès/échec ;
-- session inconnue/révoquée/expirée ;
-- principal reconstitué côté serveur ;
-- logout/revocation ;
-- aucune confiance dans les permissions déclarées par le client.
+- login success/failure;
+- unknown/revoked/expired session;
+- principal rebuilt server-side;
+- logout/revocation;
+- no trust in the permissions declared by the client.
 
 ### RBAC
 
-- matrice endpoint × capability ;
-- role assign/unassign ;
-- replacement complet des capabilities ;
-- séparation `OpsStaffManage` des autres permissions.
+- endpoint × capability matrix;
+- role assign/unassign;
+- full capability replacement;
+- separation of `OpsStaffManage` from the other permissions.
 
 ### MFA
 
-- enrollment/verification ;
-- step-up requis ;
-- step-up valide ;
-- récupération `ResetAccountMfaAsync` auditée ;
-- secret absent des logs/audit.
+- enrolment/verification;
+- step-up required;
+- step-up valid;
+- audited `ResetAccountMfaAsync` recovery;
+- secret absent from logs/audit.
 
 ### Ledger
 
-- actor/reason/action/target/detail présents ;
-- failure outcome enregistré selon contrat ;
-- aucune mutation critique sans entrée durable ;
+- actor/reason/action/target/detail present;
+- failure outcome recorded per contract;
+- no critical mutation without a durable entry;
 - secret redaction.
 
 ### API
 
-- codes d’erreur stables ;
-- Problem Details / shape standard ;
-- pas de stack trace ;
+- stable error codes;
+- Problem Details / standard shape;
+- no stack trace;
 - correlation id.
 
 ### CFH
 
-- queue/stats lisent la même vérité métier ;
-- actions moderator respectent capabilities ;
-- audit de mutation.
+- queue/stats read the same business truth;
+- moderator actions respect capabilities;
+- mutation audit.
 
 ---
 
-## 17. Observabilité
+## 17. Observability
 
-Métriques minimales :
+Minimum metrics:
 
 ```text
 dashboard.auth.success / failure
@@ -436,76 +436,76 @@ dashboard.cfh.queue.size
 dashboard.http.error{code}
 ```
 
-Logs structurés avec correlation id, jamais de secret.
+Structured logs with a correlation id, never a secret.
 
-Toute alerte sur `dashboard.audit.write.failure` est prioritaire : une mutation privilégiée non auditée est un défaut de control plane.
-
----
-
-## 18. Anti-patterns explicitement interdits
-
-- authorization par `if (rank >= X)` ;
-- authorization uniquement dans Svelte ;
-- endpoint qui instancie directement un `DbContext` pour modifier un domaine dont il n’est pas owner ;
-- route “god endpoint” qui mélange plusieurs capabilities ;
-- MFA recovery non auditée ;
-- raison opérateur optionnelle pour sanctions/permissions/destructive writes ;
-- audit best-effort après avoir retourné succès ;
-- stack traces en réponse HTTP ;
-- secrets MFA/passwords dans logs ou ledger ;
-- Dashboard et Runtime V4 modifiés dans la même grosse PR sans nécessité technique prouvée ;
-- rouvrir l’architecture Dashboard pendant les PR Commerce/Wired.
+Any alert on `dashboard.audit.write.failure` is a priority: an unaudited privileged mutation is a control-plane defect.
 
 ---
 
-## 19. Workflow IA pour ce chantier
+## 18. Explicitly forbidden anti-patterns
 
-Ce domaine est **FROZEN**.
+- authorization by `if (rank >= X)`;
+- authorization only in Svelte;
+- an endpoint that directly instantiates a `DbContext` to modify a domain it does not own;
+- a "god endpoint" route that mixes several capabilities;
+- unaudited MFA recovery;
+- optional operator reason for sanctions/permissions/destructive writes;
+- best-effort audit after returning success;
+- stack traces in an HTTP response;
+- MFA secrets/passwords in logs or ledger;
+- Dashboard and Runtime V4 modified in the same large PR with no proven technical need;
+- reopening the Dashboard architecture during Commerce/Wired PRs.
 
-Avant tout changement :
+---
+
+## 19. AI workflow for this workstream
+
+This domain is **FROZEN**.
+
+Before any change:
 
 ```text
-1. Lire ce document.
-2. Lire AGENTS.md / CONTEXT.md / CLAUDE.md.
-3. Comparer le SHA audité au HEAD sur :
+1. Read this document.
+2. Read AGENTS.md / CONTEXT.md / CLAUDE.md.
+3. Compare the audited SHA to HEAD on:
    - Vortex.Dashboard.API/**
    - Vortex.Dashboard.Web/**
    - Vortex.Dashboard.Tests/**
    - Vortex.Primitives/Permissions/**
    - Vortex.Primitives/Authentication/**
-4. Si les watched_paths n’ont pas changé :
-   -> ne pas réauditer l’architecture.
-5. Si un changement contredit une décision FROZEN :
+4. If the watched_paths have not changed:
+   -> do not re-audit the architecture.
+5. If a change contradicts a FROZEN decision:
    -> STOP
-   -> annoncer le conflit
-   -> proposer un ADR
-   -> aucune implémentation avant acceptation.
+   -> announce the conflict
+   -> propose an ADR
+   -> no implementation before acceptance.
 ```
 
-Les PR Dashboard ne doivent pas être mélangées aux PR `C*`, `W*`, `G*`, `S*` de la V4 Runtime sauf dépendance concrète documentée.
+Dashboard PRs must not be mixed with the V4 Runtime `C*`, `W*`, `G*`, `S*` PRs unless there is a documented concrete dependency.
 
 ---
 
-## 20. Critères d’acceptation finaux
+## 20. Final acceptance criteria
 
-Le chantier Dashboard/API/Security est conforme lorsque :
+The Dashboard/API/Security workstream is compliant when:
 
-1. chaque route sensible est protégée par capability côté API ;
-2. les permissions Web ne sont qu’un miroir UX ;
-3. les opérations de permissions utilisent une capability staff dédiée ;
-4. chaque mutation sensible exige actor + reason ;
-5. le ledger fournit une trace durable et corrélable ;
-6. la récupération MFA est protégée et auditée ;
-7. les opérations désignées sensibles supportent le step-up MFA ;
-8. les sessions opérateur sont server-side et révocables ;
-9. les erreurs sont structurées, stables et sans fuite interne ;
-10. les IDs métier sont non ambigus ;
-11. CFH utilise la source de vérité existante ;
-12. les endpoints n’embarquent pas la logique domaine ;
-13. l’hôte administratif peut être séparé du process gameplay sans changer les domaines ;
-14. la matrice d’autorisation couvre toutes les routes privilégiées ;
-15. les quality gates Dashboard passent ;
-16. aucune décision de ce document n’est modifiée implicitement par la V4 Runtime.
+1. every sensitive route is protected by a capability on the API side;
+2. the Web permissions are only a UX mirror;
+3. permission operations use a dedicated staff capability;
+4. every sensitive mutation requires an actor + reason;
+5. the ledger provides a durable, correlatable trail;
+6. MFA recovery is protected and audited;
+7. the operations designated sensitive support MFA step-up;
+8. operator sessions are server-side and revocable;
+9. errors are structured, stable and free of internal leakage;
+10. business IDs are unambiguous;
+11. CFH uses the existing source of truth;
+12. endpoints do not embed domain logic;
+13. the administrative host can be separated from the gameplay process without changing the domains;
+14. the authorization matrix covers every privileged route;
+15. the Dashboard quality gates pass;
+16. no decision in this document is implicitly modified by the V4 Runtime.
 
 ---
 
@@ -526,10 +526,10 @@ A conflict requires an explicit ADR.
 
 ---
 
-# Annexe A — Sources baseline
+# Appendix A — Baseline sources
 
-Repository : `https://github.com/absolutezeroo/vortex-cloud`  
-Commit : `afc485be58ffd983b8d96430efe8aed620ad0ade`
+Repository: `https://github.com/absolutezeroo/vortex-cloud`  
+Commit: `afc485be58ffd983b8d96430efe8aed620ad0ade`
 
 ## Dashboard API / Security
 

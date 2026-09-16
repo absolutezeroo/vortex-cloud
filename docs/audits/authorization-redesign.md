@@ -1,59 +1,59 @@
-# Refonte de l'autorisation — document de conception
+# Authorization redesign — design document
 
-- **Statut** : conception. **Aucun code de production n'est modifié par ce document.**
-- **Révision de référence** : `62844a3` sur `claude/vortex-cloud-beta-audit-apl5gn`.
-- **Date** : 2026-09-15.
-- **Prérequis de lecture** : `docs/audits/security-audit.md` (le constat que ce document propose de corriger).
-- **Portée** : la frontière d'authentification des paquets, et la frontière d'autorisation des grains room. Pas la cryptographie, pas les sessions web, pas les plugins.
+- **Status**: design. **No production code is modified by this document.**
+- **Reference revision**: `62844a3` on `claude/vortex-cloud-beta-audit-apl5gn`.
+- **Date**: 2026-09-15.
+- **Reading prerequisite**: `docs/audits/security-audit.md` (the finding this document proposes to fix).
+- **Scope**: the packet authentication boundary, and the room grain authorization boundary. Not cryptography, not web sessions, not plugins.
 
 ---
 
-## 1. Ce qu'on corrige, en une page
+## 1. What is being fixed, in one page
 
-L'audit de sécurité n'a trouvé **aucun chemin exploitable** sur les trajets qui comptent. Le défaut n'est pas le niveau de sécurité : c'est que la sécurité **n'est pas inspectable**.
+The security audit found **no exploitable path** on the routes that matter. The defect is not the security level: it is that security **is not inspectable**.
 
-> La même question — « cet acteur a-t-il le droit ? » — reçoit **15 réponses différentes, en 27 combinaisons, sur 179 points de décision**. Deux d'entre elles sont, en lecture de diff, indiscernables d'une méthode qui ne vérifie rien.
+> The same question — "is this actor allowed?" — gets **15 different answers, in 27 combinations, across 179 decision points**. Two of them are, when reading a diff, indistinguishable from a method that checks nothing.
 
 ```csharp
-IRoomItem? item = await FindManipulableItemAsync(ctx, itemId);   // interroge le SecurityModule
-_state.ItemsById.TryGetValue(itemId, out IRoomItem? item);       // n'interroge rien
+IRoomItem? item = await FindManipulableItemAsync(ctx, itemId);   // queries the SecurityModule
+_state.ItemsById.TryGetValue(itemId, out IRoomItem? item);       // queries nothing
 ```
 
-**Le diagnostic tient en une phrase** : l'autorisation est aujourd'hui *une étape qu'on se rappelle d'écrire*. Rien n'oblige la question à être posée ; l'oublier, c'est écrire *moins* de code, jamais du code invalide. Le compilateur ne voit rien, les tests ne voient rien (il faut écrire *exprès* le test de l'acteur non autorisé, et il existe pour 2 méthodes sur 121), et aucun outil ne peut calculer la couverture puisqu'il n'existe aucune liste des points de décision.
+**The diagnosis fits in one sentence**: authorization is today *a step you remember to write*. Nothing forces the question to be asked; forgetting it means writing *less* code, never invalid code. The compiler sees nothing, the tests see nothing (you have to write the unauthorized-actor test *on purpose*, and it exists for 2 methods out of 121), and no tool can compute coverage since no list of decision points exists.
 
-**Le principe de la refonte tient en une autre** :
+**The principle of the redesign fits in another one**:
 
-> Transformer l'autorisation d'une **étape mémorisée** en une **déclaration que le framework applique et qu'un script peut compter.**
+> Turn authorization from a **remembered step** into a **declaration that the framework enforces and a script can count.**
 
-Deux portes, la même forme, aux deux frontières réelles du système.
+Two gates, the same shape, at the system's two real boundaries.
 
 ---
 
-## 2. Le point décisif : les deux mécanismes existent déjà
+## 2. The decisive point: both mechanisms already exist
 
-C'est ce qui rend cette refonte raisonnable avant une réouverture plutôt que téméraire. Elle n'introduit **aucune infrastructure nouvelle** : elle applique deux motifs que votre serveur exécute déjà en production.
+This is what makes this redesign reasonable before a reopening rather than reckless. It introduces **no new infrastructure**: it applies two patterns your server already runs in production.
 
-| Mécanisme | Déjà utilisé par | Pour la refonte |
+| Mechanism | Already used by | For the redesign |
 |---|---|---|
-| `IIncomingGrainCallFilter` | `ObservabilityGrainCallFilter` (`Vortex.Observability/Runtime/`), enregistré en DI | `AuthorizationGrainCallFilter` |
+| `IIncomingGrainCallFilter` | `ObservabilityGrainCallFilter` (`Vortex.Observability/Runtime/`), registered in DI | `AuthorizationGrainCallFilter` |
 | `IMessageBehavior<IMessageEvent>` + `[Order(int.MinValue)]` | `RateLimitBehavior` (`Vortex.Messages/Behaviors/`) | `AuthenticationBehavior` |
 
-Le filtre d'observabilité lit déjà `context.InterfaceMethod` — c'est très exactement ce qu'il faut pour lire un attribut posé sur la méthode d'interface. Et `RateLimitBehavior` est enregistré pour `IMessageEvent` lui-même, en s'appuyant sur `EnableInheritanceDispatch` pour couvrir tous les types concrets sans les énumérer : c'est la mécanique dont la porte d'authentification a besoin, déjà éprouvée sur le même chemin.
+The observability filter already reads `context.InterfaceMethod` — precisely what is needed to read an attribute placed on the interface method. And `RateLimitBehavior` is registered for `IMessageEvent` itself, relying on `EnableInheritanceDispatch` to cover every concrete type without enumerating them: that is the machinery the authentication gate needs, already proven on the same path.
 
 ---
 
-## 3. Porte 1 — l'authentification, dans le pipeline de paquets
+## 3. Gate 1 — authentication, in the packet pipeline
 
-### 3.1 L'état actuel
+### 3.1 The current state
 
-Le chemin d'un paquet est `PackageHandler.HandleCoreAsync` → `MessageSystem.PublishAsync` → `MessageRegistry.PublishAsync` → handler. **Aucun des trois ne refuse une session non authentifiée.** Le seul rempart est le `if (ctx.PlayerId <= 0) return;` que chaque handler écrit lui-même : **351 sur 559** le font.
+A packet's path is `PackageHandler.HandleCoreAsync` → `MessageSystem.PublishAsync` → `MessageRegistry.PublishAsync` → handler. **None of the three refuses an unauthenticated session.** The only rampart is the `if (ctx.PlayerId <= 0) return;` that each handler writes itself: **351 out of 559** do.
 
-C'est le bon comportement obtenu par la mauvaise méthode. Il est répété 351 fois, absent 208 fois, et rien ne dit laquelle des 208 absences est délibérée.
+That is the right behaviour obtained by the wrong method. It is repeated 351 times, absent 208 times, and nothing says which of the 208 absences is deliberate.
 
-### 3.2 La cible
+### 3.2 The target
 
 ```csharp
-[Order(int.MinValue + 1)]   // juste après RateLimitBehavior
+[Order(int.MinValue + 1)]   // right after RateLimitBehavior
 public sealed class AuthenticationBehavior(IVortexMetrics metrics)
     : IMessageBehavior<IMessageEvent>
 {
@@ -71,64 +71,64 @@ public sealed class AuthenticationBehavior(IVortexMetrics metrics)
 }
 ```
 
-et, sur les seuls handlers qui tournent avant le login :
+and, on the only handlers that run before login:
 
 ```csharp
-[PreAuthentication("Établit la session : c'est ce paquet qui fournit le PlayerId.")]
+[PreAuthentication("Establishes the session: this packet is what supplies the PlayerId.")]
 public class SSOTicketMessageHandler(...) : IMessageHandler<SSOTicketMessage>
 ```
 
-### 3.3 L'ensemble pré-auth est petit, et c'est tout l'intérêt
+### 3.3 The pre-auth set is small, and that is the whole point
 
-Huit handlers, tous dans `Vortex.PacketHandlers/Handshake/`, dont **sept ne mentionnent jamais `ctx.PlayerId`** — ce qui est la preuve mécanique qu'ils n'en ont pas besoin :
+Eight handlers, all in `Vortex.PacketHandlers/Handshake/`, of which **seven never mention `ctx.PlayerId`** — which is mechanical proof that they do not need it:
 
-| Handler | `ctx.PlayerId` | Rôle |
+| Handler | `ctx.PlayerId` | Role |
 |---|---:|---|
-| `ClientHelloMessageHandler` | 0 | poignée de main |
-| `VersionCheckMessageHandler` | 0 | poignée de main |
-| `InitDiffieHandshakeMessageHandler` | 0 | échange de clés |
-| `CompleteDiffieHandshakeMessageHandler` | 0 | échange de clés |
-| `UniqueIdMessageHandler` | 0 | identifiant machine |
-| `PongMessageHandler` | 0 | battement de cœur |
-| `DisconnectMessageHandler` | 0 | fermeture |
-| `SSOTicketMessageHandler` | 5 | **établit** la session |
+| `ClientHelloMessageHandler` | 0 | handshake |
+| `VersionCheckMessageHandler` | 0 | handshake |
+| `InitDiffieHandshakeMessageHandler` | 0 | key exchange |
+| `CompleteDiffieHandshakeMessageHandler` | 0 | key exchange |
+| `UniqueIdMessageHandler` | 0 | machine identifier |
+| `PongMessageHandler` | 0 | heartbeat |
+| `DisconnectMessageHandler` | 0 | close |
+| `SSOTicketMessageHandler` | 5 | **establishes** the session |
 
-`InfoRetrieveMessageHandler`, qui vit dans le même dossier, utilise `ctx.PlayerId` deux fois : il est post-auth et ne doit pas être dans la liste.
+`InfoRetrieveMessageHandler`, which lives in the same folder, uses `ctx.PlayerId` twice: it is post-auth and must not be on the list.
 
-Une liste de huit lignes, relisible d'un coup d'œil, remplace une propriété aujourd'hui invisible et répartie sur 559 fichiers.
+An eight-line list, readable at a glance, replaces a property that is today invisible and spread over 559 files.
 
-### 3.4 Ce que ça achète
+### 3.4 What it buys
 
-- Les **208** handlers sans garde deviennent inatteignables avant login — y compris `RedeemVoucher`, qui est la racine de SEC-11.
-- Les **351** gardes manuelles deviennent redondantes. On peut les supprimer, ou les laisser : elles ne coûtent rien et documentent l'intention. **Recommandation : les supprimer par lots, après la porte, jamais avant.**
-- Un nouveau handler est authentifié **par défaut**. C'est le renversement qui compte : aujourd'hui l'oubli ouvre, demain l'oubli ferme.
+- The **208** unguarded handlers become unreachable before login — including `RedeemVoucher`, which is the root of SEC-11.
+- The **351** manual guards become redundant. They can be deleted, or left alone: they cost nothing and document intent. **Recommendation: delete them in batches, after the gate, never before.**
+- A new handler is authenticated **by default**. That is the reversal that matters: today forgetting opens, tomorrow forgetting closes.
 
-### 3.5 Le risque, et comment le tenir
+### 3.5 The risk, and how to hold it
 
-**Le risque réel** : un handler légitimement pré-auth qu'on oublie de déclarer ⇒ plus personne ne peut se connecter. C'est un risque de *disponibilité*, pas de sécurité, et il se manifeste au premier login en développement — pas en production.
+**The real risk**: a legitimately pre-auth handler that nobody declares ⇒ nobody can log in any more. That is an *availability* risk, not a security one, and it shows up on the first login in development — not in production.
 
-**Le tenir** : un test qui envoie la séquence de connexion complète sur une session non authentifiée et vérifie qu'elle aboutit. Si la liste est incomplète, ce test rougit avant le déploiement.
+**Holding it**: a test that sends the full login sequence on an unauthenticated session and checks that it completes. If the list is incomplete, that test goes red before deployment.
 
 ---
 
-## 4. Porte 2 — l'autorisation, à la frontière du grain
+## 4. Gate 2 — authorization, at the grain boundary
 
-### 4.1 La règle existe déjà, écrite noir sur blanc
+### 4.1 The rule already exists, written in black and white
 
 ```
-« A handler is not a security boundary: the method is a member of a public grain interface,
+"A handler is not a security boundary: the method is a member of a public grain interface,
   callable by anything in the cluster that can name the room (ROOMG-GATE-038).
-  The grain is the boundary. »
+  The grain is the boundary."
                           — Vortex.Rooms/Grains/Modules/RoomSecurityModule.cs:265
 ```
 
-Elle est appliquée, et **testée pour exactement deux méthodes** (`StaffPowerGrainGateTests`). Les 119 autres méthodes de grain room prenant un acteur reposent sur le fait que chaque auteur y a pensé. Et une quatrième, `ApplyFurniEditAsync`, énonce explicitement **l'inverse** (SEC-12).
+It is applied, and **tested for exactly two methods** (`StaffPowerGrainGateTests`). The other 119 room grain methods taking an actor rely on each author having thought of it. And a fourth one, `ApplyFurniEditAsync`, explicitly states **the opposite** (SEC-12).
 
-La refonte ne change pas la règle. Elle la rend **structurelle** au lieu de mémorisée.
+The redesign does not change the rule. It makes it **structural** instead of remembered.
 
-### 4.2 La cible
+### 4.2 The target
 
-Sur l'**interface** — c'est-à-dire là où une revue de diff regarde :
+On the **interface** — that is, where a diff review looks:
 
 ```csharp
 public interface IRoomSettings : IGrainWithIntegerKey
@@ -142,12 +142,12 @@ public interface IRoomSettings : IGrainWithIntegerKey
 
 public interface IRoomAvatars : IGrainWithIntegerKey
 {
-    [NoRoomAuthority("Agit sur l'avatar de l'acteur lui-même ; être dans la room suffit.")]
+    [NoRoomAuthority("Acts on the actor's own avatar; being in the room is enough.")]
     Task SetAvatarDanceAsync(ActionContext ctx, int danceId, CancellationToken ct);
 }
 ```
 
-et un filtre qui applique, sur le modèle exact de `ObservabilityGrainCallFilter` :
+and a filter that enforces it, on the exact model of `ObservabilityGrainCallFilter`:
 
 ```csharp
 public sealed class AuthorizationGrainCallFilter(...) : IIncomingGrainCallFilter
@@ -157,12 +157,12 @@ public sealed class AuthorizationGrainCallFilter(...) : IIncomingGrainCallFilter
         if (context.InterfaceMethod?.GetCustomAttribute<RequiresRoomAuthorityAttribute>()
             is not { } required)
         {
-            await context.Invoke().ConfigureAwait(false);   // [NoRoomAuthority] ou hors périmètre
+            await context.Invoke().ConfigureAwait(false);   // [NoRoomAuthority] or out of scope
             return;
         }
 
-        // L'acteur se lit dans les arguments : PlayerId actor, ou ActionContext ctx.
-        // La convention est validée au démarrage (§4.3), donc ici elle tient.
+        // The actor is read from the arguments: PlayerId actor, or ActionContext ctx.
+        // The convention is validated at startup (§4.3), so here it holds.
         if (!await Authority.GrantsAsync(context, required.Requirement))
         {
             throw new VortexException(VortexErrorCodeEnum.NoPermission);
@@ -173,101 +173,101 @@ public sealed class AuthorizationGrainCallFilter(...) : IIncomingGrainCallFilter
 }
 ```
 
-`RoomRequirement` est l'ensemble **nommé** des exigences, et sa mise en œuvre est le `RoomSecurityModule` d'aujourd'hui, inchangé : `Owner` → `IsRoomOwnerAsync`, `Rights` → `CanManipulateFurniAsync`, `Capability(x)` → `HasCapabilityAsync`, `ItemOwner` → la comparaison de propriétaire. **La refonte ne redéfinit aucune règle métier** — c'est la condition pour qu'elle soit sûre à faire avant une réouverture.
+`RoomRequirement` is the **named** set of requirements, and its implementation is today's `RoomSecurityModule`, unchanged: `Owner` → `IsRoomOwnerAsync`, `Rights` → `CanManipulateFurniAsync`, `Capability(x)` → `HasCapabilityAsync`, `ItemOwner` → the owner comparison. **The redesign redefines no business rule** — that is the condition for it to be safe to do before a reopening.
 
-### 4.3 Le morceau qui change tout : la validation au démarrage
+### 4.3 The piece that changes everything: startup validation
 
 ```csharp
-// Au démarrage du silo : énumère les méthodes de toutes les interfaces de grain room qui
-// prennent un acteur, et refuse de démarrer si l'une ne déclare rien.
+// At silo startup: enumerate the methods of every room grain interface that take an
+// actor, and refuse to start if one declares nothing.
 IReadOnlyList<MethodInfo> undeclared = RoomAuthoritySurface.FindUndeclared();
 
 if (undeclared.Count > 0)
 {
     throw new InvalidOperationException(
-        "Ces méthodes de grain room prennent un acteur sans déclarer "
-      + "[RequiresRoomAuthority] ni [NoRoomAuthority] :\n  "
+        "These room grain methods take an actor without declaring "
+      + "[RequiresRoomAuthority] or [NoRoomAuthority]:\n  "
       + string.Join("\n  ", undeclared.Select(m => $"{m.DeclaringType!.Name}.{m.Name}")));
 }
 ```
 
-C'est le passage de :
+This is the move from:
 
-> « rien ne peut calculer la couverture »
+> "nothing can compute coverage"
 
-à :
+to:
 
-> « la couverture est totale, ou le processus ne démarre pas ».
+> "coverage is total, or the process does not start".
 
-Le contrôle `check-authorization-surface.mjs` livré avec l'audit cesse alors d'être un inventaire heuristique et devient une **assertion**, vérifiable hors ligne comme au démarrage.
+The `check-authorization-surface.mjs` check shipped with the audit then stops being a heuristic inventory and becomes an **assertion**, verifiable offline as well as at startup.
 
-C'est aussi la réponse à la question que vous avez laissée à mon jugement : **refuser de démarrer** plutôt que refuser l'appel. Une méthode non déclarée est une erreur de programmation, pas un événement d'exécution ; elle doit coûter un démarrage raté en développement, jamais une fonctionnalité morte en silence chez un joueur.
+It is also the answer to the question you left to my judgement: **refuse to start** rather than refuse the call. An undeclared method is a programming error, not a runtime event; it should cost a failed startup in development, never a silently dead feature for a player.
 
-### 4.4 Ce que ça achète
+### 4.4 What it buys
 
-- Les deux idiomes invisibles **disparaissent de la frontière** : la porte remonte sur l'interface, visible dans le diff.
-- SEC-12 se résout par construction : `ApplyFurniEditAsync` porte `[RequiresRoomAuthority(RoomRequirement.Capability(Capabilities.Room.FurniEdit))]` et la garantie cesse de dépendre de la bonne volonté de son appelant.
-- Une nouvelle méthode de grain room **ne peut pas** être ajoutée sans que quelqu'un écrive, en une ligne, ce qu'elle exige — ou pourquoi elle n'exige rien.
-- La phrase « le grain est la frontière » devient vraie mécaniquement, et pas seulement en commentaire.
+- Both invisible idioms **disappear from the boundary**: the gate moves up onto the interface, visible in the diff.
+- SEC-12 resolves by construction: `ApplyFurniEditAsync` carries `[RequiresRoomAuthority(RoomRequirement.Capability(Capabilities.Room.FurniEdit))]` and the guarantee stops depending on its caller's goodwill.
+- A new room grain method **cannot** be added without someone writing, in one line, what it requires — or why it requires nothing.
+- The sentence "the grain is the boundary" becomes mechanically true, and not just a comment.
 
 ---
 
-## 5. Plan d'exécution
+## 5. Execution plan
 
-Cinq étapes, chacune buildée et testée séparément, chacune arrêtable. L'ordre n'est pas négociable : les portes avant les suppressions, toujours.
+Five steps, each built and tested separately, each stoppable. The order is not negotiable: gates before deletions, always.
 
-| # | Étape | Coût | Ce que ça ferme |
+| # | Step | Cost | What it closes |
 |---|---|---|---|
-| 1 | **SEC-10 + SEC-11** — plafond de sessions par IP et global ; garde + format + comptage sur les bons | ~0,5 j | les deux défauts exploitables |
-| 2 | **Porte 1** — `AuthenticationBehavior` + `[PreAuthentication]` sur les 8 | ~0,5 j | les 208 handlers non gardés |
-| 3 | **Porte 2** — `RoomRequirement`, attributs, filtre, validation au démarrage, **sans migrer aucun appelant** | ~1 j | l'infrastructure, à vide |
-| 4 | **Déclarer les 121 méthodes** — une ligne chacune, par famille d'interface | ~1,5 j | la couverture passe à 100 % |
-| 5 | **Retirer les gardes désormais redondantes** + re-baseline des contrôles + tests de refus | ~1 j | la duplication, et la dérive future |
+| 1 | **SEC-10 + SEC-11** — per-IP and global session caps; guard + format + counting on vouchers | ~0.5 d | the two exploitable defects |
+| 2 | **Gate 1** — `AuthenticationBehavior` + `[PreAuthentication]` on the 8 | ~0.5 d | the 208 unguarded handlers |
+| 3 | **Gate 2** — `RoomRequirement`, attributes, filter, startup validation, **without migrating any caller** | ~1 d | the infrastructure, empty |
+| 4 | **Declare the 121 methods** — one line each, by interface family | ~1.5 d | coverage goes to 100% |
+| 5 | **Remove the now-redundant guards** + re-baseline the checks + refusal tests | ~1 d | the duplication, and future drift |
 
-**Total : 4 à 5 jours**, dont les deux premiers referment ce qui est réellement exploitable. Si vous vous arrêtez après l'étape 2, vous avez déjà l'essentiel du gain de sécurité ; les étapes 3 à 5 achètent la *non-régression*, c'est-à-dire l'absence de surprises futures.
+**Total: 4 to 5 days**, the first two of which close what is actually exploitable. If you stop after step 2, you already have most of the security gain; steps 3 to 5 buy *non-regression*, that is, the absence of future surprises.
 
-L'étape 4 est la plus longue et la moins risquée : elle n'écrit aucune logique, seulement des déclarations, et la validation du §4.3 dit exactement quand elle est finie.
-
----
-
-## 6. Les pièges, trouvés en écrivant le code
-
-J'ai commencé l'implémentation des étapes 1 et 2 avant de la retirer à votre demande ; l'arbre est propre. Ce qu'elle a appris mérite d'être écrit, parce que ce sont les endroits où une reprise se trompera.
-
-**Le décompte par IP doit être clé sur l'adresse d'*admission*, pas sur le contexte.** À la fermeture, `ISessionContext.RemoteIpAddress` peut déjà être nul : décrémenter en relisant l'adresse depuis le contexte fuit un jeton par déconnexion, jusqu'à ce que le plafond refuse tout le monde. Il faut une seconde table `SessionKey → adresse admise`.
-
-**L'incrément et le test doivent être un seul pas atomique.** `AddOrUpdate` puis comparaison du résultat, jamais « lire, comparer, incrémenter » : deux connexions arrivant sur le dernier jeton passeraient toutes les deux.
-
-**Un refus doit rendre son jeton.** Sinon un attaquant refusé consomme quand même le plafond de tous ceux qui partagent son adresse — le refus devient l'attaque.
-
-**`AddSessionAsync` doit renvoyer sa décision.** Aujourd'hui elle rend `Task` ; il faut `Task<bool>` et deux appelants (`SuperSocketHostBuilderExtensions`, `NetworkManager`) qui ferment le transport sur refus. Fermer depuis l'intérieur de la passerelle est plus court et moins honnête : l'appelant possède le transport.
-
-**La longueur du code de bon n'est pas un réglage, c'est un fait.** `VoucherEntity.Code` est `[MaxLength(64)]` : une chaîne plus longue ne peut correspondre à aucune ligne. La refuser **avant** de nommer le grain ne peut donc rien casser qui aurait pu marcher — c'est ce qui rend la validation sûre à appliquer à des codes déjà en circulation. Restreindre le *jeu de caractères*, en revanche, casserait des codes existants qu'on ne peut pas énumérer sans la base.
-
-**Le refus de bon doit être indiscernable.** Répondre « tu es limité » plutôt que « code inconnu » donne au devineur le seul bit dont il a besoin pour se cadencer.
+Step 4 is the longest and the least risky: it writes no logic, only declarations, and the §4.3 validation says exactly when it is done.
 
 ---
 
-## 7. Ce que cette refonte ne résout pas
+## 6. The traps, found while writing the code
 
-À dire clairement, pour que le document ne promette pas plus qu'il ne tient.
+I started implementing steps 1 and 2 before withdrawing it at your request; the tree is clean. What it taught deserves to be written down, because these are the places where a follow-up will get it wrong.
 
-- **Elle ne vérifie pas qu'une exigence est la *bonne*.** Déclarer `[RequiresRoomAuthority(RoomRequirement.Rights)]` là où il fallait `Owner` passe toutes les portes. Elle garantit qu'une décision a été **prise et écrite**, pas qu'elle est juste. C'est une amélioration énorme sur « aucune décision visible », et ce n'est pas la même chose que la justesse.
-- **Elle ne couvre pas les grains hors room.** `IPlayerGrain`, `IPlayerWalletGrain`, les grains de catalogue et de marketplace ont la même propriété d'être appelables par tout le cluster. Le même attribut s'y étend sans rien changer au mécanisme, mais l'inventaire est à refaire et ce document ne l'a pas fait.
-- **Elle ne touche ni la crypto, ni les sessions web, ni les plugins.** Les trois constats ouverts du rapport de bêta (AUTH-01 ticket SSO rejouable, SEC-01 pas de verrouillage de compte et sessions non révoquées au ban) restent entiers et ne sont pas adressés ici.
-- **Elle ne remplace pas les tests de refus.** `StaffPowerGrainGateTests` reste le bon modèle : pour chaque exigence, un acteur qui ne l'a pas, et l'assertion que rien n'a bougé. La porte empêche l'oubli ; le test vérifie l'intention.
+**The per-IP count must be keyed on the *admission* address, not on the context.** At close time, `ISessionContext.RemoteIpAddress` may already be null: decrementing by re-reading the address from the context leaks a token per disconnect, until the cap refuses everyone. A second `SessionKey → admitted address` table is needed.
+
+**The increment and the test must be one atomic step.** `AddOrUpdate` then compare the result, never "read, compare, increment": two connections arriving on the last token would both pass.
+
+**A refusal must give its token back.** Otherwise a refused attacker still consumes the cap shared by everyone on their address — the refusal becomes the attack.
+
+**`AddSessionAsync` must return its decision.** Today it returns `Task`; it needs `Task<bool>` and two callers (`SuperSocketHostBuilderExtensions`, `NetworkManager`) that close the transport on refusal. Closing from inside the gateway is shorter and less honest: the caller owns the transport.
+
+**Voucher code length is not a setting, it is a fact.** `VoucherEntity.Code` is `[MaxLength(64)]`: a longer string cannot match any row. Refusing it **before** naming the grain therefore cannot break anything that could have worked — which is what makes the validation safe to apply to codes already in circulation. Restricting the *character set*, on the other hand, would break existing codes that cannot be enumerated without the database.
+
+**A voucher refusal must be indistinguishable.** Answering "you are rate limited" rather than "unknown code" gives the guesser the one bit they need to pace themselves.
 
 ---
 
-## 8. Critères de validation
+## 7. What this redesign does not solve
 
-Ce à quoi on reconnaît que c'est fini, sans avoir à croire quiconque sur parole.
+To be said plainly, so the document does not promise more than it holds.
 
-1. `dotnet build Vortex.Cloud.sln` : 0 erreur. La référence d'avant travaux est verte (vérifié sur `62844a3`).
-2. La suite complète passe, **sans test désactivé ni mis en quarantaine**.
-3. Le silo démarre. S'il refuse, il nomme les méthodes non déclarées — et c'est le comportement attendu, pas une panne.
-4. Un client se connecte et joue : la séquence de login complète aboutit sur une session non authentifiée (c'est le test qui garde la liste `[PreAuthentication]`).
-5. `node scripts/hooks/check-authorization-surface.mjs` : plus aucune entrée `NONE` non déclarée ; le nombre d'idiomes distincts a baissé — c'est la mesure d'avancement de l'étape 5.
-6. La (N+1)ᵉ connexion d'une même adresse est fermée immédiatement.
-7. Un code de bon de 200 caractères n'active aucun grain, et le 11ᵉ échec en une minute non plus.
-8. Un acteur sans droits appelant directement une méthode de grain protégée est refusé **par le filtre**, en ne passant par aucun handler.
+- **It does not check that a requirement is the *right* one.** Declaring `[RequiresRoomAuthority(RoomRequirement.Rights)]` where `Owner` was needed passes every gate. It guarantees that a decision was **made and written down**, not that it is correct. That is a huge improvement over "no visible decision", and it is not the same thing as correctness.
+- **It does not cover non-room grains.** `IPlayerGrain`, `IPlayerWalletGrain`, the catalog and marketplace grains have the same property of being callable by the whole cluster. The same attribute extends to them without changing the mechanism, but the inventory has to be redone and this document has not done it.
+- **It touches neither crypto, nor web sessions, nor plugins.** The three open findings from the beta report (AUTH-01 replayable SSO ticket, SEC-01 no account lockout and sessions not revoked on ban) remain whole and are not addressed here.
+- **It does not replace refusal tests.** `StaffPowerGrainGateTests` remains the right model: for each requirement, an actor who lacks it, and the assertion that nothing moved. The gate prevents the oversight; the test verifies the intent.
+
+---
+
+## 8. Acceptance criteria
+
+How you know it is done, without having to take anyone's word for it.
+
+1. `dotnet build Vortex.Cloud.sln`: 0 errors. The pre-work baseline is green (verified on `62844a3`).
+2. The full suite passes, **with no disabled or quarantined test**.
+3. The silo starts. If it refuses, it names the undeclared methods — and that is the expected behaviour, not an outage.
+4. A client connects and plays: the full login sequence completes on an unauthenticated session (that is the test guarding the `[PreAuthentication]` list).
+5. `node scripts/hooks/check-authorization-surface.mjs`: no undeclared `NONE` entry left; the number of distinct idioms has dropped — that is step 5's progress measure.
+6. The (N+1)th connection from the same address is closed immediately.
+7. A 200-character voucher code activates no grain, and neither does the 11th failure in a minute.
+8. An actor without rights calling a protected grain method directly is refused **by the filter**, going through no handler.

@@ -1,79 +1,79 @@
-# Audit de lisibilité et de propreté
+# Readability and cleanliness audit
 
-- **Révision** : `6666f2d` sur `claude/vortex-cloud-beta-audit-apl5gn`.
-- **Date** : 2026-09-15.
-- **Nature** : audit en lecture seule. Aucun code modifié.
-- **Avertissement de méthode** : une première passe de ce rapport donnait une note par axe sur la base d'**une seule mesure** par axe. Plusieurs de ses conclusions étaient fausses. Le §5 liste ce que la passe profonde a corrigé, parce que c'est le résultat le plus utile de cet audit : **sur ce dépôt, une mesure unique ment presque toujours**, et le §4 explique pourquoi.
-
----
-
-## 1. La réponse en une page
-
-**Le dépôt est propre sur la forme, et inégal sur le fond.**
-
-La forme est excellente et ce n'est pas un compliment de politesse : 84 % des fichiers font moins de 100 lignes, la densité de commentaires est de 13 % dont 11 % de documentation XML, il n'y a que **deux** blocs de code commenté dans 403 000 lignes, **quatre** vrais marqueurs de dette, et les murs d'architecture tiennent (7 vérifiés, 0 fuite).
-
-Le fond l'est moins, et pour une raison qui n'a rien d'esthétique :
-
-> **`partial`, le balayage d'assembly et le découpage en petits fichiers rendent invisibles trois choses : la taille réelle d'une classe, l'utilisation réelle d'un type, et la duplication réelle d'une déclaration.** Ce sont exactement les trois angles morts qui ont produit les bugs des audits précédents.
-
-Les trois faits qui le montrent :
-
-1. `RoomGrain` fait **6 865 lignes sur 31 fichiers** et expose **211 méthodes publiques**, dont **177 avec un corps réel**. On ne voit jamais sa taille.
-2. **Six mécanismes distincts enregistrent des types par balayage d'assembly.** Supprimer un type « inutilisé » compile parfaitement et casse une fonctionnalité en silence. Toute analyse de code mort est donc inutilisable ici — y compris les 397 constats « unused » de Qodana.
-3. **173 blocs de 12 lignes sont dupliqués dans 3 fichiers ou plus.** Dans `Vortex.Rooms`, ce sont les déclarations de sources wired recopiées verbatim sur 8 à 9 boîtes — **le véhicule exact** du bug documenté dans l'audit wired, où une copie a divergé sans que rien ne compare.
-
-C'est le même motif que partout ailleurs dans ce projet : *une règle appliquée ici, absente chez le voisin, et rien qui compare les deux.*
+- **Revision**: `6666f2d` on `claude/vortex-cloud-beta-audit-apl5gn`.
+- **Date**: 2026-09-15.
+- **Nature**: read-only audit. No code was modified.
+- **Method warning**: a first pass of this report scored each axis on the basis of **a single measurement** per axis. Several of its conclusions were wrong. §5 lists what the deep pass corrected, because it is the most useful result of this audit: **on this repository, a single measurement almost always lies**, and §4 explains why.
 
 ---
 
-## 2. Ce qui est sain, mesuré
+## 1. The one-page answer
 
-| Mesure | Valeur |
+**The repository is clean in form, and uneven in substance.**
+
+The form is excellent and that is not a polite compliment: 84% of files are under 100 lines, comment density is 13% of which 11% is XML documentation, there are only **two** commented-out code blocks in 403,000 lines, **four** real debt markers, and the architecture walls hold (7 checked, 0 leaks).
+
+The substance less so, and for a reason that has nothing aesthetic about it:
+
+> **`partial`, assembly scanning and splitting into small files make three things invisible: the real size of a class, the real usage of a type, and the real duplication of a declaration.** These are exactly the three blind spots that produced the bugs in the previous audits.
+
+The three facts that show it:
+
+1. `RoomGrain` is **6,865 lines across 31 files** and exposes **211 public methods**, of which **177 have a real body**. You never see its size.
+2. **Six distinct mechanisms register types by assembly scanning.** Deleting an "unused" type compiles perfectly and silently breaks a feature. Any dead-code analysis is therefore unusable here — including Qodana's 397 "unused" findings.
+3. **173 blocks of 12 lines are duplicated across 3 files or more.** In `Vortex.Rooms`, these are wired source declarations copied verbatim across 8 to 9 boxes — **the exact vehicle** of the bug documented in the wired audit, where one copy diverged with nothing comparing them.
+
+It is the same pattern as everywhere else in this project: *a rule applied here, absent next door, and nothing that compares the two.*
+
+---
+
+## 2. What is healthy, measured
+
+| Measure | Value |
 |---|---:|
-| Code écrit à la main (hors migrations, `obj/`, `bin/`) | 402 775 lignes / 6 324 fichiers |
-| Fichiers ≤ 100 lignes | **5 321 (84 %)** |
-| Fichiers > 1 000 lignes | **15 (0,24 %)** |
-| Densité de commentaires | **13 %**, dont **11 % de `///`** (39 320 lignes) |
-| Blocs de code commenté | **2** |
-| Vrais marqueurs TODO/FIXME | **4** |
-| Murs d'architecture | 7 vérifiés, **0 fuite** |
-| Handlers touchant `VortexDbContext` | **0** — la règle dure de `CLAUDE.md` est tenue |
-| Formatage | csharpier 1.2.6 imposé par hook, arbre propre |
-| Documentation | 151 fichiers, 25 463 lignes |
+| Hand-written code (excluding migrations, `obj/`, `bin/`) | 402,775 lines / 6,324 files |
+| Files ≤ 100 lines | **5,321 (84%)** |
+| Files > 1,000 lines | **15 (0.24%)** |
+| Comment density | **13%**, of which **11% is `///`** (39,320 lines) |
+| Commented-out code blocks | **2** |
+| Real TODO/FIXME markers | **4** |
+| Architecture walls | 7 checked, **0 leaks** |
+| Handlers touching `VortexDbContext` | **0** — the hard rule in `CLAUDE.md` holds |
+| Formatting | csharpier 1.2.6 enforced by hook, clean tree |
+| Documentation | 151 files, 25,463 lines |
 
-**Les commentaires méritent une mention à part.** Ils expliquent presque toujours *pourquoi*, en nommant le bug évité :
+**The comments deserve a separate mention.** They almost always explain *why*, naming the bug avoided:
 
-> « Consumed before the credits exist, for the reason the crackable is: the reverse order turns one coin still standing on the floor into as many payouts as it can be clicked. »
+> "Consumed before the credits exist, for the reason the crackable is: the reverse order turns one coin still standing on the floor into as many payouts as it can be clicked."
 
-C'est de la documentation de décision, et elle a une valeur opérationnelle directe : c'est ce qui m'a permis, dans l'audit de sécurité, de distinguer un oubli d'un choix délibéré.
+That is decision documentation, and it has direct operational value: it is what let me, in the security audit, tell an oversight apart from a deliberate choice.
 
-**Les 119 « TODO » n'en sont pas.** 115 sont la même ligne — `// TODO: add properties if/when identified` — sur des composers dont la charge utile officielle est inconnue. C'est la doctrine des specs appliquée, pas de la dette. Il en reste **quatre**, dont un `// TODO hmm`.
+**The 119 "TODO"s are not TODOs.** 115 are the same line — `// TODO: add properties if/when identified` — on composers whose official payload is unknown. That is the specs doctrine applied, not debt. **Four** remain, one of which is a `// TODO hmm`.
 
 ---
 
-## 3. Ce qui mérite d'être repris
+## 3. What deserves rework
 
-### 3.1 Deux classes-dieu que `partial` dissimule
+### 3.1 Two god classes that `partial` conceals
 
-| Classe | Lignes | Fichiers |
+| Class | Lines | Files |
 |---|---:|---:|
-| `RoomGrain` | **6 865** | 31 |
-| `DashboardEndpoints` | **6 369** | 36 |
-| `RoomPetSystem` | 3 481 | 8 |
-| `PlayerGrain` | 2 049 | 6 |
+| `RoomGrain` | **6,865** | 31 |
+| `DashboardEndpoints` | **6,369** | 36 |
+| `RoomPetSystem` | 3,481 | 8 |
+| `PlayerGrain` | 2,049 | 6 |
 
-Plus `WebApiEndpoints.cs` : **2 121 lignes dans un seul fichier**, 45 endpoints, sans `partial` pour l'excuser.
+Plus `WebApiEndpoints.cs`: **2,121 lines in a single file**, 45 endpoints, with no `partial` to excuse it.
 
-Le point sur `RoomGrain` n'est pas sa taille brute mais sa composition : **211 méthodes publiques, dont 34 seulement délèguent** à un module ou un système. **177 ont un corps réel.** La décomposition existe (`SecurityModule`, `FurniModule`, `MapModule`, `PetSystem`…) mais l'essentiel de la logique est resté dans le grain.
+The point about `RoomGrain` is not its raw size but its composition: **211 public methods, of which only 34 delegate** to a module or a system. **177 have a real body.** The decomposition exists (`SecurityModule`, `FurniModule`, `MapModule`, `PetSystem`…) but most of the logic stayed in the grain.
 
-`RoomGrain` est un grain Orleans à concurrence par tour : chaque méthode publique est un point d'entrée sérialisé sur la même activation. 211, c'est une surface que personne ne tient en tête — et c'est très précisément la surface que l'audit de sécurité a dû inventorier à la main faute de pouvoir la calculer.
+`RoomGrain` is an Orleans grain with turn-based concurrency: every public method is an entry point serialized on the same activation. 211 is a surface nobody holds in their head — and it is precisely the surface the security audit had to inventory by hand for lack of any way to compute it.
 
-*Direction* : famille par famille, jamais d'un bloc. Déplacer `RoomGrain.Settings.*` vers un `RoomSettingsSystem` sur le modèle de `RoomPetSystem`, qui prouve que le motif marche déjà ici.
+*Direction*: family by family, never in one go. Move `RoomGrain.Settings.*` to a `RoomSettingsSystem` modelled on `RoomPetSystem`, which proves the pattern already works here.
 
-### 3.2 Deux cent soixante et une méthodes de 80 lignes ou plus
+### 3.2 Two hundred and sixty-one methods of 80 lines or more
 
-Ma première passe n'avait mesuré les méthodes longues **qu'à l'intérieur de `RoomGrain`**, en avait trouvé 8, et en avait conclu que tout allait bien. Sur l'arbre entier, hors déclarations de type et hors les 17 tables d'enregistrement de `Vortex.Revisions` (qui sont longues par nature) :
+My first pass had measured long methods **only inside `RoomGrain`**, found 8, and concluded everything was fine. Across the whole tree, excluding type declarations and the 17 registration tables in `Vortex.Revisions` (which are long by nature):
 
 ```
    481  MapUser                   Vortex.WebApi/Hosting/WebApiEndpoints.cs:442
@@ -85,22 +85,22 @@ Ma première passe n'avait mesuré les méthodes longues **qu'à l'intérieur de
    237  ApplyWiredUpdateAsync     .../Wired/FurnitureWiredLogic.cs:313
 ```
 
-**`SSOTicketMessageHandler` mérite d'être nommé** : 750 lignes de fichier, dont un `HandleAsync` de **418 lignes** — alors que `CLAUDE.md` impose « keep packet handlers orchestration-only ». C'est le handler de connexion, donc le plus critique du serveur, et le seul endroit où l'audit de sécurité a dû lire 400 lignes d'affilée pour répondre à « que se passe-t-il au login ? ».
+**`SSOTicketMessageHandler` deserves to be named**: a 750-line file, including a **418-line** `HandleAsync` — while `CLAUDE.md` requires "keep packet handlers orchestration-only". It is the login handler, therefore the most critical on the server, and the only place where the security audit had to read 400 lines straight to answer "what happens at login?".
 
-Cinq handlers dépassent 150 lignes ; les 554 autres sont sobres. Là encore : la règle existe, elle est tenue presque partout, et rien ne signale les cinq exceptions.
+Five handlers exceed 150 lines; the other 554 are lean. Here again: the rule exists, it holds almost everywhere, and nothing flags the five exceptions.
 
-### 3.3 La duplication est trois fois plus étendue que ma première mesure
+### 3.3 Duplication is three times wider than my first measurement
 
-Première passe : « 18 handlers sur 383 dans des familles identiques — c'est bon. » Mesure réelle, fenêtre glissante de 12 lignes normalisées sur **tout** le C# écrit à la main :
+First pass: "Duplication: 18 handlers out of 383 in identical families — that's fine." Real measurement, 12-line normalized sliding window over **all** hand-written C#:
 
 ```
-  blocs identiques dans >= 3 fichiers distincts : 173
+  identical blocks in >= 3 distinct files: 173
     326 occurrences  Vortex.PacketHandlers
     217 occurrences  Vortex.Rooms
     147 occurrences  Vortex.Rooms.Tests
 ```
 
-Et le contenu compte plus que le nombre. Dans `Vortex.Rooms` (44 blocs), ce qui se duplique, ce sont les **déclarations de sources wired** :
+And the content matters more than the count. In `Vortex.Rooms` (44 blocks), what gets duplicated is the **wired source declarations**:
 
 ```csharp
 public override List<WiredFurniSourceType[]> GetAllowedFurniSources() =>
@@ -112,72 +112,72 @@ public override List<WiredPlayerSourceType[]> GetAllowedPlayerSources() =>
        WiredPlayerSourceType.SignalUsers ]];
 ```
 
-recopié verbatim sur 8 à 9 boîtes (`WiredActionGiveVariable`, `WiredActionRemoveVariable`, `WiredAddonSelectorFilter`, `WiredAddonVariablePlaceholder`, `WiredAddonVariableSortFilter`…).
+copied verbatim across 8 to 9 boxes (`WiredActionGiveVariable`, `WiredActionRemoveVariable`, `WiredAddonSelectorFilter`, `WiredAddonVariablePlaceholder`, `WiredAddonVariableSortFilter`…).
 
-**Ce n'est pas de la duplication cosmétique.** C'est le mécanisme de livraison du bug que l'audit wired a documenté : `wf_slc_users_with_var` déclare 1 règle de paramètre là où son jumeau `wf_slc_furni_with_var` en déclare 5. Quand une déclaration est copiée huit fois, la copie qui diverge ne se voit pas. Une constante partagée (`WiredSources.StandardFurniAndPlayers`) rendrait l'exception visible par construction.
+**This is not cosmetic duplication.** It is the delivery mechanism of the bug the wired audit documented: `wf_slc_users_with_var` declares 1 parameter rule where its twin `wf_slc_furni_with_var` declares 5. When a declaration is copied eight times, the copy that diverges is invisible. A shared constant (`WiredSources.StandardFurniAndPlayers`) would make the exception visible by construction.
 
-### 3.4 Cent quatre colonnes de texte sans borne
+### 3.4 One hundred and four unbounded text columns
 
-Sur 273 propriétés `string` des entités, **104 (38 %) n'ont ni `[MaxLength]` ni `[StringLength]`**, réparties sur 53 entités. En MySQL, c'est `longtext`. Qodana le signale à 95 occurrences.
+Out of 273 `string` properties on the entities, **104 (38%) have neither `[MaxLength]` nor `[StringLength]`**, spread across 53 entities. In MySQL, that is `longtext`. Qodana flags it 95 times.
 
-Le cas concret :
+The concrete case:
 
 ```csharp
 // Vortex.Database/Entities/Room/RoomEntity.cs:23
-[Column("name")] public required string Name { get; set; }   // aucune borne
+[Column("name")] public required string Name { get; set; }   // no bound
 
 // Vortex.Rooms/Grains/RoomGrain.Settings.cs:77
-entity.Name = update.Name;                                    // vient du fil, tel quel
+entity.Name = update.Name;                                    // comes off the wire, as is
 
 // Vortex.Rooms/RoomService.Create.cs:94
-Name = trimmedName,                                           // .Trim() seulement
+Name = trimmedName,                                           // .Trim() only
 ```
 
-Un nom de room peut donc atteindre la taille d'une trame — 64 Ko — et être stocké tel quel. Alors que le même dépôt écrit, deux fichiers plus loin :
+A room name can therefore reach the size of a frame — 64 KB — and be stored as is. While the same repository writes, two files further on:
 
 ```csharp
 entity.Name = name.Length > 100 ? name[..100] : name;   // RoomAdvertisementService.cs:47
-return trimmed.Length > 25 ? trimmed[..25] : trimmed;   // les tags, RoomGrain.Settings.cs:660
+return trimmed.Length > 25 ? trimmed[..25] : trimmed;   // the tags, RoomGrain.Settings.cs:660
 ```
 
-La règle est écrite deux fois et manque sur le champ le plus exposé des trois.
+The rule is written twice and missing on the most exposed of the three fields.
 
-### 3.5 Cinquante-trois gardes que le contrat dit impossibles
+### 3.5 Fifty-three guards the contract says are impossible
 
 ```csharp
 if (ctx is null || ctx.PlayerId <= 0 || ctx.RoomId <= 0 || message.Id <= 0)
 ```
 
-`Nullable` est `enable` dans `Directory.Build.props` et `MessageContext` est non-nullable : le contrat dit que `ctx is null` ne peut pas se produire. **53 handlers sur 559** portent ce test ; 506 ne le portent pas. Inoffensif — mais c'est une troisième variante du même symptôme : un idiome défensif appliqué à 9 % des cas, sans règle qui décide.
+`Nullable` is `enable` in `Directory.Build.props` and `MessageContext` is non-nullable: the contract says `ctx is null` cannot happen. **53 handlers out of 559** carry that test; 506 do not. Harmless — but it is a third variant of the same symptom: a defensive idiom applied to 9% of cases, with no rule deciding.
 
-*(Nuance : la répartition non générique du pipeline peut théoriquement contourner l'analyse de nullabilité. Je ne peux donc pas dire « code mort », seulement « le contrat dit que ça ne peut pas arriver ».)*
+*(Nuance: the pipeline's non-generic dispatch could theoretically bypass nullability analysis. So I cannot say "dead code", only "the contract says it cannot happen".)*
 
-### 3.6 Un artefact généré de 37 Mo dans l'historique git
+### 3.6 A 37 MB generated artifact in git history
 
 ```
-   36,9 Mo  docs/qodana.sarif.json
-    3,2 Mo  tools/catalog_converter/data/asset_logic.json
-    0,9 Mo  Vortex.Database/Seeds/furni_logic_bindings.sql
+   36.9 MB  docs/qodana.sarif.json
+    3.2 MB  tools/catalog_converter/data/asset_logic.json
+    0.9 MB  Vortex.Database/Seeds/furni_logic_bindings.sql
 ```
 
-`docs/qodana.sarif.json` est un rapport d'analyse **généré**, versionné, plus gros que tout le reste du texte du dépôt réuni. Chaque régénération ajoute une copie complète à l'historique, que tout clone traîne définitivement. Son contenu est utile — c'est lui qui m'a mis sur la piste des colonnes sans borne — mais sa place est dans un artefact de CI.
+`docs/qodana.sarif.json` is a **generated** analysis report, versioned, larger than all the rest of the repository's text put together. Every regeneration adds a full copy to history, which every clone carries forever. Its content is useful — it is what put me on the trail of the unbounded columns — but its place is a CI artifact.
 
-### 3.7 Trente noms obfusqués, et de gros composants Svelte
+### 3.7 Thirty obfuscated names, and large Svelte components
 
-**30 fichiers `class_NNNN*.cs`** dans `Vortex.Revisions` (12 dans `Help`, 4 dans `Clothing`…), noms AS3 obfusqués reportés tels quels. Le choix est défendable — inventer un nom sémantique faux serait pire — mais ces trente-là ne portent aucune explication, alors que le port TypeScript du client documente systématiquement le sien (« *Name derived: the AS3 class is obfuscated as `_SafeCls_4182`* »). Une ligne suffirait à transformer une bizarrerie en décision.
+**30 `class_NNNN*.cs` files** in `Vortex.Revisions` (12 in `Help`, 4 in `Clothing`…), obfuscated AS3 names carried over as is. The choice is defensible — inventing a false semantic name would be worse — but those thirty carry no explanation, while the client's TypeScript port systematically documents its own ("*Name derived: the AS3 class is obfuscated as `_SafeCls_4182`*"). One line would be enough to turn an oddity into a decision.
 
-**Côté dashboard** (157 fichiers, 50 021 lignes) : cinq pages Svelte entre 1 244 et 1 933 lignes, `CollectiblesPage.svelte` en tête. Même symptôme que `RoomGrain`, sans `partial` pour le cacher.
+**On the dashboard side** (157 files, 50,021 lines): five Svelte pages between 1,244 and 1,933 lines, `CollectiblesPage.svelte` in the lead. Same symptom as `RoomGrain`, without `partial` to hide it.
 
 ---
 
-## 4. Pourquoi une mesure unique ment sur ce dépôt
+## 4. Why a single measurement lies on this repository
 
-C'est la conclusion la plus utile de cet audit, et elle vaut au-delà de la propreté.
+This is the most useful conclusion of this audit, and it holds beyond cleanliness.
 
-**Six mécanismes distincts enregistrent des types par balayage d'assembly** :
+**Six distinct mechanisms register types by assembly scanning**:
 
 ```
-  Vortex.Runtime/AssemblyProcessing/AssemblyExplorer.cs     handlers, comportements
+  Vortex.Runtime/AssemblyProcessing/AssemblyExplorer.cs     handlers, behaviours
   Vortex.Signals/SignalTranslatorFeatureProcessor.cs        ISignalTranslator<>
   Vortex.Rooms/Providers/RoomObjectLogicProvider.cs         [RoomObjectLogic]
   Vortex.Dashboard.API/Hosting/DashboardWebHost.cs
@@ -185,49 +185,49 @@ C'est la conclusion la plus utile de cet audit, et elle vaut au-delà de la prop
   Vortex.Database/Commerce/CommerceRelayService.cs
 ```
 
-Conséquence directe : **un type peut n'être nommé nulle part et être pourtant indispensable.** Sur 1 375 types publics dont le nom n'apparaît dans aucun autre fichier, la quasi-totalité sont vivants — handlers résolus par balayage, tests découverts par réflexion xUnit, records de requête liés par ASP.NET, traducteurs de signaux, variables de contexte wired.
+Direct consequence: **a type can be named nowhere and still be indispensable.** Of 1,375 public types whose name appears in no other file, virtually all are alive — handlers resolved by scanning, tests discovered by xUnit reflection, request records bound by ASP.NET, signal translators, wired context variables.
 
-Trois conséquences pratiques :
+Three practical consequences:
 
-1. **Les 397 constats « unused » de Qodana** (259 `UnusedAutoPropertyAccessor` + 138 `NotAccessedPositionalProperty`) ne sont pas exploitables tels quels. J'en avais moi-même relevé un faux positif en audit de sécurité : Qodana déclare « *Class `RateLimitBehavior` is never used* » alors que c'est le rate-limiter de tout le trafic entrant.
-2. **Un nettoyage « supprimons ce qui n'est pas référencé » est dangereux ici** : ça compile, et ça casse en silence. C'est, une fois de plus, exactement la classe de défaut de ce projet.
-3. **Les rapports d'analyse statique doivent être vérifiés cas par cas.** Sur les 4 catégories Qodana que j'ai ouvertes : `UnlimitedStringLength` (95) est **réelle et sérieuse** ; `ConditionIsAlwaysTrueOrFalse` (129) est réelle mais bénigne (§3.5) ; `UnusedAutoPropertyAccessor` est un mélange, dont certains cas sont **documentés comme délibérés** dans le code ; `AccessToDisposedClosure` (32) est un **faux positif systématique** sur l'idiome `await using` + lambda EF — les deux cas que j'ai ouverts, dans deux fichiers différents, invoquent la lambda *dans* la portée du `using`.
+1. **Qodana's 397 "unused" findings** (259 `UnusedAutoPropertyAccessor` + 138 `NotAccessedPositionalProperty`) are not usable as is. I caught a false positive among them myself during the security audit: Qodana declares "*Class `RateLimitBehavior` is never used*" when it is the rate limiter for all inbound traffic.
+2. **A "let's delete what is not referenced" cleanup is dangerous here**: it compiles, and it breaks silently. That is, once again, exactly this project's defect class.
+3. **Static-analysis reports must be verified case by case.** Of the 4 Qodana categories I opened: `UnlimitedStringLength` (95) is **real and serious**; `ConditionIsAlwaysTrueOrFalse` (129) is real but benign (§3.5); `UnusedAutoPropertyAccessor` is a mix, some cases of which are **documented as deliberate** in the code; `AccessToDisposedClosure` (32) is a **systematic false positive** on the `await using` + EF lambda idiom — the two cases I opened, in two different files, invoke the lambda *inside* the `using` scope.
 
 ---
 
-## 5. Ce que la passe profonde a corrigé
+## 5. What the deep pass corrected
 
-Publié parce que ça dit quels chiffres méritent confiance.
+Published because it says which figures deserve trust.
 
-| Première passe (une mesure par axe) | Après vérification |
+| First pass (one measurement per axis) | After verification |
 |---|---|
-| « Duplication : bon — 18 handlers sur 383 » | **173 blocs** dupliqués dans ≥ 3 fichiers, dont 44 dans `Vortex.Rooms` — et ce sont les déclarations wired, cause directe d'un bug déjà documenté |
-| « Code mort : excellent — 2 blocs » | Exact pour les blocs commentés, mais je n'avais pas cherché ailleurs : **261 méthodes ≥ 80 lignes** |
-| Méthodes longues mesurées dans `RoomGrain` seulement (8 trouvées) | **261** sur l'arbre, dont un `HandleAsync` de **418 lignes** au login |
-| Qodana : 2 catégories sur 10 ouvertes | 4 ouvertes ; une entière (`AccessToDisposedClosure`) se révèle du bruit |
-| Types inutilisés : non mesuré | 1 375 candidats, **quasi tous vivants** — et c'est *ça*, le résultat |
-| « Handlers : orchestration-only respecté » | Vrai pour `VortexDbContext` (0 violation), faux pour la taille : 5 handlers ≥ 150 lignes |
+| "Duplication: fine — 18 handlers out of 383" | **173 blocks** duplicated across ≥ 3 files, 44 of them in `Vortex.Rooms` — and those are the wired declarations, direct cause of an already documented bug |
+| "Dead code: excellent — 2 blocks" | Correct for commented-out blocks, but I had not looked elsewhere: **261 methods ≥ 80 lines** |
+| Long methods measured in `RoomGrain` only (8 found) | **261** across the tree, including a **418-line** `HandleAsync` at login |
+| Qodana: 2 categories out of 10 opened | 4 opened; a whole one (`AccessToDisposedClosure`) turns out to be noise |
+| Unused types: not measured | 1,375 candidates, **virtually all alive** — and *that* is the result |
+| "Handlers: orchestration-only respected" | True for `VortexDbContext` (0 violations), false for size: 5 handlers ≥ 150 lines |
 
-Deux erreurs de mesure ont aussi été attrapées et corrigées en route : mon détecteur de code commenté ignorait les blocs `/* */` (il annonçait 0 alors qu'il y en a 2), et mon détecteur de méthodes longues comptait les constructeurs primaires comme des méthodes (il annonçait `PluginManager` à 823 lignes, qui est la classe).
-
----
-
-## 6. Ordre de reprise conseillé
-
-1. **Les bornes de chaîne** (0,5 j) — `[MaxLength]` sur les 104, troncature sur le nom de room. Plus petit effort, et ça ferme une entrée non bornée avant la réouverture.
-2. **Sortir le SARIF de git** (10 min) — `.gitignore` + artefact de CI.
-3. **Factoriser les déclarations wired dupliquées** (0,5 j) — des constantes partagées pour les jeux de sources standard. Ce n'est pas du confort : c'est ce qui rend visible la boîte qui diverge.
-4. **Découper `SSOTicketMessageHandler`** (0,5 j) — 418 lignes sur le chemin de connexion, contre la règle du dépôt lui-même.
-5. **`RoomGrain`, famille par famille** (continu) — commencer par `Settings` (146 lignes dans une seule méthode). `RoomPetSystem` est le modèle.
-6. **Les deux blocs morts et les 30 `class_NNNN`** (1 h) — supprimer, ou écrire sur place pourquoi ils restent.
+Two measurement errors were also caught and fixed along the way: my commented-out-code detector ignored `/* */` blocks (it reported 0 when there are 2), and my long-method detector counted primary constructors as methods (it reported `PluginManager` at 823 lines, which is the class).
 
 ---
 
-## 7. Limites
+## 6. Suggested order of rework
 
-- **Rien n'a été exécuté** : ni build, ni tests, ni couverture. Le ratio tests/production (85 324 / 317 509) est un **volume de lignes**, pas une couverture. Un projet sans projet de test n'est pas forcément non couvert — sa logique peut l'être depuis `Vortex.Rooms.Tests` — et je ne l'ai pas mesuré. Le seul fait dur est que `Vortex.PacketHandlers.Tests` contient **un fichier** couvrant la fonction pure d'un seul handler sur 559, et que **25 projets n'ont aucun projet de test**, dont `Vortex.Catalog`, `Vortex.Inventory`, `Vortex.Marketplace`, `Vortex.Networking` et `Vortex.Protocol`.
-- **La duplication est mesurée sur 12 lignes normalisées** : elle ne voit ni les blocs plus courts, ni la duplication logique réécrite différemment, ni le front Svelte (mesuré en volume seulement).
-- **Les 2 466 constats Qodana** : 4 catégories sur 10 ouvertes, quelques cas chacune. Les 6 autres ne sont pas jugées.
-- **La qualité des commentaires est une appréciation** appuyée sur une lecture large mais non exhaustive ; la densité, elle, est mesurée.
-- **Le front dashboard** n'a fait l'objet d'aucune revue de code, d'accessibilité ou de dépendances.
-- L'auto-test des hooks rapporte **2 échecs**, tous deux liés au registre d'en-têtes, qui a besoin du dump AS3 absent du dépôt client. Le contrôle de formatage passe.
+1. **The string bounds** (0.5 d) — `[MaxLength]` on the 104, truncation on the room name. Smallest effort, and it closes an unbounded input before reopening.
+2. **Get the SARIF out of git** (10 min) — `.gitignore` + CI artifact.
+3. **Factor out the duplicated wired declarations** (0.5 d) — shared constants for the standard source sets. This is not comfort: it is what makes the diverging box visible.
+4. **Split `SSOTicketMessageHandler`** (0.5 d) — 418 lines on the login path, against the repository's own rule.
+5. **`RoomGrain`, family by family** (ongoing) — start with `Settings` (146 lines in a single method). `RoomPetSystem` is the model.
+6. **The two dead blocks and the 30 `class_NNNN`** (1 h) — delete, or write in place why they stay.
+
+---
+
+## 7. Limits
+
+- **Nothing was executed**: no build, no tests, no coverage. The test/production ratio (85,324 / 317,509) is a **line volume**, not coverage. A project with no test project is not necessarily uncovered — its logic may be covered from `Vortex.Rooms.Tests` — and I did not measure it. The only hard fact is that `Vortex.PacketHandlers.Tests` contains **one file** covering the pure function of a single handler out of 559, and that **25 projects have no test project**, including `Vortex.Catalog`, `Vortex.Inventory`, `Vortex.Marketplace`, `Vortex.Networking` and `Vortex.Protocol`.
+- **Duplication is measured over 12 normalized lines**: it sees neither shorter blocks, nor logical duplication rewritten differently, nor the Svelte front end (measured by volume only).
+- **The 2,466 Qodana findings**: 4 categories out of 10 opened, a few cases each. The other 6 are not judged.
+- **The quality of the comments is a judgement** based on a broad but not exhaustive reading; the density, on the other hand, is measured.
+- **The dashboard front end** received no code, accessibility or dependency review.
+- The hooks self-test reports **2 failures**, both tied to the header registry, which needs the AS3 dump missing from the client repository. The formatting check passes.

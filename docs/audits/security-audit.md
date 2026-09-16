@@ -1,99 +1,99 @@
-# Audit de sécurité — rooms, catalogue, surface d'autorisation
+# Security audit — rooms, catalog, authorization surface
 
-- **Révision auditée** : `c07ca65` sur `claude/vortex-cloud-beta-audit-apl5gn` (`main` = `0455032`).
-- **Date** : 2026-09-15.
-- **Question posée** : « les room, le catalogue, la sécurité — je veux un vrai audit complet sur lequel m'appuyer, car à chaque fois j'ai des surprises niveau sécurité. »
-- **Nature** : audit en lecture seule, plus un contrôle mécanique livré avec le rapport (`scripts/hooks/check-authorization-surface.mjs`). Aucun code de production modifié.
+- **Audited revision**: `c07ca65` on `claude/vortex-cloud-beta-audit-apl5gn` (`main` = `0455032`).
+- **Date**: 2026-09-15.
+- **Question asked**: "rooms, the catalog, security — I want a real, complete audit I can lean on, because every time I get security surprises."
+- **Nature**: read-only audit, plus a mechanical check shipped with the report (`scripts/hooks/check-authorization-surface.mjs`). No production code modified.
 
 ---
 
-## 1. La réponse en une page
+## 1. The one-page answer
 
-**La bonne nouvelle d'abord, parce qu'elle change ce qu'il faut faire.** J'ai suivi à la main chacun des chemins où une faille coûterait cher — achat au catalogue, rachat de crédits, ouverture de cadeau, échange, manipulation de mobi, réglages de room, entrée en room, animaux, endpoints HTTP de compte. **Tous sont correctement protégés**, et plusieurs le sont avec une finesse qu'on ne voit pas souvent : le mobi-crédit se consomme *avant* de payer pour qu'un clic répété ne paie pas deux fois, le cadeau est protégé par la *propriété* et non par les droits de room (« sinon quiconque a les droits ouvre tous les cadeaux déposés chez lui »), et le débordement de `prix × quantité` a déjà été trouvé et corrigé.
+**The good news first, because it changes what needs doing.** I traced by hand every path where a hole would be expensive — catalog purchase, credit redemption, gift opening, trading, furni manipulation, room settings, room entry, pets, account HTTP endpoints. **All are correctly protected**, and several with a subtlety you do not often see: the credit furni is consumed *before* paying so that a repeated click does not pay twice, the gift is protected by *ownership* and not by room rights ("otherwise anyone with rights opens every gift dropped at their place"), and the `price × quantity` overflow has already been found and fixed.
 
-Votre dépôt n'a donc pas un problème de *niveau* de sécurité. Il a un problème de **vérifiabilité** de sa sécurité, et c'est exactement ce qui produit des surprises.
+So your repository does not have a security *level* problem. It has a **verifiability** problem with its security, and that is exactly what produces surprises.
 
-> **La même question — « cet acteur a-t-il le droit ? » — reçoit dans ce dépôt 15 réponses différentes, combinées de 27 façons, sur 179 points de décision. Aucune n'est nommée pareil. Deux d'entre elles sont, en lecture de diff, indiscernables d'une méthode qui ne vérifie rien.**
+> **The same question — "is this actor allowed?" — gets 15 different answers in this repository, combined in 27 ways, across 179 decision points. None of them is named alike. Two of them are, when reading a diff, indistinguishable from a method that checks nothing.**
 
-Le cas qui résume tout :
+The case that sums it all up:
 
 ```csharp
 // Vortex.Rooms/Grains/RoomGrain.Furni.Interactive.cs
-IRoomItem? item = await FindManipulableItemAsync(ctx, itemId);   // demande au SecurityModule
-_state.ItemsById.TryGetValue(itemId, out IRoomItem? item);       // ne demande rien
+IRoomItem? item = await FindManipulableItemAsync(ctx, itemId);   // asks the SecurityModule
+_state.ItemsById.TryGetValue(itemId, out IRoomItem? item);       // asks nothing
 ```
 
-Un identifiant d'écart. Le premier appelle `SecurityModule.CanManipulateFurniAsync` et rend `null` si l'acteur n'a pas les droits ; le second rend l'objet à tout le monde. Sur une revue de diff, **les deux lignes se ressemblent**. Onze méthodes du dépôt dépendent aujourd'hui de la première. Le jour où l'une est écrite avec la seconde, rien — ni le compilateur, ni les tests, ni la CI, ni l'œil — ne le dit.
+One identifier apart. The first calls `SecurityModule.CanManipulateFurniAsync` and returns `null` if the actor lacks rights; the second hands the object to everybody. In a diff review, **the two lines look alike**. Eleven methods in the repository depend on the first today. The day one is written with the second, nothing — not the compiler, not the tests, not CI, not the eye — says so.
 
-C'est le même motif que l'audit wired, transposé à l'autorisation : *une règle qui existe, qui est respectée en pratique, et que rien ne vérifie*. La différence est qu'ici la règle est écrite noir sur blanc dans le code :
+It is the same pattern as the wired audit, transposed to authorization: *a rule that exists, that is respected in practice, and that nothing verifies*. The difference is that here the rule is written in black and white in the code:
 
-> « A handler is not a security boundary: the method is a member of a public grain interface, callable by anything in the cluster that can name the room (ROOMG-GATE-038). **The grain is the boundary.** »
+> "A handler is not a security boundary: the method is a member of a public grain interface, callable by anything in the cluster that can name the room (ROOMG-GATE-038). **The grain is the boundary.**"
 > — `Vortex.Rooms/Grains/Modules/RoomSecurityModule.cs:265`
 
-Cette règle est appliquée, et **testée pour exactement deux méthodes** (`StaffPowerGrainGateTests`). Les 119 autres méthodes de grain qui prennent un acteur reposent sur le fait que chaque auteur y a pensé.
+That rule is applied, and **tested for exactly two methods** (`StaffPowerGrainGateTests`). The other 119 grain methods that take an actor rely on each author having thought of it.
 
-**Ce que je livre** : `check-authorization-surface.mjs`, qui n'essaie pas de juger si une autorisation est correcte — c'est impossible avec 15 idiomes — mais qui **inventorie les 179 points de décision et la porte qui garde chacun**, et bloque quand cet inventaire bouge. Preuve : en remplaçant `FindManipulableItemAsync` par `TryGetValue` dans `SetCustomStackHeightAsync`, il sort `gated-lookup -> NONE` et `exit=2` (§6).
+**What I deliver**: `check-authorization-surface.mjs`, which does not try to judge whether an authorization is correct — that is impossible with 15 idioms — but which **inventories the 179 decision points and the gate guarding each one**, and blocks when that inventory moves. Proof: replacing `FindManipulableItemAsync` with `TryGetValue` in `SetCustomStackHeightAsync` makes it print `gated-lookup -> NONE` and `exit=2` (§6).
 
 ---
 
-## 2. Méthode, et pourquoi les chiffres bruts mentent
+## 2. Method, and why the raw numbers lie
 
-J'ai commencé par la mesure évidente : combien de handlers de paquets vérifient `ctx.PlayerId` ? Réponse : **351 sur 559**. J'allais écrire « 208 handlers non gardés ».
+I started with the obvious measurement: how many packet handlers check `ctx.PlayerId`? Answer: **351 out of 559**. I was about to write "208 unguarded handlers".
 
-C'était faux, et il faut le dire parce que c'est la leçon de méthode de cet audit. `AddItemToTradeMessageHandler` ne vérifie rien :
+That was wrong, and it has to be said because it is this audit's method lesson. `AddItemToTradeMessageHandler` checks nothing:
 
 ```csharp
 await _roomService.AddTradeItemsAsync(ctx.AsActionContext(), [message.ItemId], ct);
 ```
 
-…parce que `RoomService.AddTradeItemsAsync` (`RoomService.Trading.cs:44-58`) commence par `if (ctx.PlayerId <= 0 || ctx.RoomId <= 0) return;`. La garde est déléguée, et correctement. Sur les 209 handlers « non gardés » du premier comptage, la quasi-totalité délèguent à une couche qui garde.
+…because `RoomService.AddTradeItemsAsync` (`RoomService.Trading.cs:44-58`) starts with `if (ctx.PlayerId <= 0 || ctx.RoomId <= 0) return;`. The guard is delegated, and correctly so. Of the 209 "unguarded" handlers in the first count, virtually all delegate to a layer that guards.
 
-**Chaque chiffre de ce rapport a donc été vérifié à la main, fichier contre fichier, avant d'être écrit.** Quand une affirmation n'a pas pu l'être, elle est marquée comme telle au §8. Les faux positifs successifs de mes propres détecteurs — `UpdateRoomSettingsAsync` (garde par `IsRoomOwnerAsync`), `PickUpPetAsync` (garde par `EnsurePetOwner`), `SetCustomStackHeightAsync` (garde par `FindManipulableItemAsync`), les endpoints du superviseur (garde par `AddEndpointFilter`) — sont eux-mêmes la preuve du défaut structurel : **si un détecteur écrit exprès pour les trouver s'y trompe quatre fois, une revue humaine s'y trompera aussi.**
+**Every figure in this report was therefore verified by hand, file against file, before being written.** Where a claim could not be, it is marked as such in §8. The successive false positives from my own detectors — `UpdateRoomSettingsAsync` (guarded by `IsRoomOwnerAsync`), `PickUpPetAsync` (guarded by `EnsurePetOwner`), `SetCustomStackHeightAsync` (guarded by `FindManipulableItemAsync`), the supervisor endpoints (guarded by `AddEndpointFilter`) — are themselves proof of the structural defect: **if a detector written on purpose to find them gets it wrong four times, a human review will get it wrong too.**
 
 ---
 
-## 3. Ce qui est vérifié sain
+## 3. What is verified healthy
 
-Un audit sur lequel s'appuyer doit dire ce qu'il a regardé **et trouvé correct**, sinon il ne sert qu'à inquiéter.
+An audit you can lean on has to say what it looked at **and found correct**, otherwise it only serves to worry you.
 
-| Chemin | Protection constatée | Référence |
+| Path | Protection observed | Reference |
 |---|---|---|
-| Achat au catalogue | Prix lu côté serveur ; quantité bornée en bas (`Math.Max(1, …)`) **et en haut** (`DEFAULT_MAX_PURCHASE_SIZE`) ; `prix × quantité` en `long` | `CatalogPurchaseGrain.cs:53-62, 333-341` |
-| Verrou de sécurité du compte | Re-vérifié côté serveur sur les 6 achats catalogue + 2 marketplace, avec le commentaire qui dit pourquoi | `SafetyLockGuard.cs` |
-| Mobi-crédit | **Propriété** exigée, pas les droits de room ; l'objet est consommé *avant* que les crédits existent | `RoomGrain.Furni.Interactive.cs:431-466` |
-| Cadeau | **Propriété** exigée ; commentaire explicite sur pourquoi pas les droits | idem `:468-484` |
-| Manipulation de mobi | `SecurityModule.CanManipulateFurniAsync` via `FindManipulableItemAsync` | `RoomGrain.Furni.Interactive.cs:46-54` |
-| Réglages, plan, catégorie, tags de room | `IsRoomOwnerAsync(actor)` en première ligne | `RoomGrain.Settings.cs:57`, `RoomGrain.FloorPlan.cs` |
-| Animaux (ramasser, déplacer, nourrir…) | `EnsurePetOwner` lève `NoPermissionToManipulatePet` | `RoomPetSystem.cs:598-604` |
-| Entrée en room | Bannissement, salle pleine, mot de passe, porte verrouillée → sonnette ; contourné seulement par `>= Rights`, ce qui est correct | `RoomService.cs:75, 108-140` |
-| Échange | `PlayerId` **et** `RoomId` gardés au niveau service | `RoomService.Trading.cs` |
-| Éditeur de mobi | Capacité `room.furni.edit` re-résolue à chaque requête ; le drapeau client ne décide que d'un bouton | `VortexApplyFurniEditMessageHandler.cs:40-47` (contrôle en `:45`) |
-| WebApi `/api/user/**` | Les 26 routes authentifient, via `ctx.AccountId(sessions)` ou `SelectedPlayerAsync` ; `/api/ssotoken` aussi | `WebApiEndpoints.cs:800-805, 1837-1862` |
-| Superviseur (`/start`, `/stop`, `/console`) | Filtre de jeton sur le groupe, + échange jeton→cookie `HttpOnly`/`SameSite=Strict` | `SupervisorEndpoints.cs:54` |
-| Dashboard | `RequireAuthorization(capacité)` par endpoint | `DashboardEndpoints.cs` |
-| Trame réseau | Longueur de corps déclarée bornée à 64 Ko, rejet explicite au-delà | `ClientPacketDecoder.cs:31-37` |
-| Débit par session | Seau à jetons, 50 paquets/s soutenus, rafale 100, **avant** tout handler | `RateLimitConfig.cs`, `RateLimitBehavior` |
+| Catalog purchase | Price read server-side; quantity bounded below (`Math.Max(1, …)`) **and above** (`DEFAULT_MAX_PURCHASE_SIZE`); `price × quantity` in `long` | `CatalogPurchaseGrain.cs:53-62, 333-341` |
+| Account safety lock | Re-checked server-side on the 6 catalog purchases + 2 marketplace ones, with the comment saying why | `SafetyLockGuard.cs` |
+| Credit furni | **Ownership** required, not room rights; the item is consumed *before* the credits exist | `RoomGrain.Furni.Interactive.cs:431-466` |
+| Gift | **Ownership** required; explicit comment on why not rights | same `:468-484` |
+| Furni manipulation | `SecurityModule.CanManipulateFurniAsync` via `FindManipulableItemAsync` | `RoomGrain.Furni.Interactive.cs:46-54` |
+| Room settings, floor plan, category, tags | `IsRoomOwnerAsync(actor)` on the first line | `RoomGrain.Settings.cs:57`, `RoomGrain.FloorPlan.cs` |
+| Pets (pick up, move, feed…) | `EnsurePetOwner` throws `NoPermissionToManipulatePet` | `RoomPetSystem.cs:598-604` |
+| Room entry | Ban, room full, password, locked door → doorbell; bypassed only by `>= Rights`, which is correct | `RoomService.cs:75, 108-140` |
+| Trading | `PlayerId` **and** `RoomId` guarded at service level | `RoomService.Trading.cs` |
+| Furni editor | `room.furni.edit` capability re-resolved on every request; the client flag only decides a button | `VortexApplyFurniEditMessageHandler.cs:40-47` (check at `:45`) |
+| WebApi `/api/user/**` | All 26 routes authenticate, via `ctx.AccountId(sessions)` or `SelectedPlayerAsync`; `/api/ssotoken` too | `WebApiEndpoints.cs:800-805, 1837-1862` |
+| Supervisor (`/start`, `/stop`, `/console`) | Token filter on the group, + token→`HttpOnly`/`SameSite=Strict` cookie exchange | `SupervisorEndpoints.cs:54` |
+| Dashboard | `RequireAuthorization(capability)` per endpoint | `DashboardEndpoints.cs` |
+| Network frame | Declared body length bounded to 64 KB, explicit rejection beyond | `ClientPacketDecoder.cs:31-37` |
+| Per-session throughput | Token bucket, 50 packets/s sustained, burst 100, **before** any handler | `RateLimitConfig.cs`, `RateLimitBehavior` |
 
-**Le `PlayerId` et le `RoomId` ne viennent jamais du client.** `MessageContext` les reçoit de `sessionGateway.GetPlayerId(SessionKey)` et du contexte ambiant résolu côté serveur (`MessageRegistry.cs:44-56`). C'est le point le plus important de toute cette liste, et il est bon.
+**`PlayerId` and `RoomId` never come from the client.** `MessageContext` receives them from `sessionGateway.GetPlayerId(SessionKey)` and from the ambient context resolved server-side (`MessageRegistry.cs:44-56`). That is the most important point in this whole list, and it is sound.
 
 ---
 
-## 4. Les défauts confirmés
+## 4. Confirmed defects
 
-### SEC-10 — Aucune limite de connexions, ni par IP ni globale (P1, confirmé)
+### SEC-10 — No connection limit, neither per IP nor global (P1, confirmed)
 
-**Ce qui existe** : une limite de débit **par session** (50 paquets/s, rafale 100).
-**Ce qui n'existe pas** : quoi que ce soit qui borne le nombre de sessions. Recherche sur tout l'arbre de `MaxConnections`, `ConnectionLimit`, `MaxSessionsPerIp`, `PerIp` : **aucun résultat**. `appsettings.json` ne déclare sous `serverOptions` que les écouteurs (`ip`, `port`) — ni `maxConnectionNumber`, ni `backlog`.
+**What exists**: a **per-session** rate limit (50 packets/s, burst 100).
+**What does not exist**: anything bounding the number of sessions. Searching the whole tree for `MaxConnections`, `ConnectionLimit`, `MaxSessionsPerIp`, `PerIp`: **no result**. `appsettings.json` declares nothing under `serverOptions` but the listeners (`ip`, `port`) — no `maxConnectionNumber`, no `backlog`.
 
-**Conséquence** : la limite par session ne borne rien au niveau de l'hôte. 1 000 connexions depuis une machine = 50 000 paquets/s, chacun pouvant activer un grain et interroger la base. Le coût pour l'attaquant est une boucle `connect()`.
+**Consequence**: the per-session limit bounds nothing at host level. 1,000 connections from one machine = 50,000 packets/s, each able to activate a grain and hit the database. The cost to the attacker is a `connect()` loop.
 
-**Aggravant** : rien n'exige d'être authentifié pour envoyer des paquets (§5.2), donc ce débit est disponible **avant** tout login.
+**Aggravating factor**: nothing requires being authenticated to send packets (§5.2), so that throughput is available **before** any login.
 
-*Correction* : `maxConnectionNumber` dans les deux sections `serverOptions` (SuperSocket l'accepte nativement), plus un compteur de sessions par IP dans `SessionGateway.AddSessionAsync`, refusant au-delà d'un seuil configurable. *Critère* : la (N+1)ᵉ connexion d'une même IP est fermée immédiatement.
+*Fix*: `maxConnectionNumber` in both `serverOptions` sections (SuperSocket accepts it natively), plus a per-IP session counter in `SessionGateway.AddSessionAsync`, refusing beyond a configurable threshold. *Criterion*: the (N+1)th connection from the same IP is closed immediately.
 
-### SEC-11 — Le rachat de bon est un amplificateur non authentifié (P2, confirmé)
+### SEC-11 — Voucher redemption is an unauthenticated amplifier (P2, confirmed)
 
-`Vortex.PacketHandlers/Catalog/RedeemVoucherMessageHandler.cs` en entier :
+`Vortex.PacketHandlers/Catalog/RedeemVoucherMessageHandler.cs` in full:
 
 ```csharp
 string? code = message.Code;
@@ -102,75 +102,75 @@ IVoucherGrain voucher = grainFactory.GetVoucherGrain(code);
 await voucher.RedeemAsync(ctx.PlayerId, ct);
 ```
 
-Quatre choses, chacune vérifiée :
+Four things, each verified:
 
-1. **Pas de garde `ctx.PlayerId <= 0`.** Une socket non authentifiée porte `PlayerId = -1` (`SessionGateway.cs:50-51`) et arrive ici.
-2. **La clé du grain est la chaîne du client, telle quelle.** `GetVoucherGrain(code)` est un grain Orleans à clé chaîne : *une activation par code distinct essayé*. Le parseur fait `packet.PopString()` sans borne propre (`RedeemVoucherMessageParser.cs`) ; seule la taille de trame la limite, à 64 Ko.
-3. **Une requête SQL par activation.** `VoucherGrain.OnActivateAsync` fait un `SELECT` sur `Vouchers` pour chaque code distinct.
-4. **Aucun comptage de tentatives.** `TryRedeemAsync` vérifie bien le déjà-racheté, le plafond de rachats et l'existence du joueur — mais rien ne compte les *échecs*. Et sur un code inconnu, `RedeemAsync` active en plus `GetPlayerPresenceGrain(-1)` pour envoyer l'erreur.
+1. **No `ctx.PlayerId <= 0` guard.** An unauthenticated socket carries `PlayerId = -1` (`SessionGateway.cs:50-51`) and reaches here.
+2. **The grain key is the client's string, as is.** `GetVoucherGrain(code)` is a string-keyed Orleans grain: *one activation per distinct code tried*. The parser does `packet.PopString()` with no bound of its own (`RedeemVoucherMessageParser.cs`); only the frame size limits it, at 64 KB.
+3. **One SQL query per activation.** `VoucherGrain.OnActivateAsync` does a `SELECT` on `Vouchers` for every distinct code.
+4. **No attempt counting.** `TryRedeemAsync` does check already-redeemed, the redemption cap and the player's existence — but nothing counts *failures*. And on an unknown code, `RedeemAsync` additionally activates `GetPlayerPresenceGrain(-1)` to send the error.
 
-**Conséquence** : force brute de codes sans verrouillage, à deux activations de grain et une requête SQL par essai, sans authentification. Composé avec SEC-10, c'est le vecteur le moins cher du dépôt.
+**Consequence**: brute-forcing codes without lockout, at two grain activations and one SQL query per try, unauthenticated. Combined with SEC-10, it is the cheapest vector in the repository.
 
-*Correction* (par ordre d'effet) : refuser `ctx.PlayerId <= 0` ; borner la longueur et le jeu de caractères du code **avant** de nommer le grain (un code a un format connu) ; compter les échecs par joueur et par IP. *Critère* : un code de 200 caractères, ou le 11ᵉ échec en une minute, n'active aucun grain.
+*Fix* (by order of effect): refuse `ctx.PlayerId <= 0`; bound the code's length and character set **before** naming the grain (a code has a known format); count failures per player and per IP. *Criterion*: a 200-character code, or the 11th failure in a minute, activates no grain.
 
-### SEC-12 — `ApplyFurniEditAsync` délègue l'autorisation à son appelant (structurel, confirmé, non exploitable aujourd'hui)
+### SEC-12 — `ApplyFurniEditAsync` delegates authorization to its caller (structural, confirmed, not exploitable today)
 
-Deux règles opposées coexistent dans le même dépôt.
+Two opposite rules coexist in the same repository.
 
-`RoomSecurityModule.cs:265` : « *A handler is not a security boundary… The grain is the boundary.* »
-`RoomGrain.Furni.Edit.cs:28-38` (la phrase en `:36`) : « *the authorization question is answered once, **by the caller**, against `room.furni.edit`.* »
+`RoomSecurityModule.cs:265`: "*A handler is not a security boundary… The grain is the boundary.*"
+`RoomGrain.Furni.Edit.cs:28-38` (the sentence at `:36`): "*the authorization question is answered once, **by the caller**, against `room.furni.edit`.*"
 
-La seconde s'applique à la méthode la plus puissante de la room : réattribution de propriétaire, placement sur tuile bloquée, altitude libre, changement de définition. Son unique appelant actuel vérifie bien la capacité — **je l'ai lu** (`VortexApplyFurniEditMessageHandler.cs:45`). Ce n'est donc pas une faille : c'est une garantie qui repose sur une convention que rien n'applique, sur la méthode où elle coûterait le plus cher.
+The second applies to the most powerful method in the room: owner reassignment, placement on a blocked tile, free altitude, definition change. Its only current caller does check the capability — **I read it** (`VortexApplyFurniEditMessageHandler.cs:45`). So it is not a hole: it is a guarantee resting on a convention nothing enforces, on the method where it would cost the most.
 
-*Correction* : déplacer la résolution de capacité dans le grain (il a déjà `SecurityModule.HasCapabilityAsync`), et laisser celle du handler comme réponse rapide au client. C'est très exactement ce que le commentaire de `HasCapabilityAsync` prescrit pour les autres pouvoirs staff.
+*Fix*: move the capability resolution into the grain (it already has `SecurityModule.HasCapabilityAsync`), and leave the handler's as a fast answer to the client. That is exactly what `HasCapabilityAsync`'s comment prescribes for the other staff powers.
 
-### SEC-15 — Le ticket SSO est rejouable sans limite, et la protection existe mais est livrée éteinte (P1, confirmé)
+### SEC-15 — The SSO ticket is replayable without limit, and the protection exists but ships disabled (P1, confirmed)
 
-Le rapport de bêta notait AUTH-01 « ticket rejouable dans une fenêtre glissante de 30 s ». C'est plus grave que ça, et plus précis.
+The beta report noted AUTH-01 "ticket replayable in a 30 s sliding window". It is worse than that, and more precise.
 
-**La protection a été écrite.** `AuthenticationService.cs:90` consomme le ticket à la première utilisation quand `TicketSingleUse` est vrai, avec le bon commentaire : *« an observed ticket (proxy logs, browser history, unencrypted transport, Referer) can no longer be replayed at all »*.
+**The protection was written.** `AuthenticationService.cs:90` consumes the ticket on first use when `TicketSingleUse` is true, with the right comment: *"an observed ticket (proxy logs, browser history, unencrypted transport, Referer) can no longer be replayed at all"*.
 
-**Elle est livrée éteinte, et rien ne la remplace :**
+**It ships disabled, and nothing replaces it:**
 
-| Réglage | Défaut | Dans votre `appsettings.json` |
+| Setting | Default | In your `appsettings.json` |
 |---|---|---|
-| `TicketSingleUse` | `false` (bool sans initialiseur) | **non déclaré** |
-| `TicketAbsoluteLifetimeSeconds` | `null` (plafond désactivé) | **non déclaré** |
-| `TicketTtlSeconds` | `30` | non déclaré |
+| `TicketSingleUse` | `false` (bool with no initializer) | **not declared** |
+| `TicketAbsoluteLifetimeSeconds` | `null` (cap disabled) | **not declared** |
+| `TicketTtlSeconds` | `30` | not declared |
 
-La section `Vortex:Authentication` de `appsettings.json` ne contient **qu'une seule clé**, `IpHashSecret`, dont la valeur livrée est `"replace-with-a-production-secret"`.
+The `Vortex:Authentication` section of `appsettings.json` contains **a single key**, `IpHashSecret`, whose shipped value is `"replace-with-a-production-secret"`.
 
-**Conséquence, en suivant la branche `else` :** à chaque usage, l'expiration est *repoussée* de 30 s (`slidExpiry`). Le plafond absolu qui bornerait le total est `null`. Donc **un ticket observé peut être rejoué indéfiniment**, chaque rejeu prolongeant sa propre validité. Ce n'est pas une fenêtre de 30 secondes : c'est une fenêtre de 30 secondes qui se déplace aussi longtemps que l'attaquant s'en sert.
+**Consequence, following the `else` branch:** on each use, expiry is *pushed back* by 30 s (`slidExpiry`). The absolute cap that would bound the total is `null`. So **an observed ticket can be replayed indefinitely**, each replay extending its own validity. This is not a 30-second window: it is a 30-second window that moves for as long as the attacker keeps using it.
 
-**Et aucun garde-fou ne le signale.** `AuthenticationConfigValidator` ne mentionne jamais `TicketSingleUse` (0 occurrence) et autorise explicitement le plafond absent : *« Leave it unset to disable the cap »*. La combinaison « pas d'usage unique **et** pas de plafond » est la seule qui soit dangereuse, et c'est la seule que la validation ne regarde pas.
+**And no guardrail flags it.** `AuthenticationConfigValidator` never mentions `TicketSingleUse` (0 occurrences) and explicitly allows the missing cap: *"Leave it unset to disable the cap"*. The combination "no single use **and** no cap" is the only dangerous one, and it is the only one the validation does not look at.
 
-Le défaut est documenté comme délibéré — *« Left default (TicketSingleUse = false) for compatibility with CMS integrations that reuse one ticket across reconnects »* — ce qui est une raison valable pour l'option, pas pour l'absence de plafond.
+The default is documented as deliberate — *"Left default (TicketSingleUse = false) for compatibility with CMS integrations that reuse one ticket across reconnects"* — which is a valid reason for the option, not for the absence of a cap.
 
-*Correction* (par ordre d'effet, aucune ne touche au code) : déclarer `TicketAbsoluteLifetimeSeconds` dans `appsettings.json` — le plafond borne le rejeu **sans casser** les intégrations CMS qui rejouent un ticket ; passer `TicketSingleUse` à `true` si votre CMS ne le fait pas ; remplacer `IpHashSecret`. Puis ajouter au validateur la règle qui manque : refuser le démarrage quand les deux protections sont absentes à la fois.
+*Fix* (by order of effect, none touches code): declare `TicketAbsoluteLifetimeSeconds` in `appsettings.json` — the cap bounds replay **without breaking** CMS integrations that replay a ticket; set `TicketSingleUse` to `true` if your CMS does not do that; replace `IpHashSecret`. Then add the missing rule to the validator: refuse to start when both protections are absent at once.
 
-### SEC-13 — Deux écrans d'argent branchés sur des handlers vides (P3, confirmé)
+### SEC-13 — Two money screens wired to empty handlers (P3, confirmed)
 
-`Vault/WithdrawCreditVaultMessageHandler` et `Marketplace/BuyMarketplaceTokensMessageHandler` ont pour corps entier `await ValueTask.CompletedTask`. Le client affiche l'écran, le joueur clique, rien ne se passe et rien ne le dit. Ce n'est pas une faille — c'est la classe « déclaré mais inerte » de l'audit wired, sur des écrans où le joueur croit manipuler de l'argent.
+`Vault/WithdrawCreditVaultMessageHandler` and `Marketplace/BuyMarketplaceTokensMessageHandler` have `await ValueTask.CompletedTask` as their entire body. The client shows the screen, the player clicks, nothing happens and nothing says so. This is not a hole — it is the wired audit's "declared but inert" class, on screens where the player believes they are handling money.
 
-### SEC-14 — L'objet en main n'est pas validé (P3, confirmé, **délibérément non corrigé**)
+### SEC-14 — The hand item is not validated (P3, confirmed, **deliberately not fixed**)
 
-`RoomHandItemModule.Give(playerId, itemId)` n'exige que `itemId > 0`. N'importe quel identifiant d'objet-en-main peut être placé dans la main d'un avatar. C'est cosmétique et temporaire (`HandItemDurationMs`), donc P3 — mais c'est une valeur du fil qui atteint un état diffusé à toute la room sans être vérifiée contre une liste connue.
+`RoomHandItemModule.Give(playerId, itemId)` only requires `itemId > 0`. Any hand-item identifier can be placed in an avatar's hand. It is cosmetic and temporary (`HandItemDurationMs`), hence P3 — but it is a value off the wire reaching a state broadcast to the whole room without being checked against a known list.
 
-**Laissé ouvert, et voici pourquoi.** Corriger demande une plage valide, et il n'en existe **aucune autorité** : ni énumération ni table dans le dépôt, rien dans le port TypeScript du client non plus (recherché sur `CarryItem` croisé avec `max|valid|range`). Inventer une borne risquerait de refuser des objets légitimes — une régression visible par les joueurs — pour fermer un défaut cosmétique, juste avant une réouverture. Le bon ordre est : établir la liste depuis le client ou depuis les données, *puis* borner.
+**Left open, and here is why.** Fixing it requires a valid range, and **no authority** for one exists: no enum, no table in the repository, nothing in the client's TypeScript port either (searched on `CarryItem` crossed with `max|valid|range`). Inventing a bound would risk refusing legitimate items — a player-visible regression — to close a cosmetic defect, right before a reopening. The right order is: establish the list from the client or from the data, *then* bound it.
 
 ---
 
-## 5. Le défaut structurel : l'autorisation n'est pas inspectable
+## 5. The structural defect: authorization is not inspectable
 
-### 5.1 Quinze idiomes
+### 5.1 Fifteen idioms
 
-Inventaire produit par le contrôle livré, sur 179 points de décision :
+Inventory produced by the shipped check, over 179 decision points:
 
-| Idiome | Occurrences | À quoi il ressemble |
+| Idiom | Occurrences | What it looks like |
 |---|---:|---|
-| *(aucun trouvé)* | 48 | — |
+| *(none found)* | 48 | — |
 | `security-module` | 24 | `await SecurityModule.CanManipulateFurniAsync(ctx)` |
-| `account-id` | 23 | `ctx.AccountId(sessions)` puis `Unauthorized()` |
+| `account-id` | 23 | `ctx.AccountId(sessions)` then `Unauthorized()` |
 | `actor-guard` | 16 | `if (ctx.PlayerId <= 0) return;` |
 | `owner-compare` | 14 | `if (item.OwnerId != ctx.PlayerId) return null;` |
 | `can-helper` | 13 | `CanEditContractAsync`, `CanUseChestAsync`, … |
@@ -182,34 +182,34 @@ Inventaire produit par le contrôle livré, sur 179 points de décision :
 | **`ensure-helper`** | **2** | **`EnsurePetOwner(ctx, pet);`** |
 | `require-authorization` | 2 | `.RequireAuthorization(Capabilities.…)` |
 | `controller-level` | 1 | `GetControllerLevelAsync(ctx)` |
-| *(implémentation non résolue)* | 2 | — |
+| *(implementation unresolved)* | 2 | — |
 
-**27 combinaisons distinctes.** Les deux en gras sont celles qui ne se voient pas :
+**27 distinct combinations.** The two in bold are the ones you cannot see:
 
-- `gated-lookup` : la porte est **dans une recherche**. `FindManipulableItemAsync(ctx, id)` interroge le module de sécurité et rend `null` si l'acteur n'a pas les droits ; `_state.ItemsById.TryGetValue(id, out item)` ne demande rien. Un identifiant d'écart, sens opposé.
-- `ensure-helper` : `EnsurePetOwner(ctx, pet);` ne rend rien et lève. Sur la ligne d'appel, **rien n'indique qu'une vérification a eu lieu** — ni valeur de retour, ni `if`, ni `await`.
+- `gated-lookup`: the gate is **inside a lookup**. `FindManipulableItemAsync(ctx, id)` queries the security module and returns `null` if the actor lacks rights; `_state.ItemsById.TryGetValue(id, out item)` asks nothing. One identifier apart, opposite meaning.
+- `ensure-helper`: `EnsurePetOwner(ctx, pet);` returns nothing and throws. On the call line, **nothing indicates a check happened** — no return value, no `if`, no `await`.
 
-### 5.2 Et pas de porte d'authentification dans le pipeline
+### 5.2 And no authentication gate in the pipeline
 
-Le chemin d'un paquet est `PackageHandler.HandleCoreAsync` → `MessageSystem.PublishAsync` → `MessageRegistry.PublishAsync` → handler. **Je les ai lus tous les trois : aucun ne refuse une session non authentifiée.** Le seul rempart est le `if (ctx.PlayerId <= 0) return;` que chaque handler écrit lui-même — 351 sur 559 le font, et parmi ceux qui ne le font pas, la plupart délèguent correctement (§2).
+A packet's path is `PackageHandler.HandleCoreAsync` → `MessageSystem.PublishAsync` → `MessageRegistry.PublishAsync` → handler. **I read all three: none refuses an unauthenticated session.** The only rampart is the `if (ctx.PlayerId <= 0) return;` each handler writes itself — 351 out of 559 do, and among those that do not, most delegate correctly (§2).
 
-C'est le constat SES-02 du rapport de bêta, ici quantifié et confirmé jusqu'au bout. Il est de gravité modérée en soi : `PlayerId` vaut `-1`, et les chemins d'écriture s'arrêtent (`CreateRoomAsync` lève sur `Player -1 not found`, vérifié). Mais il transforme chaque handler non gardé en amplificateur — c'est le moteur de SEC-11.
+That is the beta report's SES-02 finding, here quantified and confirmed all the way. It is of moderate severity in itself: `PlayerId` is `-1`, and the write paths stop (`CreateRoomAsync` throws on `Player -1 not found`, verified). But it turns every unguarded handler into an amplifier — that is the engine of SEC-11.
 
-### 5.3 Pourquoi cela produit des surprises, précisément
+### 5.3 Why this produces surprises, precisely
 
-Une faille d'autorisation n'apparaît pas au moment où on l'écrit. Elle apparaît quand quelqu'un l'essaie. Entre les deux, la seule chose qui pourrait la signaler est une relecture — et ici la relecture ne le peut pas :
+An authorization hole does not appear when it is written. It appears when someone tries it. In between, the only thing that could flag it is a review — and here the review cannot:
 
-1. **Rien ne dit combien de portes il devrait y avoir.** Il n'existe pas de liste des points de décision, donc pas de notion de couverture.
-2. **Deux idiomes sur quinze sont invisibles** dans un diff (§5.1).
-3. **Le compilateur ne voit rien** : oublier une porte, c'est écrire *moins* de code, jamais du code invalide.
-4. **Les tests ne voient rien** : un test vérifie qu'une action autorisée marche. Il faut écrire *exprès* le test de l'acteur non autorisé, et il existe **pour deux méthodes sur 121**.
-5. **La CI ne tourne pas** : `VortexCloudFastCheck` est rouge pour d'autres raisons, donc les commits partent en `--no-verify` (constat QA-01 du rapport de bêta, toujours vrai).
+1. **Nothing says how many gates there should be.** No list of decision points exists, hence no notion of coverage.
+2. **Two idioms out of fifteen are invisible** in a diff (§5.1).
+3. **The compiler sees nothing**: forgetting a gate means writing *less* code, never invalid code.
+4. **The tests see nothing**: a test checks that an authorized action works. You have to write the unauthorized-actor test *on purpose*, and it exists **for two methods out of 121**.
+5. **CI does not run**: `VortexCloudFastCheck` is red for other reasons, so commits go out with `--no-verify` (the beta report's QA-01 finding, still true).
 
-Cinq filets, cinq trous, au même endroit.
+Five nets, five holes, in the same place.
 
 ---
 
-## 6. Ce qui est livré, et la preuve
+## 6. What is shipped, and the proof
 
 `scripts/hooks/check-authorization-surface.mjs` (+ `authorization-surface-baseline.json`).
 
@@ -218,11 +218,11 @@ check-authorization-surface: OK (179 entries: 121 room-grain methods, 58 HTTP en
 15 distinct gate idioms).
 ```
 
-**Ce qu'il ne fait pas** : juger si une autorisation est correcte. Avec 15 idiomes c'est hors d'atteinte, et prétendre le contraire donnerait un contrôle qui rassure à tort — le pire résultat possible pour un outil de sécurité.
+**What it does not do**: judge whether an authorization is correct. With 15 idioms that is out of reach, and pretending otherwise would give a check that falsely reassures — the worst possible outcome for a security tool.
 
-**Ce qu'il fait** : inventorier les 179 points de décision **avec le nom de la porte qui garde chacun**, et bloquer quand cet inventaire bouge — une entrée **nouvelle**, ou une entrée dont la porte **a disparu**. Il ne demande pas d'avoir raison ; il demande d'être explicite, une fois, dans le diff où c'est gratuit.
+**What it does**: inventory the 179 decision points **with the name of the gate guarding each**, and block when that inventory moves — a **new** entry, or an entry whose gate **disappeared**. It does not ask you to be right; it asks you to be explicit, once, in the diff where it is free.
 
-**La preuve de régression.** J'ai simulé l'erreur exacte que ce contrôle existe pour attraper — remplacer la recherche gardée par la lecture brute dans `SetCustomStackHeightAsync` :
+**The regression proof.** I simulated the exact mistake this check exists to catch — replacing the guarded lookup with the raw read in `SetCustomStackHeightAsync`:
 
 ```
 check-authorization-surface: the authorization surface moved.
@@ -232,13 +232,13 @@ check-authorization-surface: the authorization surface moved.
 exit=2
 ```
 
-Une modification d'un identifiant, qui ne casse ni le build ni un test ni une revue, et qui rendait la hauteur d'empilement de n'importe quel mobi modifiable par n'importe quel visiteur. Le fichier a été restauré immédiatement après ; `git status` est propre sur ce fichier.
+A one-identifier change, which breaks neither the build nor a test nor a review, and which made any furni's stack height editable by any visitor. The file was restored immediately after; `git status` is clean on that file.
 
-La baseline porte une note par classe d'entrée, dont celle-ci, qui est la seule chose à retenir si vous ne lisez rien d'autre :
+The baseline carries a note per entry class, including this one, which is the only thing to remember if you read nothing else:
 
-> `gate:NONE` — « Pour la plupart c'est correct : un avatar qui agit sur son propre avatar (danse, frappe, posture) n'a besoin d'aucune autorité au-delà d'être dans la room. Ce n'est **pas** automatiquement correct pour ce qui touche la propriété d'autrui, une monnaie, ou les réglages de la room. **Un nouveau `NONE` est celui qu'il faut lire deux fois.** »
+> `gate:NONE` — "For most of them this is correct: an avatar acting on its own avatar (dance, wave, posture) needs no authority beyond being in the room. It is **not** automatically correct for anything touching someone else's property, a currency, or the room's settings. **A new `NONE` is the one to read twice.**"
 
-**Adoption** : une ligne dans `VortexCloudFastCheck`, que je n'ai pas ajoutée — même raison qu'au wired : la cible est rouge, et le rapport devait livrer un contrôle sans toucher au code de production.
+**Adoption**: one line in `VortexCloudFastCheck`, which I did not add — same reason as with wired: the target is red, and the report had to ship a check without touching production code.
 
 ```xml
 <Exec Command="node scripts/hooks/check-authorization-surface.mjs"
@@ -249,102 +249,102 @@ La baseline porte une note par classe d'entrée, dont celle-ci, qui est la seule
 
 ## 7. Plan
 
-**Avant la bêta**
+**Before the beta**
 
-1. **SEC-10** (2 h) — `maxConnectionNumber` sur les deux écouteurs + compteur par IP dans `SessionGateway`. *Critère* : la (N+1)ᵉ connexion d'une IP est fermée.
-2. **SEC-11** (2 h) — garde `PlayerId`, format du code validé avant de nommer le grain, comptage des échecs. *Critère* : un code hors format n'active aucun grain.
-3. **Brancher le contrôle** (10 min, après la réparation de la barrière du §5.3). Sans elle, il ne s'exécutera jamais.
+1. **SEC-10** (2 h) — `maxConnectionNumber` on both listeners + per-IP counter in `SessionGateway`. *Criterion*: the (N+1)th connection from an IP is closed.
+2. **SEC-11** (2 h) — `PlayerId` guard, code format validated before naming the grain, failure counting. *Criterion*: an out-of-format code activates no grain.
+3. **Wire up the check** (10 min, after repairing the barrier in §5.3). Without it, it will never run.
 
-**Peu après**
+**Shortly after**
 
-4. **SEC-12** (0,5 j) — la capacité `room.furni.edit` résolue dans le grain ; celle du handler devient une réponse rapide, pas la garantie.
-5. **Le test qui manque** (1 j) — `StaffPowerGrainGateTests` est le bon modèle, appliqué à deux méthodes. Le porter aux ~20 méthodes de grain qui gardent autre chose que l'avatar de l'acteur : pour chacune, un acteur sans droit, et l'assertion que rien n'a bougé.
-6. **SEC-13 / SEC-14** (2 h) — brancher ou retirer les deux handlers vides ; valider l'objet-en-main contre la liste des définitions.
+4. **SEC-12** (0.5 d) — the `room.furni.edit` capability resolved in the grain; the handler's becomes a fast answer, not the guarantee.
+5. **The missing test** (1 d) — `StaffPowerGrainGateTests` is the right model, applied to two methods. Extend it to the ~20 grain methods that guard something other than the actor's own avatar: for each, an actor without the right, and the assertion that nothing moved.
+6. **SEC-13 / SEC-14** (2 h) — wire up or remove the two empty handlers; validate the hand item against the definitions list.
 
-**Structurel, quand vous voudrez**
+**Structural, whenever you want**
 
-7. **Réduire 15 idiomes à un** (2 à 3 j). La cible n'est pas de tout réécrire mais de rendre la porte **visible et nommée** partout : un `RoomAuthority.RequireAsync(ctx, …)` explicite, et surtout la fin de `gated-lookup` — une recherche qui autorise devrait s'appeler `FindItemIfAllowedAsync`, ou mieux, rendre l'autorisation et l'objet séparément. Le contrôle livré mesure l'avancement : le nombre d'idiomes distincts doit baisser à chaque étape.
-
----
-
-## 8. Couverture et limites
-
-**Vérifié à la main, des deux côtés** : les 15 chemins du §3, les 4 défauts du §4, le pipeline de paquets de bout en bout (`PackageHandler` → `MessageSystem` → `MessageRegistry` → handler), `RoomSecurityModule` en entier, `RoomService.Trading/Create/Doorbell`, `CatalogPurchaseGrain`, `VoucherGrain`, `RoomHandItemModule`, les 45 endpoints de `WebApiEndpoints.cs`, `SupervisorEndpoints.cs`, `ClientPacketDecoder`, `RateLimitConfig`, `SessionGateway`.
-
-**Analysé mécaniquement** : 559 handlers de paquets, 121 méthodes de grain room prenant un acteur, 58 endpoints HTTP, 179 points de décision d'autorisation.
-
-**Non vérifié — et il faut le savoir avant de s'appuyer sur ce rapport** :
-
-- **Aucune exécution.** Pas de MySQL, pas d'émulateur, pas de client dans cet environnement. **Aucun des défauts n'a été exploité pour de vrai** : ils sont établis par lecture du code, y compris SEC-10 et SEC-11, dont l'effet réel dépend de votre hébergement (un pare-feu ou un reverse-proxy en amont peut déjà borner les connexions — je n'ai pas vu votre déploiement).
-- **La cryptographie** (`Vortex.Crypto`, la poignée de main Diffie-Hellman, RC4) : non auditée. C'est un domaine où une revue superficielle est pire qu'aucune.
-- **L'authentification et les sessions web** : `AuthenticationService`, `WebApiSessionStore`, hachage des mots de passe, gestion des cookies. Le rapport de bêta les couvre (AUTH-01 ticket SSO rejouable, SEC-01 pas de verrouillage de compte, sessions non révoquées au ban) ; je n'y suis pas retourné et **ces trois constats restent ouverts**.
-- **Les 48 entrées `NONE`** : j'en ai lu une quinzaine (avatar, animaux, objets-en-main, cadeaux, mobi-crédit). Les autres — notamment `ClaimWelcomeGiftAsync`, `HitCrackableAsync`, `UseMysteryBoxAsync`, `GetWiredDataSnapshotByFloorItemIdAsync`, `AddPlayerToRoomAsync` — sont inventoriées mais **pas relues une par une**. C'est le premier endroit où continuer.
-- **L'injection SQL** : non recherchée systématiquement. Le dépôt utilise EF Core avec LINQ paramétré partout où j'ai regardé, ce qui rend la classe improbable, mais « improbable » n'est pas « vérifié ».
-- **Les plugins** : la surface d'extension (`Vortex.Plugins`) charge du code tiers dans le processus. Hors périmètre ici, et c'est un audit à part entière.
-
-*(Les grains hors room figuraient dans cette liste ; ils sont désormais couverts, §10.)*
-
+7. **Reduce 15 idioms to one** (2 to 3 d). The target is not to rewrite everything but to make the gate **visible and named** everywhere: an explicit `RoomAuthority.RequireAsync(ctx, …)`, and above all the end of `gated-lookup` — a lookup that authorizes should be called `FindItemIfAllowedAsync`, or better, return the authorization and the object separately. The shipped check measures progress: the number of distinct idioms must drop at every step.
 
 ---
 
-## 10. Les grains hors room
+## 8. Coverage and limits
 
-Ajouté après coup : le §8 listait les grains hors room comme non couverts. Ils le sont maintenant, et la règle que le dépôt énonce — « *callable by anything in the cluster that can name it* » — ne parlait jamais de rooms.
+**Verified by hand, on both sides**: the 15 paths in §3, the 4 defects in §4, the packet pipeline end to end (`PackageHandler` → `MessageSystem` → `MessageRegistry` → handler), `RoomSecurityModule` in full, `RoomService.Trading/Create/Doorbell`, `CatalogPurchaseGrain`, `VoucherGrain`, `RoomHandItemModule`, the 45 endpoints of `WebApiEndpoints.cs`, `SupervisorEndpoints.cs`, `ClientPacketDecoder`, `RateLimitConfig`, `SessionGateway`.
 
-### 10.1 Résultat
+**Analyzed mechanically**: 559 packet handlers, 121 room grain methods taking an actor, 58 HTTP endpoints, 179 authorization decision points.
 
-**Aucun trou exploitable.** Sur 62 interfaces de grain :
+**Not verified — and you need to know it before leaning on this report**:
 
-| Surface | Constat |
+- **No execution.** No MySQL, no emulator, no client in this environment. **None of the defects was actually exploited**: they are established by reading the code, including SEC-10 and SEC-11, whose real effect depends on your hosting (a firewall or an upstream reverse proxy may already bound connections — I have not seen your deployment).
+- **Cryptography** (`Vortex.Crypto`, the Diffie-Hellman handshake, RC4): not audited. It is a domain where a superficial review is worse than none.
+- **Web authentication and sessions**: `AuthenticationService`, `WebApiSessionStore`, password hashing, cookie handling. The beta report covers them (AUTH-01 replayable SSO ticket, SEC-01 no account lockout, sessions not revoked on ban); I did not go back to them and **those three findings remain open**.
+- **The 48 `NONE` entries**: I read about fifteen of them (avatar, pets, hand items, gifts, credit furni). The others — notably `ClaimWelcomeGiftAsync`, `HitCrackableAsync`, `UseMysteryBoxAsync`, `GetWiredDataSnapshotByFloorItemIdAsync`, `AddPlayerToRoomAsync` — are inventoried but **not reviewed one by one**. That is the first place to continue.
+- **SQL injection**: not searched systematically. The repository uses EF Core with parameterized LINQ everywhere I looked, which makes the class unlikely, but "unlikely" is not "verified".
+- **Plugins**: the extension surface (`Vortex.Plugins`) loads third-party code into the process. Out of scope here, and an audit in its own right.
+
+*(Non-room grains were on this list; they are now covered, §10.)*
+
+
+---
+
+## 10. Non-room grains
+
+Added afterwards: §8 listed non-room grains as uncovered. They are covered now, and the rule the repository states — "*callable by anything in the cluster that can name it*" — never said anything about rooms.
+
+### 10.1 Result
+
+**No exploitable hole.** Across 62 grain interfaces:
+
+| Surface | Finding |
 |---|---|
-| **20 grains à clé chaîne** | 19 sont des singletons (`SingletonGrainId.GLOBAL`). **Un seul** prend une chaîne du client : `IVoucherGrain`, déjà rapporté en SEC-11. La classe « clé de grain choisie par le client » est donc close, avec une seule instance. |
-| **24 méthodes hors room prenant un acteur** | 15 sur `IGroupGrain`, 8 sur `IGroupForumGrain`, 1 sur `IPlayerGrain`. **Toutes gardées.** |
-| **31 méthodes agissant sur un tiers nommé** (`targetPlayerId`) | Exclusion, promotion, bannissement, modération de forum : vérifiées, gardées. |
+| **20 string-keyed grains** | 19 are singletons (`SingletonGrainId.GLOBAL`). **Only one** takes a string from the client: `IVoucherGrain`, already reported as SEC-11. So the "grain key chosen by the client" class is closed, with a single instance. |
+| **24 non-room methods taking an actor** | 15 on `IGroupGrain`, 8 on `IGroupForumGrain`, 1 on `IPlayerGrain`. **All guarded.** |
+| **31 methods acting on a named third party** (`targetPlayerId`) | Kick, promotion, ban, forum moderation: checked, guarded. |
 
-Les groupes sont le système le mieux gardé que j'aie lu dans ce dépôt. `KickCoreAsync` refuse même d'exclure le propriétaire, avec la raison écrite : *« a guild without an owner has nobody who can disband or repair it »*.
+Groups are the best-guarded system I have read in this repository. `KickCoreAsync` even refuses to kick the owner, with the reason written out: *"a guild without an owner has nobody who can disband or repair it"*.
 
-### 10.2 Mais sept idiomes de plus, dont trois invisibles
+### 10.2 But seven more idioms, three of them invisible
 
-La couture du §5 ne s'arrête pas aux rooms. Les groupes répondent à la même question avec un vocabulaire **entièrement distinct**, que rien ne relie au précédent :
+The §5 seam does not stop at rooms. Groups answer the same question with an **entirely distinct** vocabulary, which nothing links to the previous one:
 
-| Idiome | Exemple | Visible au point d'appel ? |
+| Idiom | Example | Visible at the call site? |
 |---|---|---|
-| comparaison en ligne | `group.OwnerPlayerEntityId != actorId` | oui |
-| `IsAdminAsync(dbCtx, group, actorId, ct)` | | oui |
-| matrice de permissions | `Allows(settings.ModPermission, role)`, `CanRead`, `PostPermission` | oui |
-| **chargeur gardé** | `LoadIfAdminAsync(dbCtx, actor, ct)` → `null` si refusé | **non** |
-| **chargeur gardé à tuple** | `LoadForModerationAsync(...)` → `(null, ForumRole.None)` | **non** |
-| **enrobage de mutation** | `MutateAsAdminAsync(actor, group => { … }, ct)` | **non** |
+| inline comparison | `group.OwnerPlayerEntityId != actorId` | yes |
+| `IsAdminAsync(dbCtx, group, actorId, ct)` | | yes |
+| permission matrix | `Allows(settings.ModPermission, role)`, `CanRead`, `PostPermission` | yes |
+| **guarded loader** | `LoadIfAdminAsync(dbCtx, actor, ct)` → `null` if refused | **no** |
+| **guarded tuple loader** | `LoadForModerationAsync(...)` → `(null, ForumRole.None)` | **no** |
+| **mutation wrapper** | `MutateAsAdminAsync(actor, group => { … }, ct)` | **no** |
 
-Le deuxième mérite d'être regardé de près, parce qu'il est le plus trompeur du dépôt :
+The second deserves a close look, because it is the most misleading in the repository:
 
 ```csharp
 (GroupEntity? group, ForumRole role) = await LoadForModerationAsync(dbCtx, actor, ct);
 if (group is null) { return null; }
-// `role` n'est plus jamais utilisé
+// `role` is never used again
 ```
 
-Le rôle est extrait puis **jeté**. Le refus voyage sur le `group is null`, pas sur le rôle. Une relecture rapide y voit un chargement qui a échoué, pas une autorisation refusée — et quelqu'un qui « nettoierait » ce `role` inutilisé toucherait à la seule ligne qui dit que cette méthode est gardée.
+The role is extracted then **thrown away**. The refusal travels on `group is null`, not on the role. A quick review sees a load that failed, not an authorization refused — and someone "cleaning up" that unused `role` would be touching the only line that says this method is guarded.
 
-Le troisième plie la porte dans un enrobage qui prend une lambda : au point d'appel, `UpdateBadgeAsync` ne montre qu'un acteur et une mutation, jamais une vérification.
+The third folds the gate into a wrapper taking a lambda: at the call site, `UpdateBadgeAsync` shows only an actor and a mutation, never a check.
 
-### 10.3 Deux grains qui délèguent à leur appelant (forme SEC-12)
+### 10.3 Two grains that delegate to their caller (SEC-12 shape)
 
-- **`StaffModerateThreadAsync(int actorPlayerId, …)`** ne vérifie **rien**. Son unique appelant de production est la route dashboard, qui exige `Capabilities.Dashboard.OpsGuildsManage`. Correct aujourd'hui.
-- **`SetHotelMuteAsync(PlayerId targetPlayerId, DateTime? expiresUtc)`** — mute à l'échelle de l'hôtel, et **aucun paramètre d'acteur**. Le grain ne peut donc pas vérifier, même en principe. `ModMuteMessageHandler` résout bien `ModerationAction.Mute` avant d'appeler. *C'est la signature qui est le constat* : un acteur qu'on ne passe pas ne peut pas être vérifié.
+- **`StaffModerateThreadAsync(int actorPlayerId, …)`** checks **nothing**. Its only production caller is the dashboard route, which requires `Capabilities.Dashboard.OpsGuildsManage`. Correct today.
+- **`SetHotelMuteAsync(PlayerId targetPlayerId, DateTime? expiresUtc)`** — a hotel-wide mute, and **no actor parameter**. The grain therefore cannot check, even in principle. `ModMuteMessageHandler` does resolve `ModerationAction.Mute` before calling. *The signature is the finding*: an actor you do not pass cannot be checked.
 
-### 10.4 Une fausse piste, et pourquoi elle compte
+### 10.4 A false lead, and why it matters
 
-J'ai cru tenir une fuite de vie privée : `PlayerEntity.ProfileVisible` est appliqué avec soin côté site — profil privé = en-tête seul, jamais un 404, pour ne pas offrir un oracle d'énumération de pseudos — et **n'apparaît pas une seule fois** dans `Vortex.Players`, donc le profil complet part quand même sur le socket de jeu.
+I thought I had a privacy leak: `PlayerEntity.ProfileVisible` is carefully applied on the site side — private profile = header only, never a 404, so as not to offer a nickname-enumeration oracle — and **does not appear once** in `Vortex.Players`, so the full profile goes out on the game socket anyway.
 
-C'est un choix documenté, sur la propriété elle-même :
+It is a documented choice, on the property itself:
 
-> « *It governs the WEB profile only. Nothing on the game socket reads it… calling this one "private" for that too would be the same promise broken a second time.* »
+> "*It governs the WEB profile only. Nothing on the game socket reads it… calling this one "private" for that too would be the same promise broken a second time.*"
 
-**Ce n'est donc pas un défaut, et c'est le septième cas de la session** où un détecteur pointe une décision délibérée. Le point n'est pas que je me sois trompé : c'est que la justification vivait dans un commentaire XML sur une propriété d'entité, trois projets plus loin que le handler concerné. Aucun outil ne pouvait la voir, et un relecteur pressé non plus.
+**So it is not a defect, and it is the session's seventh case** of a detector pointing at a deliberate decision. The point is not that I was wrong: it is that the justification lived in an XML comment on an entity property, three projects away from the handler concerned. No tool could see it, and neither could a reviewer in a hurry.
 
-### 10.5 Ce que ça change pour la refonte
+### 10.5 What this changes for the redesign
 
-`docs/audits/authorization-redesign.md` propose `[RequiresRoomAuthority]` sur les interfaces de grain room. **Le périmètre est à élargir** : `IGroupGrain` et `IGroupForumGrain` en ont autant besoin, et `SetHotelMuteAsync` montre le cas que l'attribut ne peut pas traiter seul — une méthode sans acteur doit d'abord en recevoir un.
+`docs/audits/authorization-redesign.md` proposes `[RequiresRoomAuthority]` on the room grain interfaces. **The scope has to widen**: `IGroupGrain` and `IGroupForumGrain` need it just as much, and `SetHotelMuteAsync` shows the case the attribute cannot handle alone — a method with no actor must first be given one.
 
-Le contrôle livré couvre désormais cette surface : **220 entrées** (162 méthodes de grain prenant un acteur, 58 endpoints HTTP), **19 idiomes distincts** au lieu de 15.
+The shipped check now covers that surface: **220 entries** (162 grain methods taking an actor, 58 HTTP endpoints), **19 distinct idioms** instead of 15.

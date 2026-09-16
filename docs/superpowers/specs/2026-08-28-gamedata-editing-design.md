@@ -1,176 +1,176 @@
-# Éditer les gamedata depuis la dashboard — conception
+# Editing gamedata from the dashboard — design
 
-**Date** : 2026-08-28
-**État** : proposée, non implémentée
+**Date**: 2026-08-28
+**Status**: proposed, not implemented
 
-Rendre modifiables depuis la dashboard les quatre fichiers que le client télécharge :
+Make the four files the client downloads editable from the dashboard:
 `external_variables.json`, `external_flash_texts.json`, `furnidata_json.json`, `productdata_json.json`.
-Et le faire **multilingue dès le départ**, parce que le client sait le faire et que rien ne l'utilise.
+And do it **multilingual from the start**, because the client can do it and nothing uses it.
 
-`figuredata.xml` et `figuremap.xml` sont **hors périmètre** — décision explicite, pas un oubli.
+`figuredata.xml` and `figuremap.xml` are **out of scope** — an explicit decision, not an oversight.
 
 ---
 
-## 1. Ce qui existe aujourd'hui
+## 1. What exists today
 
-Les fichiers vivent sur l'hôte d'assets, `C:/Laragon/www/vortex-assets/gamedata/`. Cette racine est
-déjà configurée côté dashboard (`DashboardAssetUrls.LocalRoot`) et `gamedata` figure déjà dans
+The files live on the asset host, `C:/Laragon/www/vortex-assets/gamedata/`. That root is
+already configured on the dashboard side (`DashboardAssetUrls.LocalRoot`) and `gamedata` already appears in
 `HotelAssetRoots`.
 
-| Fichier | Taille | Forme | Entrées |
+| File | Size | Shape | Entries |
 | --- | --- | --- | --- |
-| `external_variables.json` | 42 Ko | map plate | 709 |
-| `external_flash_texts.json` | 1 071 Ko | map plate | 12 529 |
-| `productdata_json.json` | 3 Mo | `productdata.product[]` | — |
-| `furnidata_json.json` | **38 Mo** | `roomitemtypes` / `wallitemtypes` | **55 836** |
+| `external_variables.json` | 42 KB | flat map | 709 |
+| `external_flash_texts.json` | 1,071 KB | flat map | 12,529 |
+| `productdata_json.json` | 3 MB | `productdata.product[]` | — |
+| `furnidata_json.json` | **38 MB** | `roomitemtypes` / `wallitemtypes` | **55,836** |
 
-`hashes.php` publie `{name, url, hash: md5_file(...)}` et `.htaccess` réécrit `^<name>/.+$` vers le
-fichier. Le client demande `<url>/<hash>`. **Conséquence gratuite : toute écriture change le md5,
-donc invalide le cache client.** Aucun travail de cache-busting à faire, mais `hashes.php` doit
-connaître chaque fichier servi — y compris les nouveaux fichiers par langue (§4).
+`hashes.php` publishes `{name, url, hash: md5_file(...)}` and `.htaccess` rewrites `^<name>/.+$` to the
+file. The client requests `<url>/<hash>`. **Free consequence: any write changes the md5,
+hence invalidates the client cache.** No cache-busting work to do, but `hashes.php` must
+know every file served — including the new per-language files (§4).
 
-Les dossiers `gamedata/en/` et `gamedata/fr/` existent et sont **vides**.
+The `gamedata/en/` and `gamedata/fr/` folders exist and are **empty**.
 
 ---
 
-## 2. Le multilingue — ce que le client cible sait faire
+## 2. Multilingual — what the target client can do
 
-Autorité : `vortex-modern-client`. La source 2016 est lisible, le client cible WIN63-2026 est
-vérifié par présence de symboles.
+Authority: `vortex-modern-client`. The 2016 source is readable, the WIN63-2026 target client is
+verified by symbol presence.
 
-`HabboLocalizationManager.configureLocalizationLocations()` boucle `k = 1, 2, 3…` tant que
-`localization.<k>` existe, et lit pour chacun :
+`HabboLocalizationManager.configureLocalizationLocations()` loops `k = 1, 2, 3…` for as long as
+`localization.<k>` exists, and reads for each:
 
-| Clé | Rôle |
+| Key | Role |
 | --- | --- |
-| `localization.<k>` | l'**id** de la langue |
-| `localization.<k>.code` | le code (`fr`) |
-| `localization.<k>.name` | le nom affiché (`Français`) |
-| `localization.<k>.url` | **l'URL du fichier de textes de cette langue** |
+| `localization.<k>` | the language **id** |
+| `localization.<k>.code` | the code (`fr`) |
+| `localization.<k>.name` | the display name (`Français`) |
+| `localization.<k>.url` | **the URL of that language's texts file** |
 
-puis `registerLocalizationDefinition(id, name, url, code)`.
-`requestLocalizationInit()` charge ensuite `external.texts.txt` : c'est la **base**, la langue par défaut.
+then `registerLocalizationDefinition(id, name, url, code)`.
+`requestLocalizationInit()` then loads `external.texts.txt`: that is the **base**, the default language.
 
-Le basculement se fait par **`activateLocalizationDefinition(id)`**, qui rend la définition active
-*et recharge son URL*. Son unique appelant est `ChatInputWidgetHandler`, sur la commande de chat
+Switching is done via **`activateLocalizationDefinition(id)`**, which makes the definition active
+*and reloads its URL*. Its only caller is `ChatInputWidgetHandler`, on the chat command
 **`:lang <id>`**.
 
-> `:lang` reçoit l'**id**, pas le code. On pose donc `localization.<k>` = le code lui-même, pour que
-> le joueur tape `:lang fr`. Sans ça la fonctionnalité existe et reste introuvable.
+> `:lang` takes the **id**, not the code. So we set `localization.<k>` to the code itself, so the
+> player types `:lang fr`. Without that the feature exists and stays undiscoverable.
 
-### Ce que la cible a perdu
+### What the target lost
 
-| Mécanisme | 2016 | Cible WIN63-2026 |
+| Mechanism | 2016 | WIN63-2026 target |
 | --- | --- | --- |
-| Registre `localization.<k>` | ✅ | ✅ `configureLocalizationLocations`, `registerLocalizationDefinition`, `localization.1` présents |
+| `localization.<k>` registry | ✅ | ✅ `configureLocalizationLocations`, `registerLocalizationDefinition`, `localization.1` present |
 | `external.texts.txt` | ✅ | ✅ |
-| `external.override.texts.txt` (2ᵉ couche) | ✅ | ❌ **absent** |
-| `language_selection.enabled` | ✅ | ❌ **absent — clé morte dans le dump actuel** |
+| `external.override.texts.txt` (2nd layer) | ✅ | ❌ **absent** |
+| `language_selection.enabled` | ✅ | ❌ **absent — dead key in the current dump** |
 
-Pas de couche d'override sur la cible : **une modification de texte s'écrit dans le fichier de sa
-langue**, il n'y a pas de fichier de surcharge à côté du dump.
+No override layer on the target: **a text change is written into its own language's file**,
+there is no override file alongside the dump.
 
-### La frontière, écrite noir sur blanc
+### The boundary, written in black and white
 
-`furnidata.load.url` et `productdata.load.url` sont des propriétés simples, chargées **une fois,
-telles quelles**. Il n'existe ni registre équivalent ni substitution `%lang%` dans le client
-(vérifié : aucune occurrence). Les noms de furnis vivent dans furnidata (seulement 4 clés
-`furni_*_name|desc` dans les textes, donc ce n'est pas la voie).
+`furnidata.load.url` and `productdata.load.url` are plain properties, loaded **once,
+as is**. There is no equivalent registry and no `%lang%` substitution in the client
+(verified: no occurrences). Furni names live in furnidata (only 4 `furni_*_name|desc`
+keys in the texts, so that is not the route).
 
-**Le client n'offre aucun moyen de servir un furnidata par langue.** Furnidata et productdata sont
-donc éditables en **une seule langue**. Contourner ça demanderait de servir un contenu différent à la
-même URL selon le joueur — une décision d'infrastructure sur l'hôte d'assets, hors de cette
-conception. Cette limite est une propriété du client, pas un raccourci.
-
----
-
-## 3. Modèle d'écriture
-
-Le dump est **figé** (décision de l'exploitant : aucun ré-import de dump officiel). Le fichier est
-donc la vérité, édité en place.
-
-Chaque écriture, sans exception :
-
-1. copie de sauvegarde horodatée ;
-2. écriture dans un fichier temporaire ;
-3. **relecture et parse du temporaire** ;
-4. remplacement atomique du fichier réel.
-
-L'étape 3 est le cœur : un fichier que le client télécharge ne doit jamais pouvoir rester cassé. Si
-le parse échoue, le fichier réel n'a pas bougé et l'opération est refusée.
-
-Les sauvegardes vont dans `gamedata_backups/`, **frère** de `gamedata/` et donc hors des trois
-racines servies par `HotelAssets` — sinon les sauvegardes seraient téléchargeables par n'importe qui.
-
-### Concurrence
-
-Chaque écriture porte le `mtime` attendu du fichier. S'il a bougé, refus. Plusieurs personnes
-touchent l'hôtel, et une écriture perdue sur un fichier de 55 836 entrées ne se voit pas.
-
-### Cache et coût
-
-`GamedataDocumentStore` parse à la première demande et garde en mémoire, invalidé à l'écriture.
-Recherche et pagination **côté serveur** : la page ne reçoit jamais le fichier.
-
-> `ponytail:` réécriture intégrale des 38 Mo à chaque enregistrement de furni (~1 s de disque).
-> C'est le prix de « le fichier est la vérité ». Passer à une écriture incrémentale seulement si
-> l'attente devient gênante.
+**The client offers no way to serve a per-language furnidata.** Furnidata and productdata are
+therefore editable in **a single language**. Working around that would mean serving different content at the
+same URL depending on the player — an infrastructure decision on the asset host, outside this
+design. That limit is a property of the client, not a shortcut.
 
 ---
 
-## 4. Les langues
+## 3. Write model
 
-**Une seule liste de langues pour tout l'hôtel.** `web_languages` existe déjà (`Code`, `Name`,
-`IsDefault`, `Enabled`), créée pour les news. On la réutilise comme **liste**. Pas de seconde table :
-deux listes de langues divergent, toujours.
+The dump is **frozen** (operator's decision: no re-import of an official dump). The file is
+therefore the truth, edited in place.
 
-Mais `web_languages.Enabled` signifie « publiable sur le site » et rien d'autre. Une langue peut être
-ouverte sur le site sans que ses 12 529 textes client soient traduits, et l'inverse est vrai aussi.
-Les deux états sont donc **distincts** : le site garde `Enabled`, le client est activé séparément
-depuis cet onglet, et la présence du bloc `localization.<k>` dans `external_variables.json` **est**
-cet état — il n'y a pas de second drapeau en base à tenir synchronisé avec le fichier.
+Every write, without exception:
 
-Activer une langue **pour le client** produit, en une opération :
+1. timestamped backup copy;
+2. write to a temporary file;
+3. **re-read and parse the temporary file**;
+4. atomic replacement of the real file.
 
-1. le bloc `localization.<k>` / `.code` / `.name` / `.url` dans `external_variables.json` —
-   **généré, jamais tapé à la main**, et renuméroté de 1 à N à chaque changement (le client s'arrête
-   au premier trou) ;
-2. le fichier `gamedata/<code>/external_flash_texts.json`, initialisé depuis la langue par défaut ;
-3. l'entrée correspondante dans `hashes.php`.
+Step 3 is the heart of it: a file the client downloads must never be able to stay broken. If
+the parse fails, the real file has not moved and the operation is refused.
 
-Désactiver une langue retire son bloc et son entrée de hash ; **le fichier de textes est conservé**
-(le travail de traduction ne se perd pas sur un clic).
+Backups go to `gamedata_backups/`, a **sibling** of `gamedata/` and therefore outside the three
+roots served by `HotelAssets` — otherwise the backups would be downloadable by anyone.
 
-La langue par défaut reste servie par `external.texts.txt`, c'est-à-dire le
-`external_flash_texts.json` racine.
+### Concurrency
+
+Every write carries the file's expected `mtime`. If it moved, refuse. Several people
+touch the hotel, and a lost write on a file of 55,836 entries is invisible.
+
+### Cache and cost
+
+`GamedataDocumentStore` parses on first request and keeps it in memory, invalidated on write.
+Search and pagination **server-side**: the page never receives the file.
+
+> `ponytail:` full rewrite of the 38 MB on every furni save (~1 s of disk).
+> That is the price of "the file is the truth". Move to an incremental write only if
+> the wait becomes annoying.
 
 ---
 
-## 5. Identité des entrées
+## 4. The languages
 
-| Fichier | Clé |
+**One single language list for the whole hotel.** `web_languages` already exists (`Code`, `Name`,
+`IsDefault`, `Enabled`), created for the news. We reuse it as the **list**. No second table:
+two language lists diverge, always.
+
+But `web_languages.Enabled` means "publishable on the site" and nothing else. A language can be
+open on the site without its 12,529 client texts being translated, and the reverse is true too.
+The two states are therefore **distinct**: the site keeps `Enabled`, the client is enabled separately
+from this tab, and the presence of the `localization.<k>` block in `external_variables.json` **is**
+that state — there is no second flag in the database to keep in sync with the file.
+
+Enabling a language **for the client** produces, in one operation:
+
+1. the `localization.<k>` / `.code` / `.name` / `.url` block in `external_variables.json` —
+   **generated, never hand-typed**, and renumbered from 1 to N on every change (the client stops
+   at the first gap);
+2. the `gamedata/<code>/external_flash_texts.json` file, initialized from the default language;
+3. the corresponding entry in `hashes.php`.
+
+Disabling a language removes its block and its hash entry; **the texts file is kept**
+(translation work is not lost on a click).
+
+The default language stays served by `external.texts.txt`, that is, the root
+`external_flash_texts.json`.
+
+---
+
+## 5. Entry identity
+
+| File | Key |
 | --- | --- |
-| `external_variables.json` | la clé |
-| `external_flash_texts.json` | la clé + le code langue |
-| `productdata_json.json` | le code produit |
+| `external_variables.json` | the key |
+| `external_flash_texts.json` | the key + the language code |
+| `productdata_json.json` | the product code |
 | `furnidata_json.json` | **`(kind, index)`** |
 
-Pour furnidata, ni `id` ni `classname` n'identifient une entrée :
+For furnidata, neither `id` nor `classname` identifies an entry:
 
-- 55 836 entrées pour **55 254 ids distincts** et **51 425 classnames distincts** ;
-- 577 ids sont partagés entre `roomitemtypes` et `wallitemtypes` — deux espaces de noms, légitime ;
-- **5 ids sont dupliqués à l'intérieur même de `roomitemtypes`** (p. ex. `2170666`) : deux entrées,
-  même id, même liste. Défaut du dump ; on ignore laquelle le client retient.
+- 55,836 entries for **55,254 distinct ids** and **51,425 distinct classnames**;
+- 577 ids are shared between `roomitemtypes` and `wallitemtypes` — two namespaces, legitimate;
+- **5 ids are duplicated inside `roomitemtypes` itself** (e.g. `2170666`): two entries,
+  same id, same list. A flaw in the dump; which one the client keeps is unknown.
 
-D'où : la clé est la position dans le tableau, et **la suppression d'une entrée furni n'est pas
-supportée** (les index glisseraient). Édition et ajout en fin de liste seulement.
+Hence: the key is the position in the array, and **deleting a furni entry is not
+supported** (the indices would shift). Editing and appending at the end of the list only.
 
 ---
 
-## 6. Cohérence furnidata ↔ base
+## 6. furnidata ↔ database coherence
 
-`furniture_definitions` est alimentée *depuis* furnidata, jamais l'inverse. Les deux décrivent les
-mêmes meubles et partagent 7 champs :
+`furniture_definitions` is fed *from* furnidata, never the reverse. Both describe the
+same furniture and share 7 fields:
 
 | furnidata | `furniture_definitions` |
 | --- | --- |
@@ -179,98 +179,98 @@ mêmes meubles et partagent 7 champs :
 | `xdim` / `ydim` | `Width` / `Length` |
 | `cansiton` / `canstandon` / `canlayon` | `CanSit` / `CanWalk` / `CanLay` |
 
-Changer `xdim` sans changer `Width` fait dessiner au client un meuble 2×1 dont le serveur réserve
-1×1. Ni le build, ni les tests, ni l'écran ne le signalent.
+Changing `xdim` without changing `Width` makes the client draw a 2×1 piece of furniture for which the server reserves
+1×1. Neither the build, nor the tests, nor the screen flags it.
 
-Un onglet **Cohérence** liste ces désaccords et propose « aligner la base » par ligne.
+A **Coherence** tab lists those disagreements and offers "align the database" per row.
 
-Jointure : `id` + `kind` → `SpriteId` + `ProductType` (`roomitemtypes` → sol, `wallitemtypes` → mur).
-L'index unique de la table est `(SpriteId, ProductType, FurniCategory)`, donc `(SpriteId, ProductType)`
-peut encore désigner plusieurs lignes. **Une jointure ambiguë est listée comme ambiguë, jamais
-tranchée au hasard** — et les 5 doublons du §5 y apparaissent aussi.
+Join: `id` + `kind` → `SpriteId` + `ProductType` (`roomitemtypes` → floor, `wallitemtypes` → wall).
+The table's unique index is `(SpriteId, ProductType, FurniCategory)`, so `(SpriteId, ProductType)`
+can still point at several rows. **An ambiguous join is listed as ambiguous, never
+settled at random** — and the 5 duplicates from §5 show up there too.
 
-`Name` est non unique par conception (3533 doublons) : ne jamais joindre dessus, utiliser
-`FurnitureDefinitionLookup` pour toute résolution par classname.
+`Name` is non-unique by design (3,533 duplicates): never join on it, use
+`FurnitureDefinitionLookup` for any resolution by classname.
 
 ---
 
-## 7. Surface HTTP
+## 7. HTTP surface
 
-Lectures, sous `/api/v1/gamedata` :
+Reads, under `/api/v1/gamedata`:
 
-| Route | Rend |
+| Route | Returns |
 | --- | --- |
-| `GET /files` | les 4 fichiers : taille, nombre d'entrées, `mtime` |
-| `GET /entries?file=&lang=&search=&page=` | entrées paginées, recherche côté serveur |
-| `GET /languages` | les langues, leur bloc `localization.<k>` et l'état de leur fichier |
-| `GET /coherence?page=` | les désaccords du §6 |
+| `GET /files` | the 4 files: size, entry count, `mtime` |
+| `GET /entries?file=&lang=&search=&page=` | paginated entries, server-side search |
+| `GET /languages` | the languages, their `localization.<k>` block and their file's state |
+| `GET /coherence?page=` | the disagreements from §6 |
 
-Écritures, sous `/api/v1/operations/gamedata/…`, via `DashboardOperationsService` (donc auditées, et
-capturées par l'intercepteur avant/après) :
-`entry/save`, `entry/delete` (vars et textes seulement), `furni/save`, `language/enable`,
+Writes, under `/api/v1/operations/gamedata/…`, via `DashboardOperationsService` (so audited, and
+captured by the before/after interceptor):
+`entry/save`, `entry/delete` (vars and texts only), `furni/save`, `language/enable`,
 `language/disable`, `coherence/align`.
 
-`file` est une **énumération fermée de 4 valeurs**, jamais un chemin. Aucune concaténation de chemin
-issue du réseau.
+`file` is a **closed enumeration of 4 values**, never a path. No path concatenation
+coming off the network.
 
 ---
 
-## 8. Interface
+## 8. UI
 
-Une page, cinq onglets : **Variables · Textes · Furnidata · Produits · Cohérence**.
+One page, five tabs: **Variables · Texts · Furnidata · Products · Coherence**.
 
-Chaque onglet : une recherche, un tableau paginé, un tiroir d'édition. Réutilise `createResource`,
-`createWriteOps`, `Pagination`, `Drawer`, `Tabs`, `EmptyState` — tous existants.
+Each tab: a search box, a paginated table, an edit drawer. Reuses `createResource`,
+`createWriteOps`, `Pagination`, `Drawer`, `Tabs`, `EmptyState` — all existing.
 
-L'onglet **Textes** est le seul multilingue : une clé par ligne, **une colonne par langue activée**,
-les traductions manquantes signalées. C'est cette vue qui rend le travail de traduction faisable ;
-un sélecteur de langue obligerait à comparer de mémoire.
+The **Texts** tab is the only multilingual one: one key per row, **one column per enabled language**,
+missing translations flagged. It is that view that makes the translation work feasible;
+a language picker would force comparing from memory.
 
-Capability `gamedata.manage`, déclarée dans les **quatre** fichiers du checklist `AGENTS.md`.
+Capability `gamedata.manage`, declared in the **four** files of the `AGENTS.md` checklist.
 
 ---
 
-## 9. Pièges connus
+## 9. Known traps
 
-- **DI de la dashboard** : `GamedataDocumentStore` doit être ajouté à
-  `DashboardWebHost.ForwardedServiceTypes`. Un service non forwardé est lu comme un corps de requête
-  et tue la dashboard **entière** au démarrage.
-- **Sauvegardes hors des racines servies** (§3), sinon elles sont publiques.
-- **Renumérotation de `localization.<k>`** : le client s'arrête au premier index manquant. Un trou
-  rend invisibles toutes les langues suivantes.
-- **`hashes.php` est généré** à partir de la liste des langues ; l'oublier fait que le client ne voit
-  jamais qu'un fichier a changé.
-- `.htaccess` doit réécrire les chemins par langue (`^<code>/external_flash_texts/.+$`).
+- **Dashboard DI**: `GamedataDocumentStore` must be added to
+  `DashboardWebHost.ForwardedServiceTypes`. An unforwarded service is read as a request body
+  and kills the **entire** dashboard at startup.
+- **Backups outside the served roots** (§3), otherwise they are public.
+- **Renumbering `localization.<k>`**: the client stops at the first missing index. A gap
+  makes every following language invisible.
+- **`hashes.php` is generated** from the language list; forgetting it means the client never
+  sees that a file changed.
+- `.htaccess` must rewrite the per-language paths (`^<code>/external_flash_texts/.+$`).
 
 ---
 
 ## 10. Tests
 
-- le chemin d'écriture : sauvegarde créée, temporaire parsé, remplacement atomique — **et le refus
-  laissant le fichier réel intact quand le contenu produit ne parse pas** ;
-- le refus sur `mtime` obsolète ;
-- la génération du bloc `localization.<k>` : contiguïté de 1 à N après activation *et* désactivation ;
-- la jointure de cohérence, dont un cas ambigu et un cas de doublon ;
-- le refus d'un `file` hors énumération.
+- the write path: backup created, temporary parsed, atomic replacement — **and the refusal
+  leaving the real file intact when the produced content does not parse**;
+- the refusal on a stale `mtime`;
+- generation of the `localization.<k>` block: contiguity from 1 to N after enabling *and* disabling;
+- the coherence join, including one ambiguous case and one duplicate case;
+- the refusal of a `file` outside the enumeration.
 
 ---
 
-## 11. Découpage
+## 11. Slicing
 
-| Tranche | Contenu |
+| Slice | Contents |
 | --- | --- |
-| 1 | `GamedataDocumentStore` + écriture sûre + registre de langues (`localization.<k>`, fichiers par langue, `hashes.php`) + onglet Variables |
-| 2 | Onglet Textes multilingue |
-| 3 | Furnidata + Produits + onglet Cohérence |
+| 1 | `GamedataDocumentStore` + safe write + language registry (`localization.<k>`, per-language files, `hashes.php`) + Variables tab |
+| 2 | Multilingual Texts tab |
+| 3 | Furnidata + Products + Coherence tab |
 
-La tranche 1 porte toute la machinerie d'écriture et le multilingue, c'est-à-dire les deux choses
-dont le reste dépend.
+Slice 1 carries all the write machinery and the multilingual support, that is, the two things
+everything else depends on.
 
 ---
 
-## 12. Laissé ouvert
+## 12. Left open
 
-- **Furnidata et productdata restent monolingues** (§2). Le client ne permet pas autre chose.
-- Le ré-import d'un dump officiel plus récent n'est pas traité : l'exploitant a indiqué que le dump
-  est figé. Si ça change, les modifications faites ici seront écrasées et il faudra une couche de
-  surcharge — que la cible ne fournit plus pour les textes.
+- **Furnidata and productdata stay monolingual** (§2). The client allows nothing else.
+- Re-importing a more recent official dump is not handled: the operator stated the dump
+  is frozen. If that changes, the edits made here will be overwritten and an override layer will be
+  needed — which the target no longer provides for texts.
