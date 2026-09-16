@@ -99,9 +99,38 @@ for (const line of cli.stdout.split(/\r?\n/)) {
   }
 }
 
-if (entries.length === 0) {
-  console.error('check-wire-conflicts: parsed no conflicts -- the CLI output format changed, this check is blind.');
+// "No conflicts" and "I could not read the output" are different answers, and conflating them is
+// what blocked CI on every push: with no client sources in the scan there is nothing for our field
+// counts to disagree WITH, so the CLI legitimately prints `Conflicts (0)` / `none` and exits 0 --
+// the exact situation the client_code skip below was written for, refused one step too early.
+//
+// The CLI states its own count, so ask it rather than inferring from the parse. A declared count of
+// zero is a real, empty result; a declared count above zero that yields no parsed entries is the
+// format change this guard exists to catch, and still blocks.
+const declaredCount = Number(/^Conflicts \((\d+)\)/m.exec(cli.stdout)?.[1] ?? NaN);
+
+if (Number.isNaN(declaredCount)) {
+  console.error(
+    'check-wire-conflicts: could not find the "Conflicts (N)" header -- the CLI output format\n' +
+      'changed, this check is blind.'
+  );
   process.exit(2);
+}
+
+if (declaredCount > 0 && entries.length === 0) {
+  console.error(
+    `check-wire-conflicts: the CLI reports ${declaredCount} conflict(s) and none of them parsed --\n` +
+      'the per-entry output format changed, this check is blind.'
+  );
+  process.exit(2);
+}
+
+if (declaredCount === 0) {
+  console.error(
+    'check-wire-conflicts: skipped -- the specs scan found no field-count conflicts at all, which\n' +
+      'means it holds no client sources to compare against. Nothing to arbitrate.'
+  );
+  process.exit(0);
 }
 
 // The client and reference checkouts live outside this repository on purpose (SpecWorkspace looks
