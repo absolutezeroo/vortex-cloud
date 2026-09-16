@@ -246,8 +246,22 @@ for (const tree of trees.slice(1)) {
 }
 
 // ---- fallback: the ceiling, when there is no client to ask ----------------------------------------
+//
+// The baseline applies here too. It did not, and that is why CI failed on every push: the runner
+// clones only this repository, so there is no client registry to read, and the ceiling branch
+// blocked on CustomStackingHeightUpdateMessageComposer = 9201 -- an id that IS in the baseline, with
+// a note explaining why it is parked out of range. One branch honoured the baseline and its sibling
+// ignored it, which is the exact defect this repository's checks exist to catch, inside a check.
 if (!known) {
-  const above = ours.filter((name) => headers[name].id > CEILING && !isExtension(name));
+  const ceilingBaseline = fs.existsSync(baselineFile)
+    ? new Set(JSON.parse(fs.readFileSync(baselineFile, 'utf8')).unreachable)
+    : new Set();
+  const above = ours.filter(
+    (name) =>
+      headers[name].id > CEILING &&
+      !isExtension(name) &&
+      !ceilingBaseline.has(`${headers[name].section}/${name}=${headers[name].id}`)
+  );
   console.error(
     'check-header-registry: no client sources beside this repository -- falling back to the id ceiling.'
   );
