@@ -125,24 +125,34 @@ if (declaredCount > 0 && entries.length === 0) {
   process.exit(2);
 }
 
+// Blind, not clean -- and only the FIELD-COUNT half is blind. The arity ratchet further down reads
+// call-site notes that are committed under docs/habbo-specs (312 of them), so it needs no client and
+// works perfectly well on CI. Exiting 0 here took it down too: between this branch and the
+// client_code branch below, the arity ratchet has never once run on a runner. The script already
+// knows how to report one half as unable to see without silencing the other -- that is `arityBlind`
+// at the bottom -- so this is the same idiom applied to the half that was written first.
+let clientBlind = false;
+
 if (declaredCount === 0) {
   console.error(
-    'check-wire-conflicts: skipped -- the specs scan found no field-count conflicts at all, which\n' +
-      'means it holds no client sources to compare against. Nothing to arbitrate.'
+    'check-wire-conflicts: field-count comparison skipped -- the specs scan found no field-count\n' +
+      'conflicts at all, which means it holds no client sources to compare against. The call-site\n' +
+      'arity ratchet below does not need them and still runs.'
   );
-  process.exit(0);
+  clientBlind = true;
 }
 
 // The client and reference checkouts live outside this repository on purpose (SpecWorkspace looks
 // for a sibling holding a `sources` directory), so the specs scan degrades instead of failing when
 // they are absent -- on CI, they always are. Without the client's own field counts there is nothing
 // to compare against, and reporting "OK" for that would be worse than saying nothing.
-if (!entries.some((e) => e.positions.some((p) => p.authority === 'client_code'))) {
+if (!clientBlind && !entries.some((e) => e.positions.some((p) => p.authority === 'client_code'))) {
   console.error(
-    'check-wire-conflicts: skipped -- no client_code source in the scan. The official client sources\n' +
-      'are not checked out beside this repository, so the specs have no field counts to compare ours to.'
+    'check-wire-conflicts: field-count comparison skipped -- no client_code source in the scan. The\n' +
+      'official client sources are not checked out beside this repository, so the specs have no field\n' +
+      'counts to compare ours to. The call-site arity ratchet below still runs.'
   );
-  process.exit(0);
+  clientBlind = true;
 }
 
 // Only disagreements against the client itself. A disagreement with a reference emulator is
@@ -274,8 +284,14 @@ underRead.sort();
 const arityBlind = specFiles.length > 0 && notesSeen === 0;
 
 if (update) {
-  fs.writeFileSync(baselineFile, `${JSON.stringify({ subjects: againstClient }, null, 2)}\n`);
-  console.error(`check-wire-conflicts: baseline written (${againstClient.length} disagreements with the client).`);
+  // Without the client every disagreement reads as resolved, so an --update here would quietly empty
+  // the 61-entry baseline and take the ratchet with it. Refuse, as the arity half below already does.
+  if (clientBlind) {
+    console.error('check-wire-conflicts: baseline NOT written -- no client sources, every entry would read as fixed.');
+  } else {
+    fs.writeFileSync(baselineFile, `${JSON.stringify({ subjects: againstClient }, null, 2)}\n`);
+    console.error(`check-wire-conflicts: baseline written (${againstClient.length} disagreements with the client).`);
+  }
   if (!arityBlind) {
     fs.writeFileSync(arityBaselineFile, `${JSON.stringify({ subjects: underRead }, null, 2)}\n`);
     console.error(`check-wire-conflicts: arity baseline written (${underRead.length} under-reads).`);
@@ -283,32 +299,36 @@ if (update) {
   process.exit(0);
 }
 
-if (!fs.existsSync(baselineFile)) {
-  console.error(`check-wire-conflicts: no baseline at ${path.relative(root, baselineFile)}. Run with --update.`);
-  process.exit(2);
-}
-
 let failed = false;
 
-const baseline = new Set(JSON.parse(fs.readFileSync(baselineFile, 'utf8')).subjects);
-const added = againstClient.filter((s) => !baseline.has(s));
-const fixed = [...baseline].filter((s) => !againstClient.includes(s));
-
-for (const s of fixed) console.error(`warning: ${s} no longer disagrees with the client -- run --update to lock it in`);
-
-if (added.length) {
-  console.error(`\nNew wire disagreement with the official client (${added.length}):`);
-  for (const s of added) {
-    const entry = entries.find((e) => e.subject === s);
-    console.error(`  - ${s}`);
-    for (const p of entry.positions) console.error(`      ${p.origin} (${p.authority}): ${p.fields} fields`);
+// Blind, every baselined subject would read as fixed and print a warning saying so, which is how a
+// ratchet gets talked into being emptied. Compare only when the client was in the scan.
+if (!clientBlind) {
+  if (!fs.existsSync(baselineFile)) {
+    console.error(`check-wire-conflicts: no baseline at ${path.relative(root, baselineFile)}. Run with --update.`);
+    process.exit(2);
   }
-  console.error(
-    '\nOur field count must match the client class that parses these bytes. Audit it against the AS3\n' +
-      'source (.claude/agents/wire-truth-auditor.md), then fix the serializer -- or, if the client is\n' +
-      'the one that is wrong, record why and run this script with --update.'
-  );
-  failed = true;
+
+  const baseline = new Set(JSON.parse(fs.readFileSync(baselineFile, 'utf8')).subjects);
+  const added = againstClient.filter((s) => !baseline.has(s));
+  const fixed = [...baseline].filter((s) => !againstClient.includes(s));
+
+  for (const s of fixed) console.error(`warning: ${s} no longer disagrees with the client -- run --update to lock it in`);
+
+  if (added.length) {
+    console.error(`\nNew wire disagreement with the official client (${added.length}):`);
+    for (const s of added) {
+      const entry = entries.find((e) => e.subject === s);
+      console.error(`  - ${s}`);
+      for (const p of entry.positions) console.error(`      ${p.origin} (${p.authority}): ${p.fields} fields`);
+    }
+    console.error(
+      '\nOur field count must match the client class that parses these bytes. Audit it against the AS3\n' +
+        'source (.claude/agents/wire-truth-auditor.md), then fix the serializer -- or, if the client is\n' +
+        'the one that is wrong, record why and run this script with --update.'
+    );
+    failed = true;
+  }
 }
 
 if (arityBlind) {
@@ -342,6 +362,9 @@ if (arityBlind) {
 if (failed) process.exit(2);
 
 console.error(
-  `check-wire-conflicts: OK (${againstClient.length} known disagreements with the client, ${entries.length} field-count conflicts total; ` +
-    `${underRead.length} known call-site under-reads over ${notesSeen} composer notes).`
+  `check-wire-conflicts: OK (${
+    clientBlind
+      ? 'field counts not compared, no client sources'
+      : `${againstClient.length} known disagreements with the client, ${entries.length} field-count conflicts total`
+  }; ${underRead.length} known call-site under-reads over ${notesSeen} composer notes).`
 );
