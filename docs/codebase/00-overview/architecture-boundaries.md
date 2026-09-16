@@ -137,7 +137,7 @@ Each fills a gap where the build, the tests and `grep` all pass while the featur
 | `check-architecture-walls.mjs` | FastCheck | the six walls above |
 | `Vortex.Specs.Cli -- validate` | FastCheck | a malformed or self-contradictory behavioural spec |
 | `npm run lint` | QualityGate | an undefined identifier in Svelte markup, which `npm run build` compiles and ships |
-| `check-wire-conflicts.mjs` | QualityGate | a **new** field-count disagreement with the official client. Reports blind and exits 0 without the client sources, rather than faking a pass |
+| `check-wire-conflicts.mjs` | QualityGate | a **new** field-count disagreement with the official client, and a **new** parser that reads fewer values than the client passes its composer. Without the client sources the field-count half reports blind rather than faking a pass; the arity half runs on committed spec evidence alone |
 | `scripts/hooks/__test/run.mjs` | QualityGate | a hook that stopped blocking — a hook that fails open says nothing |
 | `guard-emulator.mjs` | PreToolUse | a command that would kill the running `Vortex.Main` |
 
