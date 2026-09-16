@@ -85,5 +85,18 @@
   <ItemGroup>
     <PackageVersion Include="Microsoft.EntityFrameworkCore.InMemory" Version="9.0.8" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.8" />
+    <!-- Microsoft.EntityFrameworkCore.Sqlite 9.0.8 resolves the whole SQLitePCLRaw family at 2.1.10,
+         and the native lib package at that version carries GHSA-2m69-gcr7-jv3q (high). OSV records
+         the advisory as last_affected 2.1.11, so 2.1.12 is the first clean release and the bump
+         stays inside the 2.1.x line instead of crossing to the 3.x rename.
+
+         Nothing here references these packages, so the pin has to be central AND transitive:
+         CentralPackageTransitivePinningEnabled at the top of this file is what lets four
+         PackageVersion lines reach a dependency no project asks for. All four move together
+         because core, provider, lib and bundle ship as a matched set. -->
+    <PackageVersion Include="SQLitePCLRaw.bundle_e_sqlite3" Version="2.1.12" />
+    <PackageVersion Include="SQLitePCLRaw.core" Version="2.1.12" />
+    <PackageVersion Include="SQLitePCLRaw.lib.e_sqlite3" Version="2.1.12" />
+    <PackageVersion Include="SQLitePCLRaw.provider.e_sqlite3" Version="2.1.12" />
   </ItemGroup>
 </Project>
