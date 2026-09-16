@@ -15,6 +15,9 @@ using Vortex.Rooms.Wired.Rules;
 namespace Vortex.Rooms.Object.Logic.Furniture.Floor.Wired.Triggers;
 
 [RoomObjectLogic("wf_trg_says_something")]
+// The hotel's "user says EXACT keyword" box. Not a second behaviour: the match mode is already
+// intParams[1] of this box's own form, and "exact" is one of its three values.
+[RoomObjectLogic("wf_trg_exact_keyword")]
 public class WiredTriggerHabboSaysKeyword(
     IGrainFactory grainFactory,
     IStuffDataFactory stuffDataFactory,

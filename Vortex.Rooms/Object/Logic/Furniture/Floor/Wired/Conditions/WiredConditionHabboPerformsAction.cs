@@ -20,6 +20,9 @@ namespace Vortex.Rooms.Object.Logic.Furniture.Floor.Wired.Conditions;
 /// idle sleep are not tracked as durable avatar state here, so they report false. The negative variant
 /// inherits this and flips <see cref="FurnitureWiredConditionLogic.IsNegative"/>.</summary>
 [RoomObjectLogic("wf_cnd_user_performs_action")]
+// The hotel's "user IS dancing" box. Dancing is action 11 of this box's own dropdown, so it is this
+// condition with one option picked rather than a behaviour of its own.
+[RoomObjectLogic("wf_cnd_habbo_is_dancing")]
 public class WiredConditionHabboPerformsAction(
     IGrainFactory grainFactory,
     IStuffDataFactory stuffDataFactory,

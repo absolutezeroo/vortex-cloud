@@ -56,6 +56,7 @@ UPDATE `furniture_definitions`
     'wf_xtra_custom_contract',
     'wf_xtra_filter_furni_by_var',
     'wf_xtra_filter_users_by_var',
+    'wf_xtra_scan_chest_furni_by_type',
     'wf_xtra_text_output_furni_name',
     'wf_xtra_text_output_username',
     'wf_xtra_text_output_variable'

@@ -187,6 +187,50 @@ public sealed partial class RoomGrain
     public Task<bool> UseHabbiconAsync(PlayerId playerId, int habbiconId) =>
         ChatSystem.UseHabbiconAsync(playerId, habbiconId);
 
+    /// <summary>The client's <c>WiredUserAction</c> codes for the two actions that carry an index.</summary>
+    private const int SignActionCode = 10;
+
+    private const int DanceActionCode = 11;
+
+    /// <summary>
+    /// Announces an action a wired box can watch for. Published from here rather than from the
+    /// handlers because a dance also arrives from a wired variable and from a bot command, and a
+    /// trigger that fired only for the ones that came in on a packet would be a lie.
+    /// </summary>
+    private Task PublishPerformedActionAsync(
+        ActionContext ctx,
+        int actionCode,
+        int extra,
+        CancellationToken ct
+    ) =>
+        PublishRoomEventAsync(
+            new PlayerPerformedActionEvent
+            {
+                RoomId = RoomId,
+                CausedBy = ctx,
+                PlayerId = ctx.PlayerId,
+                ActionCode = actionCode,
+                Extra = extra,
+            },
+            ct
+        );
+
+    /// <summary>
+    /// The client's <c>WiredUserAction</c> code for one of our expressions, or <c>-1</c> for an
+    /// expression its action catalogue has no name for — no box can ask for those, so nothing is
+    /// lost by staying quiet.
+    /// </summary>
+    private static int WiredActionCodeFor(AvatarExpressionType expression) =>
+        expression switch
+        {
+            AvatarExpressionType.Wave => 0,
+            AvatarExpressionType.Blow => 1,
+            AvatarExpressionType.Laugh => 2,
+            AvatarExpressionType.Respect => 3,
+            AvatarExpressionType.Idle => 5,
+            _ => -1,
+        };
+
     public async Task<bool> SetAvatarDanceAsync(
         ActionContext ctx,
         AvatarDanceType danceType,
@@ -212,6 +256,9 @@ public sealed partial class RoomGrain
                         new PlayerGesturedEvent(ctx.PlayerId, _state.RoomId.Value, "dance"),
                         ct
                     )
+                    .ConfigureAwait(true);
+
+                await PublishPerformedActionAsync(ctx, DanceActionCode, (int)danceType, ct)
                     .ConfigureAwait(true);
             }
 
@@ -298,6 +345,13 @@ public sealed partial class RoomGrain
                     .ConfigureAwait(true);
             }
 
+            int actionCode = WiredActionCodeFor(expressionType);
+
+            if (actionCode >= 0)
+            {
+                await PublishPerformedActionAsync(ctx, actionCode, -1, ct).ConfigureAwait(true);
+            }
+
             return true;
         }
         catch (Exception ex)
@@ -379,6 +433,8 @@ public sealed partial class RoomGrain
             {
                 return false;
             }
+
+            await PublishPerformedActionAsync(ctx, SignActionCode, signId, ct).ConfigureAwait(true);
 
             return true;
         }

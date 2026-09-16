@@ -73,7 +73,12 @@ function walk(dir, out = []) {
 const keys = new Set();
 
 for (const file of walk(root)) {
-  for (const m of readFileSync(file, 'utf8').matchAll(/RoomObjectLogic\("([^"]+)"\)/g)) {
+  // Comment lines are dropped first. Prose that quotes the attribute — `[RoomObjectLogic("wf_...")]`
+  // in a doc comment explaining the convention — reads like a registration to a plain regex, and the
+  // placeholder inside it then has to be carried in the operator's dropdown forever.
+  const source = readFileSync(file, 'utf8').replace(/^\s*(\/\/|\*|\/\*).*$/gm, '');
+
+  for (const m of source.matchAll(/RoomObjectLogic\("([^"]+)"\)/g)) {
     keys.add(m[1]);
   }
 }
