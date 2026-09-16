@@ -172,6 +172,69 @@ public sealed class ConfigValidationTests
             .BeTrue();
     }
 
+    /// <summary>
+    /// SEC-15. Each bound is individually optional for a defensible reason — single-use is off so a
+    /// CMS can reuse one ticket across reconnects — and turning both off leaves no bound at all:
+    /// every use slides the TTL forward, so an observed ticket stays valid for as long as somebody
+    /// keeps replaying it. These three cases are the whole rule.
+    /// </summary>
+    [Fact]
+    public void NeitherTicketReplayBound_IsRefusedOutsideDevelopment()
+    {
+        AuthenticationConfigValidator validator = new(Environment(Environments.Production));
+
+        validator
+            .Validate(
+                null,
+                new AuthenticationConfig
+                {
+                    IpHashSecret = "a-real-production-secret",
+                    TicketSingleUse = false,
+                    TicketAbsoluteLifetimeSeconds = null,
+                }
+            )
+            .Failed.Should()
+            .BeTrue();
+    }
+
+    [Fact]
+    public void AnAbsoluteTicketLifetime_IsEnoughOnItsOwn()
+    {
+        AuthenticationConfigValidator validator = new(Environment(Environments.Production));
+
+        validator
+            .Validate(
+                null,
+                new AuthenticationConfig
+                {
+                    IpHashSecret = "a-real-production-secret",
+                    TicketSingleUse = false,
+                    TicketAbsoluteLifetimeSeconds = 300,
+                }
+            )
+            .Succeeded.Should()
+            .BeTrue();
+    }
+
+    [Fact]
+    public void SingleUseTickets_AreEnoughOnTheirOwn()
+    {
+        AuthenticationConfigValidator validator = new(Environment(Environments.Production));
+
+        validator
+            .Validate(
+                null,
+                new AuthenticationConfig
+                {
+                    IpHashSecret = "a-real-production-secret",
+                    TicketSingleUse = true,
+                    TicketAbsoluteLifetimeSeconds = null,
+                }
+            )
+            .Succeeded.Should()
+            .BeTrue();
+    }
+
     [Fact]
     public void ANegativeTicketTtl_IsRefused()
     {

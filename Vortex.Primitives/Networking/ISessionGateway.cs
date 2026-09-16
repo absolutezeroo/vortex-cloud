@@ -40,7 +40,14 @@ public interface ISessionGateway
     /// <see cref="GetOnlinePlayerCount"/> when one of those answers the question.
     /// </summary>
     public IReadOnlyCollection<PlayerId> GetOnlinePlayerIds();
-    public Task AddSessionAsync(SessionKey key, ISessionContext ctx);
+
+    /// <summary>
+    /// Registers a freshly connected transport session. Returns <c>false</c> when the connection is
+    /// refused &#8212; the caller must then close it &#8212; which today means a per-IP or global
+    /// session cap was reached (SEC-10). A refused session is never registered, so nothing needs
+    /// unwinding.
+    /// </summary>
+    public Task<bool> AddSessionAsync(SessionKey key, ISessionContext ctx);
     public Task RemoveSessionAsync(SessionKey key, CancellationToken ct);
     public Task AddSessionToPlayerAsync(
         SessionKey key,

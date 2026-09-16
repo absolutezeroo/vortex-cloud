@@ -166,7 +166,64 @@ function readKnown(src) {
   return null;
 }
 
-const known = trees.length > 0 ? readKnown(trees[0].src) : null;
+// ---- the client's registry, second source: the TypeScript port ------------------------------------
+//
+// The AS3 dump lives under `sources/`, which vortex-modern-client GITIGNORES (line 14). So on every
+// machine that did not unpack a client by hand -- CI included -- the reader above finds nothing and
+// this check degrades to comparing against an id ceiling, which catches almost nothing.
+//
+// The TypeScript port carries the same two tables, in one COMMITTED file:
+//
+//   this._events.set(230, AuthenticationOKMessageEvent);        // the client RECEIVES it
+//   this._composers.set(1953, WiredClickUserMessageComposer);   // the client SENDS it
+//
+// The direction inverts across the wire, and getting it backwards would report every id as
+// unreachable, so it is pinned to two ids verified by hand against Headers.cs: 230 is
+// AuthenticationOKMessageComposer on our side (we send what the client receives), and 1953 is
+// WiredClickUserMessageEvent (we receive what the client sends).
+function findClientTsRegistry() {
+  const RELATIVE = path.join(
+    'packages',
+    'vortex-engine',
+    'src',
+    'habbo',
+    'communication',
+    'HabboMessages.ts'
+  );
+  const parent = path.dirname(root);
+  const candidates = [];
+  if (process.env.VORTEX_CLIENT_ROOT)
+    candidates.push(path.join(process.env.VORTEX_CLIENT_ROOT, RELATIVE));
+  candidates.push(path.join(parent, 'vortex-modern-client', RELATIVE));
+  // The layout add_repo produces: <parent>/<owner>/<repo>.
+  for (const entry of fs.existsSync(parent) ? fs.readdirSync(parent) : [])
+    candidates.push(path.join(parent, entry, 'vortex-modern-client', RELATIVE));
+  return candidates.find((c) => fs.existsSync(c)) ?? null;
+}
+
+function readKnownFromTypeScript(file) {
+  const src = fs.readFileSync(file, 'utf8');
+  const found = { MessageEvent: new Set(), MessageComposer: new Set() };
+  for (const m of src.matchAll(/this\._(events|composers)\.set\(\s*(\d+)\s*,/g)) {
+    // client receives -> our composer; client sends -> our incoming event.
+    found[m[1] === 'events' ? 'MessageComposer' : 'MessageEvent'].add(Number(m[2]));
+  }
+  // Both directions or nothing, same rule as the AS3 reader: a half-read registry would report
+  // every composer as unreachable.
+  return found.MessageEvent.size > 0 && found.MessageComposer.size > 0 ? found : null;
+}
+
+const tsRegistry = findClientTsRegistry();
+const as3Known = trees.length > 0 ? readKnown(trees[0].src) : null;
+const known = as3Known ?? (tsRegistry ? readKnownFromTypeScript(tsRegistry) : null);
+
+// Named so a reader can tell which authority answered. "It exists somewhere" with no source would
+// be indistinguishable from a guess -- the same reason the later-build list below names its build.
+const registrySource = as3Known
+  ? trees[0].build
+  : tsRegistry
+    ? `${path.relative(path.dirname(root), tsRegistry).split(path.sep).slice(-2).join('/')} (TypeScript port)`
+    : 'none';
 
 // The other Habbo builds sitting beside this repository.
 //
@@ -225,7 +282,7 @@ fromLaterBuild.sort();
 
 if (fromLaterBuild.length) {
   console.error(
-    `check-header-registry: ${fromLaterBuild.length} id(s) absent from ${trees[0].build} but bound by a later build:`
+    `check-header-registry: ${fromLaterBuild.length} id(s) absent from ${registrySource} but bound by a later build:`
   );
   for (const entry of fromLaterBuild) console.error(`  - ${entry}`);
 }
@@ -263,5 +320,5 @@ if (added.length) {
 }
 
 console.error(
-  `check-header-registry: OK (${ours.length} mapped headers, ${unreachable.length} known unreachable, registry from ${trees[0].build}).`
+  `check-header-registry: OK (${ours.length} mapped headers, ${unreachable.length} known unreachable, registry from ${registrySource}).`
 );

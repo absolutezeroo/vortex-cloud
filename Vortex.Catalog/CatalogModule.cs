@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Vortex.Catalog.Providers;
+using Vortex.Catalog.Vouchers;
 using Vortex.Database.Context;
 using Vortex.Primitives.Catalog;
 using Vortex.Primitives.Catalog.Enums;
@@ -21,6 +22,10 @@ public sealed class CatalogModule : IHostPluginModule
     public void ConfigureServices(IServiceCollection services, HostApplicationBuilder builder)
     {
         services.AddSingleton<ICatalogService, CatalogService>();
+
+        // Singleton because the counts must outlive a packet: the handler is built fresh per
+        // invocation, so anything it held would reset on every attempt and count nothing (SEC-11).
+        services.AddSingleton<IVoucherAttemptLimiter, VoucherAttemptLimiter>();
         services.AddSingleton<ILtdScheduleService, LtdScheduleService>();
         services.AddSingleton<ICatalogClubOfferProvider, CatalogClubOfferProvider>();
         services.AddSingleton<IReferenceDataProvider>(sp =>

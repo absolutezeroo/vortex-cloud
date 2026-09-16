@@ -32,9 +32,16 @@ public static class SuperSocketHostBuilderExtensions
                             {
                                 ctx.SetRevisionId(revisionManager.DefaultRevisionId);
 
-                                await gateway
-                                    .AddSessionAsync(ctx.SessionKey, ctx)
-                                    .ConfigureAwait(false);
+                                if (
+                                    !await gateway
+                                        .AddSessionAsync(ctx.SessionKey, ctx)
+                                        .ConfigureAwait(false)
+                                )
+                                {
+                                    // Over a session cap (SEC-10). The gateway registered nothing,
+                                    // so closing the transport is the whole of the cleanup.
+                                    await ctx.CloseSessionAsync().ConfigureAwait(false);
+                                }
                             }
                         },
                         Closed = async (session, e) =>

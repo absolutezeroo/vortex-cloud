@@ -39,4 +39,25 @@ public class NetworkingConfig
     public TimeSpan PongTimeout { get; init; } = TimeSpan.Zero;
 
     public int MaxPacketBodyBytes { get; init; } = DefaultMaxPacketBodyBytes;
+
+    /// <summary>
+    ///     How many concurrent sessions one remote address may hold. Zero disables the cap.
+    /// </summary>
+    /// <remarks>
+    ///     The per-session rate limit (<c>RateLimitConfig</c>) bounds what ONE connection may send.
+    ///     On its own it bounds nothing at the host level, because nothing bounded the number of
+    ///     connections: a thousand sockets at fifty packets a second each is fifty thousand packets
+    ///     a second from one machine, and every one of them can activate a grain before the session
+    ///     has authenticated (SEC-10).
+    ///
+    ///     Sized for the case that is not an attack: a household, a school or a caf&#233; behind one
+    ///     NAT address, where a dozen players legitimately share an IP, plus reconnect churn.
+    /// </remarks>
+    public int MaxSessionsPerIpAddress { get; init; } = 32;
+
+    /// <summary>
+    ///     Hard ceiling on concurrent sessions across every remote address. Zero disables it. The
+    ///     last line before the process runs out of sockets; set it from what the host can carry.
+    /// </summary>
+    public int MaxTotalSessions { get; init; } = 5000;
 }
